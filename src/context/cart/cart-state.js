@@ -1,0 +1,54 @@
+import { React, useReducer } from "react";
+import ShopContext from "./shop-context";
+import CartReducer from "./cart-reducer";
+import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useQuery } from "@tanstack/react-query";
+
+const CartState = ({ children }) => {
+  let items = [];
+  const initialState = {
+    showCart: false,
+    products: items,
+    cartItems: [],
+  };
+  const { q } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const data = await getDocs(collection(db, "/products"));
+      data.docs.forEach((doc) => {
+        let key = doc.id;
+        let item = doc.data();
+        items.push({ key, item });
+      });
+    },
+  });
+
+  const [state, dispatch] = useReducer(CartReducer, initialState);
+  const addToCart = (item) => {
+    dispatch({ type: ADD_TO_CART, payload: item });
+  };
+  const showHideCart = () => {
+    dispatch({ type: SHOW_HIDE_CART });
+  };
+  const removeItem = (id) => {
+    dispatch({ type: REMOVE_ITEM, payload: id });
+  };
+  return (
+    <ShopContext.Provider
+      value={{
+        showCart: state.showCart,
+        products: state.products,
+        cartItem: state.cartItems,
+        addToCart,
+        showHideCart,
+        removeItem,
+      }}
+    >
+      {children}
+    </ShopContext.Provider>
+  );
+};
+
+export default CartState;
