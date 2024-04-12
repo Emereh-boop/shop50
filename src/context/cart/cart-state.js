@@ -1,4 +1,4 @@
-import { React, useReducer } from "react";
+import { React, useReducer, useState } from "react";
 import ShopContext from "./shop-context";
 import CartReducer from "./cart-reducer";
 import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const CartState = ({ children }) => {
   let items = [];
+
   const initialState = {
     showCart: false,
     products: items,
@@ -24,6 +25,7 @@ const CartState = ({ children }) => {
       });
     },
   });
+  const [cart, setCart] = useState([initialState]);
 
   const [state, dispatch] = useReducer(CartReducer, initialState);
   const addToCart = (item) => {

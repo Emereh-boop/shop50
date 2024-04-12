@@ -15,11 +15,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<ProductPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/account" element={<Login />} />
-          <Route index element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
