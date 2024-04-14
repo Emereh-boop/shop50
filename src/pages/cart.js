@@ -11,7 +11,6 @@ export default function Cart() {
     window.location.href = "/";
   };
 
-  // console.log(cartItem);
   return (
     <div className="px-4 md:px-20 py-10 flex flex-col justify-between h-svh text-xs text-gray-600 ">
       <Navbar />
@@ -31,6 +30,7 @@ export default function Cart() {
               </div>
             ) : (
               cartItem.map((p, index) => {
+                console.log(p, index);
                 return (
                   <ol key={p.key + index}>
                     <div className="flex flex-col md:flex-row">
@@ -54,12 +54,12 @@ export default function Cart() {
                       <div className="flex justify-between md:w-3/5">
                         <div className="md:w-1/4 flex flex-col gap-10">
                           <label htmlFor="select">SIZE</label>
-                          {/* <select className="md:w-1/2 outline-none">
+                          <select className="md:w-1/2 outline-none">
                             <option></option>
                             {p.item.sizes.map((size) => {
-                              return <option>{size}</option>;
+                              return <option key={size}>{size}</option>;
                             })}
-                          </select> */}
+                          </select>
                         </div>
                         <div className="md:w-1/4 flex flex-col gap-10">
                           <label htmlFor="select">QUANTITY</label>

@@ -19,6 +19,7 @@ export default function NewArrivals() {
             return (
               <Product
                 key={i.key}
+                id={i.key}
                 image={i.item.image}
                 title={i.item.title}
                 currentprice={i.item.currentprice}
