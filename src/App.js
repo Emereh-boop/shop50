@@ -5,7 +5,6 @@ import { Route, Routes, BrowserRouter } from "react-router-dom";
 import ProductPage from "./pages/product-page";
 import Cart from "./pages/cart";
 import Register from "./components/account-register";
-import Logout from "./components/account-logout";
 import Login from "./components/account-login";
 import UploadData from "./pages/upload-data";
 
@@ -20,7 +19,6 @@ function App() {
           <Route path="/account" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
           <Route path="/upload-data" element={<UploadData />} />
         </Routes>
       </BrowserRouter>

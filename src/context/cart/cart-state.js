@@ -5,6 +5,8 @@ import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useQuery } from "@tanstack/react-query";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const CartState = ({ children }) => {
   const cartItemsFromStorage = localStorage.getItem("cartItems");
@@ -42,6 +44,11 @@ const CartState = ({ children }) => {
   };
   const removeItem = (id) => {
     dispatch({ type: REMOVE_ITEM, payload: id });
+    alert("Remove item");
+  };
+  const logout = async () => {
+    await signOut(auth);
+    alert("logged out!");
   };
   return (
     <ShopContext.Provider
@@ -52,6 +59,7 @@ const CartState = ({ children }) => {
         addToCart,
         showHideCart,
         removeItem,
+        logout,
       }}
     >
       {children}

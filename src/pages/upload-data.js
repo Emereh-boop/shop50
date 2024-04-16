@@ -5,6 +5,7 @@ import { v4 } from "uuid";
 import { addDoc, collection } from "firebase/firestore";
 
 export default function UploadData() {
+  //setting and initializing states
   const [imageUpload, setImageUpload] = React.useState(null);
   const [titleUpload, setTitleUpload] = React.useState("");
   const [discountUpload, setDiscountUpload] = React.useState(0);
@@ -16,9 +17,13 @@ export default function UploadData() {
   const [imageList, setImageList] = React.useState([]);
 
   const uploadImage = async () => {
+    //ensure all inputs are filled correctly
+
     if (!imageUpload) {
       return alert("Please complete form!");
     }
+
+    //getting image refrences from firestore
     const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
     await uploadBytes(imageRef, imageUpload).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
@@ -27,6 +32,8 @@ export default function UploadData() {
       });
     });
   };
+
+  //updating firebase with complete data
   const uploadData = async () => {
     if (!imageUpload || !titleUpload || !newPriceUpload || !quantityUpload) {
       return alert("Please complete form!");

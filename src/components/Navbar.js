@@ -10,14 +10,14 @@ export default function Navbar() {
   const handleCart = () => {
     window.location.href = "/cart";
   };
-  const handleAccount = () => {
+  const navigateToAccount = () => {
     window.location.href = "/account";
   };
   const handleMenu = () => {
     return setIsMobile(!isMobile);
   };
 
-  const { cartItem } = useContext(ShopContext);
+  const { cartItem, logout } = useContext(ShopContext);
   return (
     <div className="relative py-10 flex justify-center">
       <div className="fixed top-0 w-screen cursor-pointer flex  flex-col-reverse py-3 px-6 gap-6 text-sm justify-between  text-black bg-white md:flex-row md:px-20 md:py-8">
@@ -85,9 +85,16 @@ export default function Navbar() {
               {cartItem.length}
             </span>
           </div>
-          <div onClick={handleAccount}>
+          <div onClick={navigateToAccount}>
             <img className="w-10 h-6" src={accountIcon} alt="" />
           </div>
+          <input
+            type="button"
+            name="button"
+            value="Logout"
+            className="bg-blue-500 px-5 rounded-lg shadow-inner w-1/5"
+            onClick={logout}
+          />
         </div>
       </div>
     </div>

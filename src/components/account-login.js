@@ -1,14 +1,16 @@
-import React from "react";
-import appleIcon from "../images/apple.svg";
+import React, { useState } from "react";
+import googleIcon from "../images/google.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const handleRegister = () => {
-    window.location.href = "/register";
+  const navigate = useNavigate();
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const navigateToRegister = () => {
+    navigate("/register");
   };
-  const handleLogin = (event) => {
-    event.preventDefault();
-    window.location.href = "/home";
-  };
+  const login = () => {};
   return (
     <div className=" p-4">
       <div className="flex flex-col gap-10 md:p-10 md:w-screen ">
@@ -48,27 +50,27 @@ export default function Login() {
             </div>
 
             <button
-              onClick={(event) => handleLogin(event)}
+              onClick={() => login()}
               className="rounded-lg ring-2 ring-black
              bg-black text-white p-2"
               type="button"
             >
               Login
             </button>
-            <p className="flex justify-center">Or</p>
+            {/* <p className="flex justify-center">Or</p>
             <div className="ring-2 ring-black rounded-lg p-2 flex justify-center gap-1">
-              <img src={appleIcon} alt="" />
+              <img src={googleIcon} alt="" />
               <input
                 className="ring-0 ring-white outline-none text-center"
                 name="Apple"
                 type="button"
-                value="Sign in with Apple"
+                value="Google"
               />
-            </div>
+            </div> */}
 
             <p className="flex justify-center gap-1 cursor-pointer">
               Don't have an account?{" "}
-              <span className="font-bold" onClick={handleRegister}>
+              <span className="font-bold" onClick={navigateToRegister}>
                 Register{" "}
               </span>{" "}
             </p>
