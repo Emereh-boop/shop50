@@ -1,27 +1,28 @@
 import React, { useState } from "react";
 import googleIcon from "../images/google.svg";
+//import useNavigate
 import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  reload,
 } from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function Register() {
+  //initialize navigate
   const navigate = useNavigate();
 
   const navigateToLogin = () => {
     navigate("/login");
   };
-
+  onAuthStateChanged(auth, (currentUser) => {
+    setCurrentUser(currentUser);
+  });
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [user, setUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+  const [error, setError] = useState("");
 
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
   const register = async () => {
     try {
       const user = await createUserWithEmailAndPassword(
@@ -29,15 +30,17 @@ export default function Register() {
         registerEmail,
         registerPassword
       );
-      reload(user);
+      alert(`user ${currentUser} is signed in`);
+      //navigate to login page after sign up
+      navigate("/login");
     } catch (error) {
-      console.log(error.message);
+      setError(error.message);
     }
   };
   return (
     <div className="flex flex-col md:grid grid-cols-4 p-4">
       <div className="flex flex-col gap-10 col-span-4 md:p-10">
-        <div>
+        {/* <div>
           <h2 className="text-2xl md:text-4xl text-center font-medium">
             {" "}
             WELCOME!
@@ -45,9 +48,9 @@ export default function Register() {
           <p className="text-center text-sm">
             Enter your email and password to Register
           </p>
-        </div>
+        </div> */}
         <form className="flex justify-center ">
-          <div className="flex flex-col w-full md:w-1/2  gap-2">
+          <div className="flex flex-col w-full md:w-1/4  gap-2">
             <label htmlFor="username">Email/Username</label>
             <input
               className="ring-2 ring-black rounded-lg p-2"
@@ -78,10 +81,10 @@ export default function Register() {
                   /> */}
 
             <div className="flex justify-between text-blue-700">
-              {/* <div className="flex gap-1 text-black">
-              <input className="" type="checkbox" />
-              Remember me
-            </div> */}
+              <div className="flex gap-1 text-red-700">
+                {/* <input className="" type="checkbox" /> */}
+                {error}
+              </div>
             </div>
 
             <button

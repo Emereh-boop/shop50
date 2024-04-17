@@ -1,20 +1,38 @@
-import React, { useState } from "react";
-import googleIcon from "../images/google.svg";
+import React, { useContext, useState } from "react";
+// import googleIcon from "../images/google.svg";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import ShopContext from "../context/cart/shop-context";
 
 export default function Login() {
   const navigate = useNavigate();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { setUserIsLoggedIn, userIsLoggedIn } = useContext(ShopContext);
 
   const navigateToRegister = () => {
     navigate("/register");
   };
-  const login = () => {};
+  const login = async () => {
+    try {
+      const user = await signInWithEmailAndPassword(
+        auth,
+        loginEmail,
+        loginPassword
+      );
+      setUserIsLoggedIn(true);
+      navigate("/");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
   return (
     <div className=" p-4">
       <div className="flex flex-col gap-10 md:p-10 md:w-screen ">
-        <div>
+        {/* <div>
           <h2 className="text-2xl md:text-4xl text-center font-medium">
             {" "}
             WELCOME BACK!
@@ -22,15 +40,18 @@ export default function Login() {
           <p className="text-center text-sm">
             Enter your email and password to login
           </p>
-        </div>
+        </div> */}
         <form className="flex justify-center ">
-          <div className="flex flex-col gap-2 w-full md:w-1/2">
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
             <label htmlFor="username">Email/Username</label>
             <input
               className="ring-2 ring-black rounded-lg p-2"
               name="username"
               type="email "
               placeholder="Enter your username or Email"
+              onChange={(event) => {
+                setLoginEmail(event.target.value);
+              }}
             />
 
             <label htmlFor="password">Password </label>
@@ -39,6 +60,9 @@ export default function Login() {
               name="password"
               type="password"
               placeholder="Enter your password"
+              onChange={(event) => {
+                setLoginPassword(event.target.value);
+              }}
             />
 
             <div className="flex justify-between text-blue-700">
@@ -48,6 +72,7 @@ export default function Login() {
               </div>{" "}
               <p>Forgot password?</p>
             </div>
+            <div className="flex gap-1 text-red-700">{error}</div>
 
             <button
               onClick={() => login()}

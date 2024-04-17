@@ -1,25 +1,28 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import searchIcon from "../images/search.svg";
 import menuIcon from "../images/menu.svg";
 import cartIcon from "../images/cart.svg";
 import accountIcon from "../images/account.svg";
 import ShopContext from "../context/cart/shop-context";
+import DropDownProfile from "../pages/DropDownProfile";
 
 export default function Navbar() {
-  const [isMobile, setIsMobile] = React.useState(true);
+  const [isMobile, setIsMobile] = useState(true);
+  const [drop, setDrop] = useState(false);
+
   const handleCart = () => {
     window.location.href = "/cart";
-  };
-  const navigateToAccount = () => {
-    window.location.href = "/account";
   };
   const handleMenu = () => {
     return setIsMobile(!isMobile);
   };
 
-  const { cartItem, logout } = useContext(ShopContext);
+  const { cartItem, userIsLoggedIn } = useContext(ShopContext);
   return (
-    <div className="relative py-10 flex justify-center">
+    <div
+      onMouseLeave={() => setDrop(false)}
+      className="relative py-10 flex justify-center"
+    >
       <div className="fixed top-0 w-screen cursor-pointer flex  flex-col-reverse py-3 px-6 gap-6 text-sm justify-between  text-black bg-white md:flex-row md:px-20 md:py-8">
         <div
           className={
@@ -85,17 +88,18 @@ export default function Navbar() {
               {cartItem.length}
             </span>
           </div>
-          <div onClick={navigateToAccount}>
-            <img className="w-10 h-6" src={accountIcon} alt="" />
+          <div
+            onMouseOverCapture={() => setDrop(true)}
+            className="flex w-1/4 relative"
+          >
+            <img
+              className="w-10 h-6 absolute bottom-1 left-0 right-6"
+              src={accountIcon}
+              alt=""
+            />
           </div>
-          <input
-            type="button"
-            name="button"
-            value="Logout"
-            className="bg-blue-500 px-5 rounded-lg shadow-inner w-1/5"
-            onClick={logout}
-          />
         </div>
+        {drop && <DropDownProfile />}
       </div>
     </div>
   );

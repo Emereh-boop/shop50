@@ -10,7 +10,7 @@ export default function Section1(props) {
   //   ref3.current?.scrollIntoView({ behavior: "smooth" });
   // };
   return (
-    <div className="w-svw grid grid-cols-2 grid-flow-row-dense bg-amber-50 justify-between gap-10 px-3 md:p-20 py-3 md:grid-cols-4">
+    <div className="w-svw grid grid-cols-2 grid-flow-row-dense bg-amber-50 justify-between gap-5 px-3 md:p-5 py-3 md:grid-cols-4">
       <div className="flex col-span-full text-5xl justify-center md:text-clip md:text-9xl">
         BAGHARMONY
       </div>

@@ -1,4 +1,4 @@
-import { React, useReducer, useEffect } from "react";
+import { React, useReducer, useEffect, useState } from "react";
 import ShopContext from "./shop-context";
 import CartReducer from "./cart-reducer";
 import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
@@ -12,6 +12,7 @@ const CartState = ({ children }) => {
   const cartItemsFromStorage = localStorage.getItem("cartItems");
   let c = cartItemsFromStorage ? JSON.parse(cartItemsFromStorage) : [];
   let items = [];
+  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
 
   const initialState = {
     showCart: false,
@@ -44,11 +45,11 @@ const CartState = ({ children }) => {
   };
   const removeItem = (id) => {
     dispatch({ type: REMOVE_ITEM, payload: id });
-    alert("Remove item");
   };
   const logout = async () => {
     await signOut(auth);
-    alert("logged out!");
+    setUserIsLoggedIn(false);
+    prompt("Are you sure you want to logged out!");
   };
   return (
     <ShopContext.Provider
@@ -60,6 +61,8 @@ const CartState = ({ children }) => {
         showHideCart,
         removeItem,
         logout,
+        setUserIsLoggedIn,
+        userIsLoggedIn,
       }}
     >
       {children}
