@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="px-3 w-screen  md:px-20 static gap-8 flex flex-col bg-black text-white">
+    <footer className="px-3 static gap-8 flex flex-col bg-black invert text-white">
       <div className="flex col-span-4 text-5xl justify-center md:text-9xl">
         BAGHARMONY
       </div>
@@ -14,9 +14,12 @@ export default function Footer() {
             <input
               className=" outline-none bg-inherit"
               type="email"
+              name="subscribe"
               placeholder="Enter your email"
             />
-            <button className="text-base">SUBSCRIBE</button>
+            <button type="submit" className="text-base">
+              SUBSCRIBE
+            </button>
           </form>
         </div>
         <div className="rev">

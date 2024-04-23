@@ -5,14 +5,15 @@ import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useQuery } from "@tanstack/react-query";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 
 const CartState = ({ children }) => {
   const cartItemsFromStorage = localStorage.getItem("cartItems");
   let c = cartItemsFromStorage ? JSON.parse(cartItemsFromStorage) : [];
   let items = [];
-  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+  const [likes, setLike] = useState([{}]);
 
   const initialState = {
     showCart: false,
@@ -22,7 +23,7 @@ const CartState = ({ children }) => {
   const { q } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const data = await getDocs(collection(db, "/products"));
+      const data = await getDocs(collection(db, "/Products"));
       data.docs.forEach((doc) => {
         let key = doc.id;
         let item = doc.data();
@@ -48,9 +49,24 @@ const CartState = ({ children }) => {
   };
   const logout = async () => {
     await signOut(auth);
-    setUserIsLoggedIn(false);
-    prompt("Are you sure you want to logged out!");
+    refreshPage();
   };
+  onAuthStateChanged(auth, (currentUser) => {
+    setCurrentUser(currentUser);
+  });
+  function refreshPage() {
+    window.location.reload(false); // Set to true for a full server refresh
+  }
+  function setLikes(product) {
+    setLike(product);
+    console.log(product);
+  }
+  function calculateDiscount(originalPrice, discountPercentage) {
+    const discountAmount = (originalPrice * discountPercentage) / 100;
+    const discountedPrice = originalPrice - discountAmount;
+    return discountedPrice;
+  }
+
   return (
     <ShopContext.Provider
       value={{
@@ -61,8 +77,11 @@ const CartState = ({ children }) => {
         showHideCart,
         removeItem,
         logout,
-        setUserIsLoggedIn,
-        userIsLoggedIn,
+        setLikes,
+        currentUser,
+        likes,
+        refreshPage,
+        calculateDiscount,
       }}
     >
       {children}

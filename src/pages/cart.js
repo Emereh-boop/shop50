@@ -4,7 +4,7 @@ import backArrowIcon from "../images/back-arrow.svg";
 import ShopContext from "../context/cart/shop-context";
 import Navbar from "../components/Navbar";
 export default function Cart() {
-  const { cartItem } = useContext(ShopContext);
+  const { cartItem, removeItem, calculateDiscount } = useContext(ShopContext);
   const [quantity, setQuantity] = React.useState(0);
 
   const handleBack = () => {
@@ -17,6 +17,7 @@ export default function Cart() {
       <div className="flex flex-col gap-3 md:gap-4">
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <div className="flex md:w-3/4 flex-col gap-3">
+            <h1 className=" font-bold text-8xl text-black ">CART</h1>
             {cartItem.length === 0 ? (
               <div className="flex flex-col align-middle">
                 <h1 className="text-7xl text-black text-center">
@@ -30,11 +31,9 @@ export default function Cart() {
               </div>
             ) : (
               cartItem.map((p, index) => {
-                console.log(p, index);
                 return (
                   <ol key={p.key + index}>
                     <div className="flex flex-col md:flex-row">
-                      <h1 className=" font-bold text-8xl text-black ">CART</h1>
                       <div className="md:flex md:w-11/12 grid grid-cols-2 md:gap-12">
                         <img
                           className="object-contain w-28 md:w-40"
@@ -53,9 +52,8 @@ export default function Cart() {
                       </div>
                       <div className="flex justify-between md:w-3/5">
                         <div className="md:w-1/4 flex flex-col gap-10">
-                          <label htmlFor="select">SIZE</label>
-                          <select className="md:w-1/2 outline-none">
-                            <option></option>
+                          <select className="md:w-16 outline-none">
+                            <option disabled>SIZE</option>
                             {p.item.sizes.map((size) => {
                               return <option key={size}>{size}</option>;
                             })}
@@ -64,24 +62,42 @@ export default function Cart() {
                         <div className="md:w-1/4 flex flex-col gap-10">
                           <label htmlFor="select">QUANTITY</label>
                           <div className="flex justify-between cursor-pointer">
-                            <button onClick={setQuantity((prev) => prev - 1)}>
+                            <button
+                              onClick={() => {
+                                setQuantity((prev) => prev - 1);
+                              }}
+                            >
                               -
                             </button>
                             <div className="text-sm font-bold">{quantity}</div>
-                            <button onClick={setQuantity((prev) => prev + 1)}>
+                            <button
+                              onClick={() => {
+                                setQuantity((prev) => prev + 1);
+                              }}
+                            >
                               +
                             </button>
                           </div>
                         </div>
                         <div className="md:w-1/4 flex flex-col gap-10">
-                          {" "}
                           <label htmlFor="select">PRICE</label>
                           <div className="md:w-1/3 text-black font-bold">
-                            ${p.currentprice}.99
+                            {quantity === 0
+                              ? calculateDiscount(
+                                  p.item.prevprice,
+                                  p.item.discount
+                                )
+                              : calculateDiscount(
+                                  p.item.prevprice,
+                                  p.item.discount
+                                ) * quantity}
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col h-1/2 w-1/12 justify-center text-2xl">
+                      <div
+                        onClick={() => removeItem(p.key)}
+                        className="flex flex-col h-1/2 w-1/12 justify-center text-2xl"
+                      >
                         <img className="h-6 w-6" src={cancelIcon} alt="" />
                       </div>
                     </div>
@@ -114,7 +130,7 @@ export default function Cart() {
               <p className="underline underline-offset-2">
                 <strong>CHECKOUT </strong>
               </p>
-              <strong>USD ${cartItem.currentprice}.00 </strong>
+              <strong>{} </strong>
             </div>
           </div>
         </div>

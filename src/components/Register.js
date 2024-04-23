@@ -1,22 +1,25 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import googleIcon from "../images/google.svg";
-//import useNavigate
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth } from "../firebase";
-import ShopContext from "../context/cart/shop-context";
 
 export default function Register() {
   //initialize navigate
   const navigate = useNavigate();
-  const { currentUser } = useContext(ShopContext);
 
   const navigateToLogin = () => {
     navigate("/login");
   };
-
+  onAuthStateChanged(auth, (currentUser) => {
+    setCurrentUser(currentUser);
+  });
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [currentUser, setCurrentUser] = useState({});
   const [error, setError] = useState("");
 
   const register = async () => {
@@ -26,23 +29,32 @@ export default function Register() {
         registerEmail,
         registerPassword
       );
+      alert(`user ${currentUser} is signed in`);
+      //navigate to login page after sign up
       navigate("/login");
     } catch (error) {
       setError(error.message);
     }
   };
   return (
-    <div className="p-4 h-screen bg-hero-pattern flex justify-center">
-      <div className="flex flex-col gap-10 rounded-xl shadow-2xl self-center bg-teal-50 md:p-10 md:w-1/4">
+    <div className="flex flex-col md:grid grid-cols-4 p-4">
+      <div className="flex flex-col gap-10 col-span-4 md:p-10">
+        {/* <div>
+              <h2 className="text-2xl md:text-4xl text-center font-medium">
+                {" "}
+                WELCOME!
+              </h2>
+              <p className="text-center text-sm">
+                Enter your email and password to Register
+              </p>
+            </div> */}
         <form className="flex justify-center ">
-          <div className="flex flex-col w-full gap-2">
+          <div className="flex flex-col w-full md:w-1/4  gap-2">
             <label htmlFor="username">Email/Username</label>
             <input
               className="ring-2 ring-black rounded-lg p-2"
               type="email "
               required
-              id="username"
-              autoComplete="username"
               placeholder="Enter your username or Email"
               onChange={(event) => {
                 setRegisterEmail(event.target.value);
@@ -53,16 +65,25 @@ export default function Register() {
             <input
               className="ring-2 ring-black rounded-lg p-2"
               type="password"
-              id="password"
               required
               placeholder="Enter your password"
               onChange={(e) => {
                 setRegisterPassword(e.target.value);
               }}
             />
+            {/* <label htmlFor="password">Confirm password </label>
+                  <input
+                    className="ring-2 ring-black rounded-lg p-2"
+                    name="password"
+                    type="password"
+                    placeholder="Retype password"
+                  /> */}
 
             <div className="flex justify-between text-blue-700">
-              <div className="flex gap-1 text-red-700">{error}</div>
+              <div className="flex gap-1 text-red-700">
+                {/* <input className="" type="checkbox" /> */}
+                {error}
+              </div>
             </div>
 
             <button
@@ -86,10 +107,7 @@ export default function Register() {
 
             <p className="flex justify-center gap-1">
               Already have an account?{" "}
-              <span
-                onClick={navigateToLogin}
-                className="font-bold cursor-default"
-              >
+              <span onClick={navigateToLogin} className="font-bold">
                 Login{" "}
               </span>{" "}
             </p>

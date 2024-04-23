@@ -15,8 +15,8 @@ export default function ShopProducts() {
   });
   return (
     <>
-      <div className=" px-5 md:px-20 bg-white text-black grid gap-4 ">
-        <div className="font-bold col-span-full row-span-1 text-45xl py-8 justify-center grid md:text-8xl">
+      <div className="bg-white text-black grid gap-4 ">
+        <div className=" top-0 bg-neutral-50 font-bold col-span-full row-span-1 text-45xl py-5 justify-center grid md:text-8xl">
           SHOP PRODUCTS
         </div>
         <div className="col-span-full grid grid-flow-dense gap-4 md:grid-cols-4">
@@ -26,6 +26,7 @@ export default function ShopProducts() {
                 key={i.key}
                 id={i.key}
                 image={i.item.image}
+                inStock={i.item.inStock}
                 title={i.item.title}
                 currentprice={i.item.currentprice}
                 prevprice={i.item.prevprice}
@@ -46,6 +47,7 @@ export default function ShopProducts() {
                 key={i.key}
                 id={i.key}
                 image={i.item.image}
+                inStock={i.item.inStock}
                 title={i.item.title}
                 currentprice={i.item.currentprice}
                 prevprice={i.item.prevprice}

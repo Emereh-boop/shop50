@@ -10,8 +10,8 @@ export default function NewArrivals() {
 
   return (
     <>
-      <div className=" px-5 md:px-20 bg-white text-black grid gap-4 ">
-        <div className="font-bold col-span-full row-span-1 text-5xl py-8 justify-center grid md:text-8xl">
+      <div className="  bg-white text-black grid gap-4 ">
+        <div className=" sticky top-0 bg-neutral-50 font-bold col-span-full row-span-1 text-5xl py-5 justify-center grid md:text-8xl">
           NEW ARRIVALS
         </div>
         <div className="col-span-full grid grid-flow-dense grid-cols-2 gap-4 md:grid-cols-4 ">
@@ -24,6 +24,7 @@ export default function NewArrivals() {
                 title={i.item.title}
                 currentprice={i.item.currentprice}
                 prevprice={i.item.prevprice}
+                inStock={i.item.inStock}
                 discount={i.item.discount}
                 quantity={i.item.quantity}
                 products={i}
@@ -31,7 +32,7 @@ export default function NewArrivals() {
             );
           })}
         </div>
-        <p className="col-span-full row-span-1 text-center text-2xl underline underline-offset-8 h-24 md:text-lg">
+        <p className="col-span-full row-span-1 text-center text-2xl cursor-pointer hover:text-blue-500 underline underline-offset-8 h-24 md:text-lg">
           SEE ALL PRODUCT
         </p>
       </div>

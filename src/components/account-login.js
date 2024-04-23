@@ -23,15 +23,15 @@ export default function Login() {
         loginEmail,
         loginPassword
       );
-      setUserIsLoggedIn(true);
+      // setUserIsLoggedIn(true);
       navigate("/");
     } catch (error) {
       setError(error.message);
     }
   };
   return (
-    <div className=" p-4">
-      <div className="flex flex-col gap-10 md:p-10 md:w-screen ">
+    <div className=" p-4 h-screen bg-hero-pattern flex justify-center ">
+      <div className="flex flex-col gap-10 rounded-xl shadow-2xl self-center bg-teal-50 md:p-10 md:w-1/4 ">
         {/* <div>
           <h2 className="text-2xl md:text-4xl text-center font-medium">
             {" "}
@@ -42,12 +42,14 @@ export default function Login() {
           </p>
         </div> */}
         <form className="flex justify-center ">
-          <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <div className="flex flex-col gap-2 w-full">
             <label htmlFor="username">Email/Username</label>
             <input
+              id="username"
               className="ring-2 ring-black rounded-lg p-2"
-              name="username"
-              type="email "
+              type="email"
+              required
+              autoComplete="username"
               placeholder="Enter your username or Email"
               onChange={(event) => {
                 setLoginEmail(event.target.value);
@@ -57,8 +59,9 @@ export default function Login() {
             <label htmlFor="password">Password </label>
             <input
               className="ring-2 ring-black rounded-lg p-2"
-              name="password"
               type="password"
+              id="password"
+              required
               placeholder="Enter your password"
               onChange={(event) => {
                 setLoginPassword(event.target.value);
@@ -67,7 +70,7 @@ export default function Login() {
 
             <div className="flex justify-between text-blue-700">
               <div className="flex gap-1 text-black">
-                <input className="" type="checkbox" />
+                <input id="checkbox" title="checkbox" type="checkbox" />
                 Remember me
               </div>{" "}
               <p>Forgot password?</p>
@@ -93,7 +96,7 @@ export default function Login() {
               />
             </div> */}
 
-            <p className="flex justify-center gap-1 cursor-pointer">
+            <p className="flex justify-center gap-1 cursor-default">
               Don't have an account?{" "}
               <span className="font-bold" onClick={navigateToRegister}>
                 Register{" "}
