@@ -2,12 +2,11 @@ import React, { useContext, useState } from "react";
 import ShopContext from "../context/cart/shop-context";
 import { Heart, HeartFill } from "react-bootstrap-icons";
 import Delete from "../images/delete.svg";
+import StateContext from "../context/State/State-context";
 
 export default function Product(props) {
-  const { addToCart, removeItem, likes, calculateDiscount, setLikes } =
-    useContext(ShopContext);
-
-  const [like, setL] = useState();
+  const { addToCart, removeItem } = useContext(ShopContext);
+  const { likes, setLikes, calculateDiscount } = useContext(StateContext);
 
   return (
     <div
@@ -15,26 +14,33 @@ export default function Product(props) {
       className=" bg-white justify-between flex flex-col gap-6 rounded-xl p-5 shadow-xl"
     >
       <div className="flex justify-between flex-col">
-        <div className="relative">
+        <div className="relative group">
           <div
             className=" w-20 h-20 bg-white/0 absolute right-0 top-0"
             onClick={() => setLikes(props.products)}
           >
-            {like ? (
+            {likes ? (
               <HeartFill
-                className="absolute right-6 top-6"
+                className="absolute right-6 top-6 hidden group-hover:block"
                 color="red"
                 size={25}
               />
             ) : (
-              <Heart className="absolute right-6 top-6" color="red" size={25} />
+              <Heart
+                className=" hidden group-hover:block absolute right-6 top-6"
+                color="red"
+                size={25}
+              />
             )}
           </div>
           <img
-            className=" h-3/4 w-full object-cover"
+            className=" h-4/5 w-full object-cover"
             src={props.image}
             alt="Product"
           />
+          <div className="hidden group-hover:block  absolute bottom-2 left-20 bg-black/15 rounded-xl justify-center text-center p-3 w-2/3">
+            Quick View
+          </div>
         </div>
         <div
           className="flex flex-col justify-center gap-2

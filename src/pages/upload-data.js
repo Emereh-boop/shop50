@@ -6,71 +6,67 @@ import Navbar from "../components/Navbar";
 import { HourglassSplit } from "react-bootstrap-icons";
 
 export default function UploadData() {
-  const [image, setImage] = useState({});
+  const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [discount, setDiscount] = useState(0);
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [inStock, setInstock] = useState("");
   const options = ["XS", "S", "M", "L", "XL", "XXL"];
-  const [url, setUrl] = useState([{}]);
+  const [url, setUrl] = useState([]);
 
-  let images = [];
+  const uploadData = async (e) => {
+    e.preventDefault();
+    const imageName = new Date().getTime() + image.name;
+    const storageRef = ref(storage, "/ecommerce-webapp-000.appspot.com/images");
+    // create storage rference
 
-  useEffect(() => {}, []);
-
-  const uploadData = async () => {
-    const uploadImage = () => {
-      const imageName = new Date().getTime() + image.name;
-      const storageRef = ref(storage, imageName);
-
-      const uploadTask = uploadBytesResumable(storageRef, image);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              <HourglassSplit className="animate-spin" />;
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-            default:
-              break;
-          }
-        },
-        (error) => {
-          console.log(error);
-          switch (error.code) {
-            case "storage/unauthorized":
-              // User doesn't have permission to access the object
-              break;
-            case "storage/canceled":
-              // User canceled the upload
-              break;
-
-            // ...
-
-            case "storage/unknown":
-              // Unknown error occurred, inspect error.serverResponse
-              break;
-            default:
-              break;
-          }
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            console.log("File available at", downloadURL);
-            setUrl((i) => ({ ...i, downloadURL }));
-            console.log(url);
-          });
+    const uploadTask = uploadBytesResumable(storageRef, image);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            <HourglassSplit className="animate-spin" />;
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+          default:
+            break;
         }
-      );
-    };
+      },
+      (error) => {
+        console.log(error);
+        switch (error.code) {
+          case "storage/unauthorized":
+            // User doesn't have permission to access the object
+            break;
+          case "storage/canceled":
+            // User canceled the upload
+            break;
+
+          // ...
+
+          case "storage/unknown":
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+          default:
+            break;
+        }
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          setUrl((i) => ({ ...i, downloadURL }));
+        });
+      }
+    );
+    console.log(url);
 
     if (!title || !price || !quantity) {
       return alert("Please complete form!");
@@ -82,7 +78,7 @@ export default function UploadData() {
         quantity: quantity,
         sizes: options,
         title: title,
-        // image: imageList,
+        image: url,
       });
       console.log("Document written with ID: ", docRef.id);
     }
@@ -90,20 +86,20 @@ export default function UploadData() {
 
   const fileInputRef = useRef();
   function handleChange(e) {
-    const file = fileInputRef.current.files[0];
-    console.log("Selected file:", file.name, file.size);
-    images.push(file);
-    setImage({ data: file });
-    console.log(images);
-    console.log(image);
+    const file = e.target.files[0];
+    // console.log("Selected file:", file.name, file.size);
+    setImage((prev) => ({ ...prev, file: file }));
   }
+
+  useEffect(() => {}, []);
+
   return (
     <div className="px-4">
       <Navbar />
       <div className="flex flex-col gap-4 py-40">
         <form
-          onSubmit={() => {
-            uploadData();
+          onSubmit={(e) => {
+            uploadData(e);
           }}
           className="flex flex-col md:px-80 gap-4"
         >
@@ -115,10 +111,9 @@ export default function UploadData() {
             id="image"
             name="image"
             onChange={handleChange}
-            required
+            // required
             className="ring-1 ring-black p-3"
           />
-          {/* <p>{image[0].name}</p> */}
           <input
             type="text"
             placeholder="Title"
@@ -174,9 +169,9 @@ export default function UploadData() {
           >
             upload
           </button>
-          {url.map((url) => {
+          {/* {url.map((url) => {
             return <img key={url} src={url} alt="" />;
-          })}
+          })} */}
         </form>
       </div>
     </div>

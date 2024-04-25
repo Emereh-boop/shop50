@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import NikeShoeTeal from "../images/Nike-Air-jordan-teal.png";
 import NikeShoeBlue from "../images/NIKE_AIR_JORDAN_1_RETRO_HIGH_RARE_AIR_SOAR_BLUE-no-bg.png";
 import NikeShoeRed from "../images/NIKE_AIR_JORDAN_1_RETRO_MID_CHICAGO-no-bg.png";
@@ -11,67 +11,65 @@ import {
   ChevronCompactLeft,
   ChevronCompactRight,
   Dot,
-  Facebook,
-  Instagram,
-  TwitterX,
-  Whatsapp,
 } from "react-bootstrap-icons";
-import ShopContext from "../context/cart/shop-context";
+// import ShopContext from "../context/cart/shop-context";
+// import { useNavigate } from "react-router-dom";
 
 function ShoeHeroPage() {
-  const { cartItem } = useContext(ShopContext);
+  // const navigate = useNavigate();
+  // const { products } = useContext(ShopContext);
   let shoes = [
     {
-      color: "bg-teal-300",
+      color: "teal",
       image: NikeShoeTeal,
       name: `Nike Retro Teal`,
       description: ` Men's revolution 6 Next Nature`,
       brand: "Nike",
     },
     {
-      color: "bg-indigo-300",
+      color: "indigo",
       image: NikeAirMax,
       name: `Nike Retro Air Max`,
       description: `Retro Air Max shoes blend comfort, style, and innovation.`,
       brand: "Nike",
     },
     {
-      color: "bg-neutral-400",
+      color: "neutral",
       image: AdidasYeezys350,
       name: `Adidas Yeezy's boost 350`,
       description: `Adidas shoes blend comfort, style, and innovation.`,
       brand: "Adidas",
     },
     {
-      color: "bg-zinc-400",
+      color: "zinc",
       image: AdidasYeezysSlide,
       name: `Adidas Yeezy's Slide Onyx`,
       description: `Adidas shoes blend comfort, style, and innovation.`,
       brand: "Adidas",
     },
     {
-      color: "bg-slate-500",
+      color: "slate",
       image: AdidasYeezys45DarkSlate,
       name: `Adidas Yeezy's 450 Dark Slate`,
       description: `Adidas shoes blend comfort, style, and innovation.`,
       brand: "Adidas",
     },
     {
-      color: "bg-red-400",
+      color: "red",
       image: NikeShoeRed,
       name: `Nike High Top Sneakers`,
       description: `Air Jordans represent basketball greatness Whether you’re hitting the court or the streets it continue to make iconic statements.`,
       brand: "Nike",
     },
     {
-      color: "bg-blue-500",
+      color: "blue",
       image: NikeShoeBlue,
       name: `Air Jordan`,
       description: ` Air Jordans represent basketball greatness`,
       brand: "Nike",
     },
     {
-      color: "bg-teal-400",
+      color: "teal",
       image: NikeShoeAirforce,
       name: `Nike Air Force`,
       description: ` fashion staple, combining heritage, innovation, and style. Whether you’re hitting the court or the streets, these sneakers continue to make a powerful statement.`,
@@ -95,19 +93,14 @@ function ShoeHeroPage() {
   };
 
   return (
-    <div className="md:px-0 bg-white/0 ">
-      <div className=" font-bold col-span-full row-span-1 text-45xl py-5 justify-center grid md:text-8xl">
-        ONLINE STORE
-      </div>
+    <div
+      className={`md:pb-10 bg-gray-100 gap-5  flex  flex-col  items-center `}
+    >
       <div
         key={shoes[i].name}
-        className={
-          shoes
-            ? `${shoes[i].color} shadow-2xl rounded-3xl p-4 scale-x-90 scale-y-80 gap-10  flex justify-between `
-            : "bg-neutral-100 shadow-2xl p-5 rounded-2xl flex "
-        }
+        className={`bg-neutral-0  p-4 gap-10   flex md:flex-row  flex-col justify-between w-full `}
       >
-        <div className=" relative group w-1/2 flex h-60  duration-500 drop-shadow-4xl bg-center bg-cover md:h-96 brightness-120 ">
+        <div className=" relative group md:w-1/2 flex h-60  items-center justify-center duration-500 drop-shadow-4xl bg-center bg-cover md:h-96 brightness-120 ">
           <ChevronCompactLeft
             onClick={prevSlide}
             size={40}
@@ -138,50 +131,25 @@ function ShoeHeroPage() {
         </div>
 
         <div className="md:w-1/2 flex md:flex-row flex-col justify-between">
-          <div className="flex flex-col py-24 gap-6 relative">
+          <div className="flex flex-col py-6 justify-between gap-6 relative">
             <span className="text-zinc-900 text-5xl md:text-9xl drop-shadow-3xl font-extrabold">
               <strong>{shoes[i].brand}</strong>{" "}
             </span>
-            <div>
-              <span className="text-4xl text-zinc-900 font-black font-serif">
-                {shoes[i].name}
-              </span>
-              <p className="text-white w-4/5 text-lg text-clip md:text-md text-left font-extralight">
-                {shoes[i].description}
-              </p>
-            </div>
-
-            <button className="rounded-full w-52 p-2 ring-1 animate-pulse  font-sans shadow-lg font-thin text-xl bg-white/45 hover:bg-transparent/10">
-              Shop Now
-            </button>
-            <div className="flex justify-start md:justify-center gap-10 scale-60 md:scale-80 w-72 ">
-              <Instagram size={35} />
-              <TwitterX size={35} />
-              <Facebook size={35} />
-              <Whatsapp size={35} />
+            <div className="flex flex-col gap-4 pb-4 relative">
+              <div>
+                <span className="md:text-4xl text-2xl text-zinc-900 font-black font-serif">
+                  {shoes[i].name}
+                </span>
+                <p className="text-black text-lg md:text-md text-left text-wrap font-extralight">
+                  {shoes[i].description}
+                </p>
+              </div>
+              <button className="rounded-full md:self-start self-center w-52 p-2 animate-pulse  font-sans shadow-lg font-thin text-xl bg-white/45 hover:bg-transparent/10">
+                Shop Now
+              </button>
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex overflow-clip">
-        {shoes.map((i, index) => {
-          return (
-            <div key={index}>
-              {" "}
-              <img src={i.image} alt="" />
-              {i.brand}
-            </div>
-          );
-        })}
-        {cartItem.map((i, index) => {
-          return (
-            <div key={index}>
-              {" "}
-              <img src={i.item.image} alt="" />
-              {i.item.title}
-            </div>
-          );
-        })}
       </div>
     </div>
   );

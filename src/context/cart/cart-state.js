@@ -2,18 +2,26 @@ import { React, useReducer, useEffect, useState } from "react";
 import ShopContext from "./shop-context";
 import CartReducer from "./cart-reducer";
 import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { useQuery } from "@tanstack/react-query";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 
 const CartState = ({ children }) => {
   const cartItemsFromStorage = localStorage.getItem("cartItems");
   let c = cartItemsFromStorage ? JSON.parse(cartItemsFromStorage) : [];
-  let items = [];
-  const [currentUser, setCurrentUser] = useState({});
-  const [likes, setLike] = useState([{}]);
+  // let items = [];
+  const [items, setItems] = useState([]);
+
+  // console.log(items);
 
   const initialState = {
     showCart: false,
@@ -23,12 +31,18 @@ const CartState = ({ children }) => {
   const { q } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const data = await getDocs(collection(db, "/Products"));
+      const first = query(
+        collection(db, "products"),
+        orderBy("title"),
+        limit(4)
+      );
+      const data = await getDocs(first);
       data.docs.forEach((doc) => {
         let key = doc.id;
         let item = doc.data();
-        items.push({ key, item });
+        // items.push({ key, item });
       });
+      setItems(data.docs);
     },
   });
 
@@ -51,20 +65,9 @@ const CartState = ({ children }) => {
     await signOut(auth);
     refreshPage();
   };
-  onAuthStateChanged(auth, (currentUser) => {
-    setCurrentUser(currentUser);
-  });
+
   function refreshPage() {
     window.location.reload(false); // Set to true for a full server refresh
-  }
-  function setLikes(product) {
-    setLike(product);
-    console.log(product);
-  }
-  function calculateDiscount(originalPrice, discountPercentage) {
-    const discountAmount = (originalPrice * discountPercentage) / 100;
-    const discountedPrice = originalPrice - discountAmount;
-    return discountedPrice;
   }
 
   return (
@@ -77,11 +80,6 @@ const CartState = ({ children }) => {
         showHideCart,
         removeItem,
         logout,
-        setLikes,
-        currentUser,
-        likes,
-        refreshPage,
-        calculateDiscount,
       }}
     >
       {children}

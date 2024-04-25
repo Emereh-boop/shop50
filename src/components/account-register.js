@@ -1,15 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import googleIcon from "../images/google.svg";
-//import useNavigate
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import ShopContext from "../context/cart/shop-context";
 
 export default function Register() {
-  //initialize navigate
   const navigate = useNavigate();
-  const { currentUser } = useContext(ShopContext);
+  // const { currentUser } = useContext(ShopContext);
 
   const navigateToLogin = () => {
     navigate("/login");
@@ -21,19 +18,19 @@ export default function Register() {
 
   const register = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(
+      await createUserWithEmailAndPassword(
         auth,
         registerEmail,
         registerPassword
       );
       navigate("/login");
     } catch (error) {
-      setError(error.message);
+      setError("Invalid credentials");
     }
   };
   return (
-    <div className="p-4 h-screen bg-hero-pattern flex justify-center">
-      <div className="flex flex-col gap-10 rounded-xl shadow-2xl self-center bg-teal-50 md:p-10 md:w-1/4">
+    <div className="p-4 h-screen  flex justify-center">
+      <div className="flex flex-col gap-10 rounded-xl shadow-2xl self-center  md:p-10 md:w-1/4">
         <form className="flex justify-center ">
           <div className="flex flex-col w-full gap-2">
             <label htmlFor="username">Email/Username</label>

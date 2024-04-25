@@ -2,13 +2,8 @@ import React from "react";
 import bagImage1 from "../images/pexels-photo-1942880.jpeg";
 import bagImage2 from "../images/istockphoto-500157629-612x612.jpg";
 import bagImage3 from "../images/gettyimages-533746941-612x612.jpg";
-// import downArrowImg from "../images/down-arrow.png";
 
 export default function Section1(props) {
-  // const ref3 = props.ref3;
-  // const scrollToTop = () => {
-  //   ref3.current?.scrollIntoView({ behavior: "smooth" });
-  // };
   return (
     <div className="w-svw grid grid-cols-2 grid-flow-row-dense bg-amber-50 justify-between gap-5 px-3 md:p-5 py-3 md:grid-cols-4">
       <div className="flex col-span-full text-5xl justify-center md:text-clip md:text-9xl">
@@ -32,16 +27,6 @@ export default function Section1(props) {
             src={bagImage2}
             alt=""
           />
-          {/* <div className="text-center md:block hidden">
-            <p>SEE MORE</p>
-            <img
-              className=" h-5 w-5  md:mx-36"
-              id="img"
-              onMouseOver={scrollToTop}
-              src={downArrowImg}
-              alt=""
-            />
-          </div> */}
         </div>
         <div className="flex flex-col justify-around  h-96 md:w-80 text-2xl">
           <p className=" text-center text-3xl underline underline-offset-8">
