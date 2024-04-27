@@ -83,10 +83,10 @@ export default function Navbar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-y-0 right-0 flex justify-evenly pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <div className="absolute inset-y-0 right-0 flex justify-evenly items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <div
                   className="filter invert flex w-1/2 h-8 flex-row-reverse mb-2 border-0 py-1.5 pl-3 pr-2 text-gray-900 ring-1 ring-black ring-inset rounded-full justify-between items-center bg-transparent
-            md:mb-0 md:py-0.5 "
+                 md:mb-0 md:py-0.5 "
                 >
                   <Search className="w-4 h-4" onClick={AlphabeticalSearch} />
                   <input
@@ -105,12 +105,12 @@ export default function Navbar() {
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Shopping cart items</span>
-                  <div>
+                  <div className="relative">
                     <CartFill className="h-6 w-6" aria-hidden="true" />
                     <span
                       className={
                         cartItem.length
-                          ? " absolute top-0 left-6 right-0 animate- text-xs bg-red-600 w-4 h-4 text-center text-white rounded-full"
+                          ? " absolute top-0 left-5 right-0 animate- text-xs bg-red-600 w-4 h-4 text-center text-white rounded-full"
                           : "hidden"
                       }
                     ></span>

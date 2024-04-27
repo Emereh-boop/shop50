@@ -94,7 +94,7 @@ function ShoeHeroPage() {
 
   return (
     <div
-      className={`md:pb-10 bg-gray-100 gap-5  flex  flex-col  items-center `}
+      className={`md:pb-10 bg-gray-200 gap-5  flex  flex-col  items-center `}
     >
       <div
         key={shoes[i].name}
@@ -116,7 +116,7 @@ function ShoeHeroPage() {
             size={40}
             className="hidden group-hover:block absolute right-0  translate-x-0 translate-y-[-50%] p-2 bg-black/20 top-[50%] self-center text-white cursor-default rounded-full"
           />
-          <div className="flex justify-center  py-2 absolute bottom-0 overflow-x-clip left-[30%] right-[20%] ">
+          <div className="flex justify-center  py-2 absolute bottom-0 top-[100%] overflow-x-clip left-[30%] right-[20%] ">
             {shoes.map((shoe, index) => {
               return (
                 <Dot
@@ -130,8 +130,8 @@ function ShoeHeroPage() {
           </div>
         </div>
 
-        <div className="md:w-1/2 flex md:flex-row flex-col justify-between">
-          <div className="flex flex-col py-6 justify-between gap-6 relative">
+        <div className="md:w-1/2 flex md:flex-row flex-col justify-betweeen">
+          <div className="flex flex-col py-6 justify-around gap-6 relative">
             <span className="text-zinc-900 text-5xl md:text-9xl drop-shadow-3xl font-extrabold">
               <strong>{shoes[i].brand}</strong>{" "}
             </span>

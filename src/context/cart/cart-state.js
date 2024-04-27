@@ -1,7 +1,7 @@
 import { React, useReducer, useEffect, useState } from "react";
 import ShopContext from "./shop-context";
 import CartReducer from "./cart-reducer";
-import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
+import { SHOW_HIDE_CART, ADD_TO_CART, REMOVE_ITEM, CLEAR_CART } from "../types";
 import {
   collection,
   getDocs,
@@ -12,35 +12,33 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useQuery } from "@tanstack/react-query";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 
 const CartState = ({ children }) => {
   const cartItemsFromStorage = localStorage.getItem("cartItems");
   let c = cartItemsFromStorage ? JSON.parse(cartItemsFromStorage) : [];
-  // let items = [];
   const [items, setItems] = useState([]);
-
-  // console.log(items);
+  const [currentUser, setCurrentUser] = useState({});
 
   const initialState = {
     showCart: false,
     products: items,
     cartItems: c,
   };
-  const { q } = useQuery({
+  useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const first = query(
-        collection(db, "products"),
+        collection(db, "Products"),
         orderBy("title"),
-        limit(4)
+        limit(10)
       );
       const data = await getDocs(first);
       data.docs.forEach((doc) => {
         let key = doc.id;
         let item = doc.data();
-        // items.push({ key, item });
+        items.push({ key, item });
       });
       setItems(data.docs);
     },
@@ -54,6 +52,9 @@ const CartState = ({ children }) => {
 
   const addToCart = (item) => {
     dispatch({ type: ADD_TO_CART, payload: item });
+  };
+  const clearCart = () => {
+    dispatch({ type: CLEAR_CART });
   };
   const showHideCart = () => {
     dispatch({ type: SHOW_HIDE_CART });
@@ -69,6 +70,14 @@ const CartState = ({ children }) => {
   function refreshPage() {
     window.location.reload(false); // Set to true for a full server refresh
   }
+  onAuthStateChanged(auth, (currentUser) => {
+    setCurrentUser(currentUser);
+  });
+  function calculateDiscount(originalPrice, discountPercentage) {
+    const discountAmount = (originalPrice * discountPercentage) / 100;
+    const discountedPrice = originalPrice - discountAmount;
+    return discountedPrice;
+  }
 
   return (
     <ShopContext.Provider
@@ -76,7 +85,10 @@ const CartState = ({ children }) => {
         showCart: state.showCart,
         products: state.products,
         cartItem: state.cartItems,
+        currentUser,
         addToCart,
+        calculateDiscount,
+        clearCart,
         showHideCart,
         removeItem,
         logout,

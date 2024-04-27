@@ -2,15 +2,15 @@ import React, { useContext } from "react";
 import Home from "./pages/home";
 import "./index.css";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
-import ProductPage from "./pages/product-page";
 import Cart from "./pages/cart";
 import Register from "./components/account-register";
 import Login from "./components/account-login";
 import UploadData from "./pages/upload-data";
 import Navbar from "./components/Navbar";
-import StateContext from "./context/State/State-context";
+import CheckoutPage from "./pages/Checkout";
+import ShopContext from "./context/cart/shop-context";
 function App() {
-  const { currentUser } = useContext(StateContext);
+  const { currentUser } = useContext(ShopContext);
   const RequireAuth = ({ children }) => {
     const user = currentUser;
     return user ? children : <Navigate to={"/login"} />;
@@ -22,13 +22,21 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route index element={<Home />} />
-          <Route path="/products" element={<ProductPage />} />
+          {/* <Route path="/products" element={} /> */}
           <Route path="/cart" element={<Cart />} />
           <Route
             path="/upload-data"
             element={
               <RequireAuth>
                 <UploadData />
+              </RequireAuth>
+            }
+          />{" "}
+          <Route
+            path="/checkout"
+            element={
+              <RequireAuth>
+                <CheckoutPage />
               </RequireAuth>
             }
           />
