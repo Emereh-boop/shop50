@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useQuery } from "@tanstack/react-query";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 
 const CartState = ({ children }) => {
@@ -62,14 +62,16 @@ const CartState = ({ children }) => {
   const removeItem = (id) => {
     dispatch({ type: REMOVE_ITEM, payload: id });
   };
+  function refreshPage() {
+    window.location.reload(false); // Set to true for a full server refresh
+  }
   const logout = async () => {
     await signOut(auth);
     refreshPage();
   };
 
-  function refreshPage() {
-    window.location.reload(false); // Set to true for a full server refresh
-  }
+  const googleProvider = new GoogleAuthProvider();
+
   onAuthStateChanged(auth, (currentUser) => {
     setCurrentUser(currentUser);
   });

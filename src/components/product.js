@@ -1,12 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import ShopContext from "../context/cart/shop-context";
-import { Heart, HeartFill } from "react-bootstrap-icons";
+import { HeartFill } from "react-bootstrap-icons";
 import Delete from "../images/delete.svg";
-import StateContext from "../context/State/State-context";
 
 export default function Product(props) {
-  const { addToCart, removeItem } = useContext(ShopContext);
-  const { likes, setLikes, calculateDiscount } = useContext(StateContext);
+  const { addToCart, removeItem, calculateDiscount } = useContext(ShopContext);
 
   return (
     <div
@@ -15,23 +13,12 @@ export default function Product(props) {
     >
       <div className="flex justify-between flex-col">
         <div className="relative group">
-          <div
-            className=" w-20 h-20 bg-white/0 absolute right-0 top-0"
-            onClick={() => setLikes(props.products)}
-          >
-            {likes ? (
-              <HeartFill
-                className="absolute right-6 top-6 hidden group-hover:block"
-                color="red"
-                size={25}
-              />
-            ) : (
-              <Heart
-                className=" hidden group-hover:block absolute right-6 top-6"
-                color="red"
-                size={25}
-              />
-            )}
+          <div className=" w-20 h-20 bg-white/0 absolute right-0 top-0">
+            <HeartFill
+              className="absolute right-6 top-6 hidden group-hover:block"
+              color="red"
+              size={25}
+            />
           </div>
           <img
             className=" h-4/5 w-full object-cover"

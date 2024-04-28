@@ -86,7 +86,7 @@ export default function Navbar() {
               <div className="absolute inset-y-0 right-0 flex justify-evenly items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <div
                   className="filter invert flex w-1/2 h-8 flex-row-reverse mb-2 border-0 py-1.5 pl-3 pr-2 text-gray-900 ring-1 ring-black ring-inset rounded-full justify-between items-center bg-transparent
-                 md:mb-0 md:py-0.5 "
+            md:mb-0 md:py-0.5 "
                 >
                   <Search className="w-4 h-4" onClick={AlphabeticalSearch} />
                   <input

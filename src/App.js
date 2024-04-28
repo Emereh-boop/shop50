@@ -3,9 +3,9 @@ import Home from "./pages/home";
 import "./index.css";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Cart from "./pages/cart";
-import Register from "./components/account-register";
-import Login from "./components/account-login";
-import UploadData from "./pages/upload-data";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import UploadData from "./pages/upload";
 import Navbar from "./components/Navbar";
 import CheckoutPage from "./pages/Checkout";
 import ShopContext from "./context/cart/shop-context";
@@ -25,7 +25,7 @@ function App() {
           {/* <Route path="/products" element={} /> */}
           <Route path="/cart" element={<Cart />} />
           <Route
-            path="/upload-data"
+            path="/upload"
             element={
               <RequireAuth>
                 <UploadData />
