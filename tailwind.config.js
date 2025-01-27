@@ -7,6 +7,17 @@ module.exports = {
         "3xl": "0 35px 35px rgba(0, 0, 0, 0.25)",
         "4xl": "80px 100px 35px rgba(0, 0, 0, 0.5)",
       },
+      colors: {
+        primary: "#262626",
+        black: "#1D1D1D",
+        gray: "D1D3D4",
+        secondary: "#ffffff",
+        "gray-400": "#6B6B6B",
+        "gray-100": "#C4C4C4",
+        "gray-900": "#393939",
+        "peach-100": "#FFEFEF",
+        "peach-400": "#FF9F9F",
+      },
       height: {
         96: "32rem",
         700: "700px",
@@ -25,6 +36,14 @@ module.exports = {
           "0%, 100%": { transform: "rotate(-3deg)" },
           "50%": { transform: "rotate(3deg)" },
         },
+      },
+      fontFamily: {
+        // sans: ["Roboto", "Poppins", "Montserrat"],
+        sans: ["ui-sans-serif", "system-ui"],
+        serif: ["ui-serif", "Georgia"],
+        mono: ["ui-monospace", "SFMono-Regular"],
+        display: ["Oswald"],
+        body: ['"Open Sans"'],
       },
       scale: {
         80: "0.8",

@@ -8,7 +8,7 @@ import HeroPage from "../components/HeroPage";
 
 export default function Home() {
   return (
-    <div className="px-5 h-lvh gap-10 flex flex-col">
+    <div className="relative h-dvh flex flex-col gap-10">
       <Navbar />
       <HeroPage />
       <ShopProducts />

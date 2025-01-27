@@ -1,15 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState, Fragment } from "react";
 import ShopContext from "../context/cart/shop-context";
-import { CartFill, PersonFill, Search } from "react-bootstrap-icons";
-import Cart from "../pages/cart";
-import { Fragment } from "react";
+import { Cart4, PersonCircle, Search } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "./Logout";
+import Logo from "../images/logo-Nahtty.jpg";
+import Cart from "../pages/cart";
+// import { collection, query, orderBy, where, getDocs } from "firebase/firestore";
+// import { db } from "../firebase"; // Make sure your Firebase config is properly imported
 
 const navigation = [
-  { name: "Home", href: "/", current: true },
-  { name: "New Arivals", href: "/new", current: false },
+  { name: "Shop", href: "/", current: true },
+  { name: "New Arrivals", href: "/new", current: false },
   { name: "Collections", href: "/collections", current: false },
   { name: "Trending", href: "/trend", current: false },
 ];
@@ -19,38 +21,32 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const { cartItem, products } = useContext(ShopContext);
+  const { cartItem, products = [] } = useContext(ShopContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState([]);
 
-  const titles = [];
-  products.map((i) => {
-    return titles.push(i.item.title);
-  });
-
-  const AlphabeticalSearch = () => {
-    // Filter titles based on search term
-    const filteredTitles = titles.filter((title) =>
-      title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    console.log(filteredTitles);
-    return filteredTitles;
-  };
+  useEffect(() => {
+    if (searchTerm) {
+      // Filtering locally stored products for faster results
+      const filtered = products.filter((product) =>
+        product.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilter(filtered);
+    } else {
+      setFilter(products); // Show all products if searchTerm is empty
+    }
+  }, [searchTerm, products]);
   const [logout, setLogout] = useState(false);
-
   const [cart, setCart] = useState(false);
-  const handleCart = () => {
-    setCart(true);
-  };
+
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className=" shadow-md ">
       {({ open }) => (
-        <>
-          <div className="mx-auto max-w-full px-2 sm:px-6 lg:px-8">
+        <div className="fixed bg-secondary right-0 left-0 top-0 z-30">
+          <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                {/* Mobile menu button*/}
-                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                  <span className="absolute -inset-0.5" />
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-200 focus:outline-none">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -60,8 +56,12 @@ export default function Navbar() {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
-                  <img className="h-8 w-auto" src="" alt="Logo" />
+                <div className="flex flex-shrink-0  items-center">
+                  <img
+                    className=" w-40 h-5 object-contain"
+                    src={Logo}
+                    alt="nahtty"
+                  />
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
@@ -71,9 +71,9 @@ export default function Navbar() {
                         href={item.href}
                         className={classNames(
                           item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
+                            ? "text-primary bg-zinc-200"
+                            : "text-gray-400 hover:text-black",
+                          "rounded-sm px-3 py-1 text-sm font-medium"
                         )}
                         aria-current={item.current ? "page" : undefined}
                       >
@@ -83,49 +83,62 @@ export default function Navbar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-y-0 right-0 flex justify-evenly items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <div
-                  className="filter invert flex w-1/2 h-8 flex-row-reverse mb-2 border-0 py-1.5 pl-3 pr-2 text-gray-900 ring-1 ring-black ring-inset rounded-full justify-between items-center bg-transparent
-            md:mb-0 md:py-0.5 "
-                >
-                  <Search className="w-4 h-4" onClick={AlphabeticalSearch} />
-                  <input
-                    className=" w-1/2 border-0 text-gray-900 ring-0 ring-inset  placeholder:text-gray-400 bg-transparent focus:ring-none outline-none md:text-md md:leading-6"
-                    type="search"
-                    name="search"
-                    value={searchTerm}
-                    placeholder="Search "
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+              <div className="flex items-center justify-end space-x-4">
+                {/* Search Bar */}
+                <div className="relative hidden lg:block">
+                  <div className="flex items-center bg-neutral-100 rounded-full px-3 py-1.5">
+                    <Search className="w-4 h-4 text-gray-400" />
+                    <input
+                      className="bg-transparent border-0 text-gray-700 placeholder-gray-400 focus:ring-0 focus:outline-none pl-2"
+                      type="search"
+                      name="search"
+                      value={searchTerm}
+                      placeholder="Search"
+                      onInput={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  {searchTerm && (
+                    <div className="absolute z-10 w-full bg-white mt-1 rounded-md shadow-lg">
+                      <ul className="py-1">
+                        {filter.length > 0 ? (
+                          filter.map((l, index) => (
+                            <li
+                              key={index}
+                              onClick={() =>
+                                (window.location.href = `/product/${l.id}`)
+                              }
+                              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                            >
+                              {l.title}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="px-4 py-2 text-sm text-gray-700">
+                            No results found
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
+                {/* Cart Icon */}
                 <button
                   type="button"
-                  onClick={handleCart}
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={() => setCart((p) => !p)}
+                  className="relative rounded-full p-1.5 text-gray-700 focus:outline-none"
                 >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Shopping cart items</span>
-                  <div className="relative">
-                    <CartFill className="h-6 w-6" aria-hidden="true" />
-                    <span
-                      className={
-                        cartItem.length
-                          ? " absolute top-0 left-5 right-0 animate- text-xs bg-red-600 w-4 h-4 text-center text-white rounded-full"
-                          : "hidden"
-                      }
-                    ></span>
-                  </div>
+                  <Cart4 className="h-7 w-7" aria-hidden="true" />
+                  {cartItem?.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
+                      {cartItem.length}
+                    </span>
+                  )}
                 </button>
-
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative ml-3">
-                  <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Open user menu</span>
-                      <PersonFill className="h-8 w-8 rounded-full text-gray-400" />
-                    </Menu.Button>
-                  </div>
+                {/* Profile Dropdown */}
+                <Menu as="div" className="relative">
+                  <Menu.Button className="flex items-center rounded-full p-1 text-gray-700 focus:outline-none">
+                    <PersonCircle className="h-7 w-7" />
+                  </Menu.Button>
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
@@ -165,21 +178,20 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            onClick={() => {
-                              setLogout(true);
-                            }}
+                            onClick={() => setLogout(true)}
                             className={classNames(
                               active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
+                              "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                             )}
                           >
-                            Sign out
+                            Log out
                           </div>
                         )}
                       </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>
+                {/* Conditional Rendering of Cart and Logout Components */}
                 {logout && <Logout />}
                 {cart && <Cart />}
               </div>
@@ -187,7 +199,7 @@ export default function Navbar() {
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2">
+            <div className="flex space-y-1 p-2">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
@@ -195,9 +207,9 @@ export default function Navbar() {
                   href={item.href}
                   className={classNames(
                     item.current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
+                      ? "text-primary bg-zinc-200"
+                      : "text-gray-400 hover:text-black",
+                    "block rounded-sm px-3 py-1 text-base font-medium"
                   )}
                   aria-current={item.current ? "page" : undefined}
                 >
@@ -206,7 +218,7 @@ export default function Navbar() {
               ))}
             </div>
           </Disclosure.Panel>
-        </>
+        </div>
       )}
     </Disclosure>
   );

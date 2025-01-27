@@ -4,8 +4,10 @@ import "./index.css";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Cart from "./pages/cart";
 import Register from "./components/Register";
+import Products from "./pages/product";
+import NewArrivals from "./pages/new";
 import Login from "./components/Login";
-import UploadData from "./pages/upload";
+import UploadData from "./pages/admin/upload";
 import Navbar from "./components/Navbar";
 import CheckoutPage from "./pages/Checkout";
 import ShopContext from "./context/cart/shop-context";
@@ -22,24 +24,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route index element={<Home />} />
-          {/* <Route path="/products" element={} /> */}
           <Route path="/cart" element={<Cart />} />
-          <Route
-            path="/upload"
-            element={
-              <RequireAuth>
-                <UploadData />
-              </RequireAuth>
-            }
-          />{" "}
-          <Route
-            path="/checkout"
-            element={
-              <RequireAuth>
-                <CheckoutPage />
-              </RequireAuth>
-            }
-          />
+          <Route path="/new" element={<NewArrivals />} />
+          <Route path="/product/:id" element={<Products />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          {/* <RequireAuth> */}
+          <Route path="/upload" element={<UploadData />} />{" "}
+          {/* </RequireAuth> */}
           <Route
             path="*"
             element={

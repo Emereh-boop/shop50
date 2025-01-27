@@ -14,12 +14,11 @@ export default function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      navigate("/");
+      navigate(-1); // Navigate to the previous page
     } catch (error) {
       setError("Invalid credentials");
     }
   };
-
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

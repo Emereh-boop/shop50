@@ -1,71 +1,91 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import ShopContext from "../context/cart/shop-context";
-import { HeartFill } from "react-bootstrap-icons";
-import Delete from "../images/delete.svg";
+import { Cart4, Plus, Heart } from "react-bootstrap-icons";
+import { MinusIcon } from "@heroicons/react/24/outline";
 
 export default function Product(props) {
-  const { addToCart, removeItem, calculateDiscount } = useContext(ShopContext);
+  const { addToCart, calculateDiscount } = useContext(ShopContext);
+  const [qty, setQty] = useState(1);
+  const colors = ["blue-600", "black", "green-700"];
 
   return (
     <div
-      key={props.title}
-      className=" bg-white justify-between flex flex-col gap-6 rounded-xl p-5 shadow-xl"
+      key={props.product.id}
+      className="bg-white shadow-sm shadow-neutral-200  overflow-hidden transition-transform transform"
     >
-      <div className="flex justify-between flex-col">
-        <div className="relative group">
-          <div className=" w-20 h-20 bg-white/0 absolute right-0 top-0">
-            <HeartFill
-              className="absolute right-6 top-6 hidden group-hover:block"
-              color="red"
-              size={25}
-            />
+      <div className="relative">
+        {props.product.inStock ? (
+          <div className="absolute z-50 left-4 top-4 bg-red-500 text-white text-sm px-2 py-1 rounded-sm shadow-lg transition-all duration-300 hover:bg-red-400">
+            {/* <Heart className="text-black" color="black" size={20} /> */}
+            on sale
           </div>
+        ) : (
+          <div className="absolute z-50 left-4 top-4 bg-white text-primary ring-[1px] ring-primary text-sm px-2 py-1 rounded-sm shadow-lg transition-all duration-300 hover:bg-neutral-100">
+            {/* <Heart className="text-black" color="black" size={20} /> */}
+            out of stock
+          </div>
+        )}
+
+        <Link to={`/product/${props.product.id}`} className="block">
           <img
-            className=" h-4/5 w-full object-cover"
-            src={props.image}
-            alt="Product"
+            className="relative rounded lg:h-[24rem] h-72 w-full object-cover"
+            src={props.product.imageUrl || props.image}
+            alt={props.product.title}
           />
-          <div className="hidden group-hover:block  absolute bottom-2 left-20 bg-black/15 rounded-xl justify-center text-center p-3 w-2/3">
-            Quick View
-          </div>
+        </Link>
+      </div>
+      <div className="flex flex-col ">
+        <div className=" gap-2 justify-between flex">
+          <span className="py-1 px-2 bg-white md:text-lg text-primary hover:bg-white/70 flex items-center truncate">
+            {props.product.title}
+          </span>
+          <span className="py-1 font-bold md:text-lg px-2 bg-white text-primary hover:bg-white/70  flex items-center ">
+            ${props.product.price}
+          </span>
         </div>
-        <div
-          className="flex flex-col justify-center gap-2
-        "
-        >
-          <h3 className="text-l font-bold">{props.title}</h3>
-          <div>
-            <span className=" font-medium">
-              {calculateDiscount(props.prevprice, props.discount)}
-            </span>{" "}
-            <span className=" line-through text-gray-400">
-              {props.prevprice}
-            </span>{" "}
-            <span className="font-bold text-nowrap">{props.discount}% 0FF</span>
-          </div>
-          <div className="text-xs text-gray-600">
-            <p>{props.quantity} COLORS</p>
-          </div>
-          <div>
-            <p>
-              <strong>Instock</strong>: {props.inStock}
+        <div className=" gap-2 justify-between flex">
+          {/* <p className=""> */}
+          <p className="py-1 px-2 gap-2 bg-white text-sm text-primary flex flex-col truncate">
+            <span> available colors</span>
+            <p className="flex gap-2 ">
+              {props.product.colors?.map((c) => (
+                <div
+                  className={`p-2 ring-[1px] ring-${c} rounded-full bg-${c}`}
+                ></div>
+              ))}
             </p>
-          </div>
-          <div className="flex justify-between">
-            <button
-              onClick={() => addToCart(props.products)}
-              className="shadow-inner shadow-gray-200 py-1 px-2 w-4/5  md:p-2 rounded-md hover:bg-neutral-100"
-            >
-              Add to cart
-            </button>
-            <button
-              onClick={() => removeItem(props.id)}
-              className="shadow-inner shadow-gray-200 py-1 px-2 w-1/4  md:p-2 rounded-md hover:bg-red-500 flex justify-center"
-            >
-              <img src={Delete} alt="remove from cart" />
-            </button>
+          </p>
+          {/* </p> */}
+          <div>
+            {
+              props.product.discount > 0 && (
+                <span className="py-1 px-2 bg-white hover:bg-white/70  flex items-center text-gray-400 line-through">
+                  ${props.product.price}
+                </span>
+              )
+              // ) : (
+              //   <span className="py-1 px-2 bg-white text-gray-400 hover:bg-white/70  flex items-center ">
+              //     $
+              //     {calculateDiscount(props.product.price, props.product.discount)}
+              //   </span>
+              // )
+            }
           </div>
         </div>
+        {/* <div className="flex items-center justify-between ml-1 mt-3">
+          <button
+            onClick={() => addToCart(props.product)}
+            type="button"
+            className="lg:py-2 p-2 lg:px-4 bg-primary text-white hover:bg-primary/70 transition-colors flex items-center justify-center"
+          >
+            <Cart4 className="h-6 w-6" />
+          </button>
+          <h3 className="text-md font-medium mb-1">{props.product.title}</h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-lg  text-black"></span>
+          </div>
+        </div> */}
       </div>
     </div>
   );

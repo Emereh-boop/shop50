@@ -1,25 +1,60 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ShopContext from "../context/cart/shop-context";
-
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Plus } from "react-bootstrap-icons";
+import { XMarkIcon, MinusIcon } from "@heroicons/react/24/outline";
+import { Timestamp } from "firebase/firestore";
 
-export default function Example() {
+export default function Cart() {
   const [open, setOpen] = useState(true);
-  const [subTotal, setSubTotal] = useState(0);
-  const { cartItem, removeItem } = useContext(ShopContext);
+  const [subTotal, setSubTotal] = useState(0); // Initialize subTotal to 0
+  const { memoizedCartItems = [], removeItem } = useContext(ShopContext); // Default cartItem to an empty array
+  const [qty, setQty] = useState(1);
+  const cart = memoizedCartItems.reduce(
+    (acc, item) => {
+      // Check if the item id has already been added to the cart
+      const existingItem = acc.cart.find((cartItem) => cartItem.id === item.id);
+
+      if (!existingItem) {
+        // If the item is new, add it to the cart
+        acc.cart.push({ ...item, qty: item.quantity });
+      } else {
+        // If the item already exists, increase the quantity
+        existingItem.qty += item.quantity;
+      }
+
+      return acc;
+    },
+    { cart: [] } // Start with an empty cart
+  ).cart;
+
+  const plusQty = () => {
+    return setQty((p) => p + 1);
+  };
+  const minusQty = () => {
+    return setQty((p) => p - 1);
+  };
 
   useEffect(() => {
-    cartItem.map((i) => {
-      return setSubTotal((prevState) => ({ ...(prevState + i.prevprice) }));
-    });
-  }, [cartItem]);
+    const total = cart.reduce((acc, item) => {
+      return acc + Number(item.qty) * Number(item.price); // Calculate the subtotal correctly
+    }, 0);
+    setSubTotal(total);
+  }, [cart]);
+
+  const currencies = {
+    USD: { symbol: "$", rate: 1 },
+    Canada: { symbol: "$", rate: 0.9 },
+    UK: { symbol: "£", rate: 0.75 },
+    India: { symbol: "₹", rate: 75 },
+    NGN: { symbol: "₦", rate: 1554.39 },
+  };
 
   return (
     <>
       <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={setOpen}>
+        <Dialog as="div" className="relative z-50" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"
@@ -29,7 +64,7 @@ export default function Example() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-black bg-opacity-60 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
@@ -70,52 +105,73 @@ export default function Example() {
                         <div className="mt-8">
                           <div className="flow-root">
                             <ul className="-my-6 divide-y divide-gray-200">
-                              {cartItem.map((product) => (
-                                <li key={product.title} className="flex py-6">
-                                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                    <img
-                                      src={product.image}
-                                      alt={product.title}
-                                      className="h-full w-full object-cover object-center"
-                                    />
-                                  </div>
+                              {cart.length === 0 ? (
+                                <p>Your cart is empty</p>
+                              ) : (
+                                cart.map((product, index) => (
+                                  <li
+                                    key={product.title + index + Timestamp}
+                                    className="flex py-6"
+                                  >
+                                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                      <img
+                                        src={product.imageUrl}
+                                        alt={product.title}
+                                        className="h-full w-full object-cover object-center"
+                                      />
+                                    </div>
 
-                                  <div className="ml-4 flex flex-1 flex-col">
-                                    <div>
-                                      <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <h3>
-                                          <a href={product.href}>
-                                            {product.title}
-                                          </a>
-                                        </h3>
-                                        <p className="ml-4">
-                                          {product.prevprice}
+                                    <div className="ml-4 flex flex-1 flex-col">
+                                      <div>
+                                        <div className="flex justify-between text-base font-medium text-gray-900">
+                                          <h3>
+                                            <a href={product.href}>
+                                              {product.title}
+                                            </a>
+                                          </h3>
+                                          <p className="ml-4">
+                                            {currencies.NGN.symbol}{" "}
+                                            {product.price}
+                                          </p>
+                                        </div>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                          {product.color}
                                         </p>
                                       </div>
-                                      <p className="mt-1 text-sm text-gray-500">
-                                        {product.color}
-                                      </p>
-                                    </div>
-                                    <div className="flex flex-1 items-end justify-between text-sm">
-                                      <p className="text-gray-500">
-                                        Qty {product.quantity}
-                                      </p>
-
-                                      <div className="flex">
-                                        <button
-                                          type="button"
-                                          className="font-medium text-neutral-600 hover:text-neutral-500"
-                                          onClick={() =>
-                                            removeItem(product.key)
-                                          }
-                                        >
-                                          Remove
-                                        </button>
+                                      <div className="flex flex-1 items-end justify-between text-sm">
+                                        <div className="flex items-center gap-2 ">
+                                          <div
+                                            className="flex items-center p-1 bg- rounded-full bg-primar"
+                                            onClick={() => minusQty()}
+                                          >
+                                            <MinusIcon className="h-4 w-4 text-primary " />
+                                          </div>
+                                          <p className="text-gray-400 text-center">
+                                            Qty {product.qty}
+                                          </p>
+                                          <div
+                                            className="rounded-full bg- p-1 flex items-center bg-primar"
+                                            onClick={() => plusQty()}
+                                          >
+                                            <Plus className="h-4 w-4 text-primary" />
+                                          </div>
+                                        </div>
+                                        <div className="flex">
+                                          <button
+                                            type="button"
+                                            className="font-medium text-neutral-600 hover:text-neutral-500"
+                                            onClick={() =>
+                                              removeItem(product.id)
+                                            }
+                                          >
+                                            Remove
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </li>
-                              ))}
+                                  </li>
+                                ))
+                              )}
                             </ul>
                           </div>
                         </div>
@@ -124,7 +180,9 @@ export default function Example() {
                       <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Subtotal</p>
-                          <p>${subTotal}</p>
+                          <p>
+                            {currencies.NGN.symbol} {subTotal}
+                          </p>
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">
                           Shipping and taxes calculated at checkout.
@@ -132,7 +190,7 @@ export default function Example() {
                         <div className="mt-6">
                           <a
                             href="/checkout"
-                            className="flex items-center justify-center rounded-md border border-transparent bg-neutral-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-neutral-700"
+                            className="flex items-center justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
                           >
                             Checkout
                           </a>
@@ -142,7 +200,7 @@ export default function Example() {
                             or{" "}
                             <button
                               type="button"
-                              className="font-medium text-neutral-600 hover:text-neutral-500"
+                              className="font-medium text-primary hover:text-primary"
                               onClick={() => setOpen(false)}
                             >
                               Continue Shopping
@@ -158,7 +216,7 @@ export default function Example() {
             </div>
           </div>
         </Dialog>
-      </Transition.Root>{" "}
+      </Transition.Root>
     </>
   );
 }

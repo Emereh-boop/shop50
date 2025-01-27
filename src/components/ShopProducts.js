@@ -1,163 +1,102 @@
-import React, { useContext } from "react";
-import ShopContext from "../context/cart/shop-context";
+import React, { useRef, useEffect, useState } from "react";
+// import ShopContext from "../context/cart/shop-context";
 import {
-  CartPlus,
+  // CartPlus,
   ChevronCompactLeft,
   ChevronCompactRight,
-  Trash3Fill,
+  // HeartFill,
 } from "react-bootstrap-icons";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function Example() {
-  const { products, addToCart, removeItem } = useContext(ShopContext);
+  // const { addToCart } = useContext(ShopContext);
+  const sliderRef = useRef(null);
+
+  const slideLeft = () => {
+    sliderRef.current.scrollBy({
+      left: -300, // Adjust based on the product card width
+      behavior: "smooth",
+    });
+  };
+
+  const slideRight = () => {
+    sliderRef.current.scrollBy({
+      left: 300, // Adjust based on the product card width
+      behavior: "smooth",
+    });
+  };
+
+  const [trending, setTrending] = useState([]);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "trending"));
+        const collectionsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTrending(collectionsData);
+      } catch (error) {
+        console.error("Error fetching collections: ", error);
+      }
+    };
+
+    fetchCollections();
+  }, []);
 
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <div className="flex justify-between">
-          <h2 className="text-xl md:text-4xl font-bold tracking-tight text-gray-900">
-            Customers also purchased
-          </h2>
+    <div className="py-10 bg-white">
+      <div className="text-center text-4xl font-extrabold text-black mb-8">
+        TRENDING
+      </div>
+      <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">
+        <div
+          ref={sliderRef}
+          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory"
+        >
+          {trending.length > 0 ? (
+            trending.slice(0, 4).map((product) => (
+              <div
+                key={product.id}
+                className="flex-shrink-0 w-60 sm:w-72 lg:w-80 snap-start"
+              >
+                <div className="relative">
+                  <img
+                    className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:sale-105"
+                    src={product.imageUrl}
+                    alt={product.title}
+                  />
+                  <span>
+                    <div className="absolute bg-white p-2 bottom-4 left-1 text-sm font-medium text-gray-400">
+                      ${product.price}
+                    </div>
+                  </span>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-md font-semibold text-black">
+                    {product.title}
+                  </h3>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No trending products</p>
+          )}
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-          {products.map((product) => (
-            <div key={product.key} className="group ">
-              <div className=" aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                <img
-                  src={product.item.image}
-                  alt={product.item.title}
-                  className="h-full w-full object-contain object-center lg:h-full lg:w-full"
-                />
-              </div>
-              <div className="">
-                <div className="mt-4 flex justify-between">
-                  <div>
-                    <h3 className="text-sm text-gray-700">
-                      <a href={product.href}>
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.item.title}
-                      </a>
-                    </h3>
-                  </div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {product.item.prevprice}
-                  </p>
-                </div>
-                <div>
-                  <p className="mt-1 text-sm font-medium text-gray-900">
-                    Available in {product.item.colors} color
-                  </p>{" "}
-                  <p className="mt-1 text-sm font-medium text-gray-900">
-                    {product.item.discount}% Off discount
-                  </p>
-                  <p className="mt-1 text-sm text-green-500 font-medium ">
-                    {product.item.inStock}
-                  </p>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <div
-                  onClick={() => addToCart(product.item)}
-                  className="p-2 gap-4 rounded-md bg-black text-white flex justify-between"
-                >
-                  <p>Add to Cart</p> <CartPlus size={25} />
-                </div>
-                <Trash3Fill
-                  onClick={() => removeItem()}
-                  className="hover:text-red-500"
-                  size={28}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <a
-            href="#"
-            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Previous
-          </a>
-          <a
-            href="#"
-            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Next
-          </a>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">1</span> to{" "}
-              <span className="font-medium">8</span> of{" "}
-              <span className="font-medium">97</span> results
-            </p>
-          </div>
-          <div>
-            <nav
-              className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-              aria-label="Pagination"
-            >
-              <a
-                href="//"
-                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                <span className="sr-only">Previous</span>
-                <ChevronCompactLeft className="h-5 w-5" aria-hidden="true" />
-              </a>
-              {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-              <a
-                href="//"
-                aria-current="page"
-                className="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                1
-              </a>
-              <a
-                href="#"
-                className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                2
-              </a>
-              <a
-                href="#"
-                className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-              >
-                3
-              </a>
-              <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
-                ...
-              </span>
-              <a
-                href="#"
-                className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-              >
-                8
-              </a>
-              <a
-                href="#"
-                className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                9
-              </a>
-              <a
-                href="#"
-                className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                10
-              </a>
-              <a
-                href="#"
-                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                <span className="sr-only">Next</span>
-                <ChevronCompactRight className="h-5 w-5" aria-hidden="true" />
-              </a>
-            </nav>
-          </div>
-        </div>
+        <ChevronCompactLeft
+          onClick={slideLeft}
+          size={40}
+          className="hidden group-hover:block absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white cursor-pointer rounded-full z-10 hover:bg-black transition"
+        />
+
+        <ChevronCompactRight
+          onClick={slideRight}
+          size={40}
+          className="hidden group-hover:block absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white cursor-pointer rounded-full z-10 hover:bg-black transition"
+        />
       </div>
     </div>
   );
