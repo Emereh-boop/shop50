@@ -11,6 +11,7 @@ import UploadData from "./pages/admin/upload";
 import Navbar from "./components/Navbar";
 import CheckoutPage from "./pages/Checkout";
 import ShopContext from "./context/cart/shop-context";
+import Trending from "./pages/trend";
 function App() {
   const { currentUser } = useContext(ShopContext);
   const RequireAuth = ({ children }) => {
@@ -21,13 +22,14 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route index element={<Home />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/new" element={<NewArrivals />} />
-          <Route path="/product/:id" element={<Products />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/new" element={<NewArrivals />} />
+          <Route path="/trend" element={<Trending />} />
+          <Route path="/product/:id" element={<Products />} />
           {/* <RequireAuth> */}
           <Route path="/upload" element={<UploadData />} />{" "}
           {/* </RequireAuth> */}

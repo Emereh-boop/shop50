@@ -11,9 +11,9 @@ import Cart from "../pages/cart";
 
 const navigation = [
   { name: "Shop", href: "/", current: true },
-  { name: "New Arrivals", href: "/new", current: false },
+  { name: "Most Wanted", href: "/trend", current: false },
   { name: "Collections", href: "/collections", current: false },
-  { name: "Trending", href: "/trend", current: false },
+  { name: "New Arrivals", href: "/new", current: false },
 ];
 
 function classNames(...classes) {
