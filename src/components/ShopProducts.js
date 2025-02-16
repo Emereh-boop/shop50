@@ -1,17 +1,15 @@
-import React, { useRef, useEffect, useState } from "react";
-// import ShopContext from "../context/cart/shop-context";
+import React, { useRef, useContext } from "react";
+import ShopContext from "../context/cart/shop-context";
 import {
   // CartPlus,
   ChevronCompactLeft,
   ChevronCompactRight,
   // HeartFill,
 } from "react-bootstrap-icons";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
 
 export default function Example() {
-  // const { addToCart } = useContext(ShopContext);
   const sliderRef = useRef(null);
+  const { products, formatCurrency } = useContext(ShopContext);
 
   const slideLeft = () => {
     sliderRef.current.scrollBy({
@@ -27,28 +25,9 @@ export default function Example() {
     });
   };
 
-  const [trending, setTrending] = useState([]);
-
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "trending"));
-        const collectionsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setTrending(collectionsData);
-      } catch (error) {
-        console.error("Error fetching collections: ", error);
-      }
-    };
-
-    fetchCollections();
-  }, []);
-
   return (
-    <div className="py-10 bg-white">
-      <div className="text-center text-4xl font-extrabold text-black mb-8">
+    <div className=" bg-white">
+      <div className="text-start text-4xl font-extrabold text-black my-5">
         TRENDING
       </div>
       <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">
@@ -56,11 +35,11 @@ export default function Example() {
           ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory"
         >
-          {trending.length > 0 ? (
-            trending.slice(0, 4).map((product) => (
+          {products.trending.length > 0 ? (
+            products.trending.slice(0, 4).map((product) => (
               <div
                 key={product.id}
-                className="flex-shrink-0 w-60 sm:w-72 lg:w-80 snap-start"
+                className="flex-shrink-0 w-72 lg:w-80 snap-start"
               >
                 <div className="relative">
                   <img
@@ -70,19 +49,19 @@ export default function Example() {
                   />
                   <span>
                     <div className="absolute bg-white p-2 bottom-4 left-1 text-sm font-medium text-gray-400">
-                      ${product.price}
+                      {formatCurrency(product.price)}
                     </div>
                   </span>
                 </div>
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <h3 className="text-md font-semibold text-black">
                     {product.title}
                   </h3>
-                </div>
+                </div> */}
               </div>
             ))
           ) : (
-            <p className="text-gray-400">No trending products</p>
+            <p className="text-gray-400">Loading ...</p>
           )}
         </div>
 

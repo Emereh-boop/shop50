@@ -1,79 +1,74 @@
-// trending page
-import React, { useContext, useState } from "react";
+import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+
+import ShopContext from "../context/cart/shop-context";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import Product from "../components/product";
-import ShopContext from "../context/cart/shop-context";
 import { ChevronCompactLeft, ChevronCompactRight } from "react-bootstrap-icons";
 import Filter from "../components/Filter";
 
-export default function Trending() {
+const CollectionProducts = () => {
+  const { category } = useParams();
   const { products } = useContext(ShopContext);
-  // const [searchTerm, setSearchTerm] = useState("");
 
+  const [prods, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
-  const totalPages = Math.ceil(products.trending.length / productsPerPage);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  useEffect(() => {
+    if (products?.products?.length > 0) {
+      // Filter products based on category
+      const selectedProducts = products.products.filter(
+        (product) => product.category === category
+      );
+      setProducts(selectedProducts);
     }
-  };
+  }, [category, products]);
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const totalPages = Math.ceil(prods.length / productsPerPage);
 
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     // Filtering locally stored products for faster results
-  //     const filtered = products.filter((product) =>
-  //       product.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     setFilter(filtered);
-  //   } else {
-  //     setFilter(products); // Show all products if searchTerm is empty
-  //   }
-  // }, [searchTerm, products]);
+  const handlePageChange = (page) => setCurrentPage(page);
+  const handleNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePreviousPage = () =>
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+
+  // Slice products based on pagination
+  const paginatedProducts = prods.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
 
   return (
     <div className="relative flex flex-col gap-10">
       <Navbar />
 
-      <div
-        className="bg-white mb-6 mt-6"
-        tabIndex={0} // Makes the div focusable
-      >
+      <div className="bg-white mb-6 mt-6">
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">
-          MOST WANTED
+          {category.toUpperCase()}
         </h2>
         <div className="mx-auto max-w-[100rem]">
           <Filter />
           <div className="relative group mx-auto">
             <div className=" grid lg:grid-cols-4 lg:gap-8 md:grid-cols-3 grid-cols-2">
-              {products.trending.length > 0 ? (
-                products.trending.map((p) => (
+              {paginatedProducts.length > 0 ? (
+                paginatedProducts.map((p) => (
                   <Product
-                    className="w-60 lg:w-[30rem] "
+                    className="w-60 lg:w-[30rem]"
                     key={p.id}
                     product={p}
                   />
                 ))
               ) : (
                 <p className="text-gray-400 p-6">
-                  fetching trending products ...
+                  No products found in this category.
                 </p>
               )}
             </div>
           </div>
         </div>
+
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -86,7 +81,7 @@ export default function Trending() {
       <Footer />
     </div>
   );
-}
+};
 
 function Pagination({
   currentPage,
@@ -95,24 +90,12 @@ function Pagination({
   handleNextPage,
   handlePreviousPage,
 }) {
-  const { products } = useContext(ShopContext);
-
-  const productsPerPage = 20; // Keep this consistent with the parent component
-
-  const startProduct = (currentPage - 1) * productsPerPage;
-  const endProduct = Math.min(
-    currentPage * productsPerPage,
-    products.trending.length
-  );
-
   return (
     <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6">
       <div className="flex flex-1 items-center justify-between">
-        <p className=" lg:block text-sm text-gray-600">
-          Showing <span className="font-semibold">{startProduct}</span> to{" "}
-          <span className="font-semibold">{endProduct}</span> of{" "}
-          <span className="font-semibold">{products.trending.length}</span>{" "}
-          results
+        <p className="lg:block text-sm text-gray-600">
+          Page <span className="font-semibold">{currentPage}</span> of{" "}
+          <span className="font-semibold">{totalPages}</span>
         </p>
         <nav
           className="isolate inline-flex -space-x-px rounded-md shadow-sm"
@@ -131,9 +114,7 @@ function Pagination({
               key={page}
               onClick={() => handlePageChange(page)}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-medium hover:bg-gray-100 focus:z-20 ${
-                page === currentPage
-                  ? "bg-zinc-600 text-white"
-                  : "text-gray-900"
+                page === currentPage ? "bg-black text-white" : "text-gray-900"
               }`}
             >
               {page}
@@ -152,3 +133,5 @@ function Pagination({
     </div>
   );
 }
+
+export default CollectionProducts;

@@ -1,67 +1,112 @@
-import React, { useContext, useState, useEffect } from "react";
-import ShopContext from "../context/cart/shop-context";
-import { FilterSquare, Search } from "react-bootstrap-icons";
+import React, { useState } from "react";
+import { Check, FilterCircleFill, SortAlphaDown } from "react-bootstrap-icons";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export default function Filter() {
-  const { products } = useContext(ShopContext);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState([]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      // Filtering locally stored products for faster results
-      const filtered = products.filter((product) =>
-        product.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilter(filtered);
-    } else {
-      setFilter(products); // Show all products if searchTerm is empty
+  const [sortBy, setSortBy] = useState(false);
+  const [order, setOrder] = useState("asc");
+  // const [sortDirection, setSortDirection] = useState("");
+  // const [sortType, setSortType] = useState("");
+  const sortOptions = ["price", "date", "colors"];
+  const filt = filter.reduce((acc, item) => {
+    // Avoid duplicate entries
+    if (!acc.includes(item)) {
+      acc.push(item);
     }
-  }, [searchTerm, products]);
+    return acc;
+  }, []);
+
+  // useEffect(() => {
+  //   if (searchTerm) {
+  //     // Filtering locally stored products for faster results
+  //     const filtered = products.filter((product) =>
+  //       product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //     setFilter(filtered);
+  //   } else {
+  //     setFilter(products); // Show all products if searchTerm is empty
+  //   }
+  // }, [searchTerm, products]);
+
   return (
-    <div className="hidden space-y-6 p-5 lg:block lg:w-1/5 shadow-md">
-      <div className="flex justify-between items-center">
-        <p className="font-bold text-lg flex items-center gap-2 ">
-          <FilterSquare className="text-gray-400 h-9 w-9" /> Filters
-        </p>
-        <p className="text-sm text-gray-900">Load</p>
-      </div>
-      <div>
-        <div className="relative hidden lg:block">
-          <div className="flex items-center rounded-sm ring-[0.5px] ring-gray-900 px-3 py-1.5">
-            <Search className="w-5 h-4 " />
-            <input
-              className="bg-transparent border-0  text-gray-700 placeholder-gray-400 focus:ring-0 focus:outline-none pl-2"
-              type="search"
-              name="search"
-              value={searchTerm}
-              placeholder="Filter collection"
-              onInput={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          {searchTerm && (
-            <div className="absolute z-10 w-full bg-white mt-1 rounded-md shadow-lg">
-              <ul className="py-1">
-                {filter.length > 0 ? (
-                  filter.map((l, index) => (
-                    <li
-                      key={index}
-                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                    >
-                      {l.title}
-                    </li>
-                  ))
-                ) : (
-                  <li className="px-4 py-2 text-sm text-gray-700">
-                    No results found
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
+    <div className="flex max-w-[100rem] items-center justify-between mx-auto">
+      <div className="flex items-center gap-4 w-1/2 h-20">
+        <div className="ring gap-1 px-2 ring-zinc-600 flex items-center rounded-sm py-1 text-white bg-zinc-600">
+          <FilterCircleFill className="w-4 h-4 text-white" /> Filters
+        </div>
+        <div className="flex gap-2 overflow-x-auto p-2 scroll-smooth scrollbar-hide snap-x snap-mandatory ">
+          {filter &&
+            filt.map((p, index) => {
+              return (
+                <div
+                  key={index + p}
+                  className="ring-1 gap-1 px-2 ring-zinc-700 flex items-center rounded-sm py-1 text-primary"
+                >
+                  {p}{" "}
+                  <XMarkIcon
+                    onClick={() =>
+                      setFilter((prev) => prev.filter((item) => item !== p))
+                    }
+                    className="w-4 h-4 text-blue-400 "
+                  />
+                </div>
+              );
+            })}
         </div>
       </div>
-      {/* <div>list of filter</div> */}
+      <div className="relative">
+        <div
+          onClick={() => setSortBy((p) => !p)}
+          className="ring-2 flex gap-1 cursor-pointer items-center ring-zinc-800 px-2 py-1 rounded-sm "
+        >
+          <SortAlphaDown className="h-5 w-5 text-zinc-800" /> Sort by
+        </div>
+        {sortBy && (
+          <div className="z-30  top-9 left-0 py-1 absolute w-40 shadow-md rounded-sm bg-secondary ">
+            <div>
+              {sortOptions.map((s, index) => (
+                <li
+                  key={s + index}
+                  onClick={() => setFilter((p) => [...p, s])}
+                  className="hover:bg-neutral-100 px-2 py-1   justify-between items-center flex"
+                >
+                  {s}
+                </li>
+              ))}
+            </div>
+            <hr className="m-2 border-neutral-400"></hr>
+            <div className="flex flex-col cursor-pointer">
+              <div
+                className="flex items-center pl-2 gap-2 "
+                onClick={() => setOrder("asc")}
+              >
+                <div className="w-5 h-5">
+                  <Check
+                    className={`${
+                      order === "asc" ? "block w-6 h-5" : "hidden "
+                    }`}
+                  />
+                </div>
+                <p>Ascending</p>
+              </div>
+              <div
+                className=" flex items-center p-2 gap-2"
+                onClick={() => setOrder("desc")}
+              >
+                <div className="w-5 h-5">
+                  <Check
+                    className={`${
+                      order === "desc" ? "block w-6 h-5" : "hidden "
+                    }`}
+                  />
+                </div>
+                <p>Descending</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -5,11 +5,14 @@ import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Cart from "./pages/cart";
 import Register from "./components/Register";
 import Products from "./pages/product";
+import CollectionProducts from "./pages/CollectionProducts";
+import Collections from "./pages/collections";
 import NewArrivals from "./pages/new";
 import Login from "./components/Login";
 import UploadData from "./pages/admin/upload";
 import Navbar from "./components/Navbar";
 import CheckoutPage from "./pages/Checkout";
+import ResetPass from "./pages/reset-pass";
 import ShopContext from "./context/cart/shop-context";
 import Trending from "./pages/trend";
 function App() {
@@ -25,11 +28,14 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ResetPass />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/new" element={<NewArrivals />} />
           <Route path="/trend" element={<Trending />} />
           <Route path="/product/:id" element={<Products />} />
+          <Route path="/products/:category" element={<CollectionProducts />} />
+          <Route path="/collections" element={<Collections />} />
           {/* <RequireAuth> */}
           <Route path="/upload" element={<UploadData />} />{" "}
           {/* </RequireAuth> */}

@@ -6,77 +6,89 @@ import {
   uploadBytesResumable,
   deleteObject,
 } from "firebase/storage";
-import {
-  collection,
-  doc,
-  serverTimestamp,
-  writeBatch,
-} from "firebase/firestore";
+import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
 import ShopContext from "../../context/cart/shop-context";
-import { FolderFill, TrashFill, XCircleFill } from "react-bootstrap-icons";
+import { Plus, TrashFill } from "react-bootstrap-icons";
 import Navbar from "../../components/Navbar";
-import Footer from "../../components/footer";
 
 const collectionsConfig = {
-  banners: ["title", "subtitle", "image", "category"],
+  banners: ["title", "href", "brand", "subtitle", "image", "category"],
   products: [
     "title",
+    "longDescription",
+    "features",
+    "specifics",
+    "review",
+    "shortDescription",
+    "brand",
+    "price",
+    "weight",
+    "quantity",
+    "sizes",
+    "category",
+    "colors",
+    "url",
+    "ad",
+    "coupon",
+    "image",
+    "additionalImage",
+    "instock",
+    "onsale",
+    "profile",
+    "time",
+  ],
+  newArrivals: [
+    "title",
+    "category",
     "description",
+    "onsale",
+    "colors",
     "price",
     "image",
+  ],
+  trending: [
+    "title",
+    "description",
     "category",
-    "brand",
-    "quantity",
-    "discount",
+    "onsale",
     "colors",
-    "sizes",
-    "inStock",
-    "weight",
-    "href",
+    "price",
+    "image",
   ],
-  newArrivals: ["title", "description", "price", "image"],
-  trending: ["title", "description", "price", "image"],
-  collections: ["title", "category", "description", "image"],
-  users: ["name", "email", "profileImage"],
-  orders: [
-    "orderNumber",
-    "orderDate",
-    "paymentStatus",
-    "products",
-    "totalAmount",
-  ],
+  collections: ["title", "brand", "category", "description", "image"],
 };
 
 export default function UploadData() {
-  const [selectedCollection, setSelectedCollection] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState("products");
   const [fields, setFields] = useState([]);
   const [formData, setFormData] = useState({
     file: null,
     title: "",
     subtitle: "",
-    description: "",
-    price: 0,
-    quantity: 0,
-    discount: 0,
-    colors: "",
-    href: "",
-    weight: 0,
-    sizes: "",
-    inStock: "",
-    imageUrl: "",
-    category: "",
+    longDescription: "",
+    features: [],
+    specifics: [],
+    review: { reviewdate: "", reviewrating: 0, review: "" },
+    shortDescription: "",
     brand: "",
-    name: "",
-    email: "",
-    profileImage: "",
-    orderNumber: "",
-    orderDate: "",
-    paymentStatus: "",
-    products: "",
-    totalAmount: 0,
+    price: 0,
+    weight: 0,
+    quantity: 0,
+    sizes: [],
+    category: "",
+    colors: [],
+    url: "",
+    ad: [],
+    coupon: [],
+    imageUrl: "",
+    additionalImage: [],
+    instock: false,
+    onsale: false,
+    profile: { image: "", name: "", email: "" },
+    time: serverTimestamp(),
   });
   const [uploading, setUploading] = useState(false);
-  const [uploadTask, setUploadTask] = useState(null); // Store the upload task to cancel
+  const [uploadTask, setUploadTask] = useState(null);
   const { currentUser } = useContext(ShopContext);
 
   useEffect(() => {
@@ -86,22 +98,17 @@ export default function UploadData() {
   }, [selectedCollection]);
 
   const handleChange = (e) => {
-    const { id, files, value } = e.target;
+    const { id, files, value, checked } = e.target;
 
     if (id === "file") {
       if (files && files.length > 0) {
-        setFormData((prev) => ({
-          ...prev,
-          file: files[0],
-          imageUrl: "", // Reset the imageUrl when a new file is selected
-        }));
-        handleUpload(files[0]); // Immediately handle the upload of the selected file
+        setFormData((prev) => ({ ...prev, file: files[0], imageUrl: "" }));
+        handleUpload(files[0]);
       }
+    } else if (id === "instock" || id === "onsale") {
+      setFormData((prev) => ({ ...prev, [id]: checked }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [id]: value,
-      }));
+      setFormData((prev) => ({ ...prev, [id]: value }));
     }
   };
 
@@ -112,13 +119,11 @@ export default function UploadData() {
     const storageRef = ref(storage, `${selectedCollection}/${file.name}`);
 
     const task = uploadBytesResumable(storageRef, file);
-    setUploadTask(task); // Store the upload task
+    setUploadTask(task);
 
     task.on(
       "state_changed",
-      (snapshot) => {
-        // Progress handling if needed
-      },
+      (snapshot) => {},
       (error) => {
         console.error("Upload failed:", error);
         setUploading(false);
@@ -127,14 +132,14 @@ export default function UploadData() {
         const downloadURL = await getDownloadURL(task.snapshot.ref);
         setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
         setUploading(false);
-        setUploadTask(null); // Reset the task after upload completes
+        setUploadTask(null);
       }
     );
   };
 
   const handleCancelUpload = () => {
     if (uploadTask) {
-      uploadTask.cancel(); // Cancel the upload task
+      uploadTask.cancel();
       setUploading(false);
       setUploadTask(null);
       alert("Upload canceled.");
@@ -165,15 +170,9 @@ export default function UploadData() {
       return alert("Please select a collection.");
     }
 
-    if (fields.some((field) => !dataToSave[field])) {
-      return alert(
-        "Please complete all required fields and wait for the image upload to finish!"
-      );
-    }
-
     try {
       const batch = writeBatch(db);
-      const documentId = `${currentUser?.uid || "PIQmarket"}-${
+      const documentId = `${currentUser?.uid || "YNT"}-${
         formData.title || formData.orderNumber
       }`;
 
@@ -184,7 +183,7 @@ export default function UploadData() {
         timeStamp: serverTimestamp(),
       });
 
-      await batch.commit(); // Commit the batch write
+      await batch.commit();
       window.location.reload();
     } catch (err) {
       console.error("Error adding document: ", err);
@@ -192,121 +191,291 @@ export default function UploadData() {
     }
   };
 
+  const handleAdditionalImageUpload = async (file, index) => {
+    if (!file) return;
+    setUploading(true);
+
+    const storageRef = ref(
+      storage,
+      `${selectedCollection}/additionalImages/${file.name}`
+    );
+    const task = uploadBytesResumable(storageRef, file);
+
+    task.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        console.error("Error uploading additional image:", error);
+        setUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(task.snapshot.ref);
+        setFormData((prev) => {
+          const newAdditionalImages = [...prev.additionalImage];
+          newAdditionalImages[index] = downloadURL;
+          return { ...prev, additionalImage: newAdditionalImages };
+        });
+        setUploading(false);
+      }
+    );
+  };
+  // Handlers for dynamic arrays
+  const handleAddToArray = (arrayName, value) => {
+    if (value.trim() !== "") {
+      setFormData((prev) => ({
+        ...prev,
+        [arrayName]: [...prev[arrayName], value],
+      }));
+    }
+  };
+
+  const handleAddToColorArray = (arrayName, colorData) => {
+    if (colorData.color.trim() !== "" && colorData.code.trim() !== "") {
+      setFormData((prev) => ({
+        ...prev,
+        [arrayName]: [...prev[arrayName], colorData],
+      }));
+    }
+  };
+  const handleRemoveFromArray = (arrayName, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [arrayName]: prev[arrayName].filter((_, i) => i !== index),
+    }));
+  };
+
   return (
     <>
       <Navbar />
-      <div className="container mx-auto p-6">
-        <div className="bg-white shadow-lg rounded-lg p-8">
-          <h2 className="text-2xl font-semibold mb-6">Upload Data</h2>
+      <div className="container mx-auto p-6 flex md:grid md:grid-cols-4 ">
+        <div className="md:col-span-1 bg-gray-200 p-4">
+          <h2 className="text-xl">Collections</h2>
+          <ul>
+            {Object.keys(collectionsConfig).map((collection) => (
+              <li
+                key={collection}
+                className="py-2 px-4 cursor-pointer hover:bg-gray-300"
+                onClick={() => setSelectedCollection(collection)}
+              >
+                {collection}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="collection"
-              className="block text-lg font-medium text-gray-700 mb-2"
-            >
-              Select Collection
-            </label>
-            <select
-              id="collection"
-              value={selectedCollection}
-              onChange={(e) => setSelectedCollection(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary"
-            >
-              <option value="">Select Collection</option>
-              {Object.keys(collectionsConfig).map((collection) => (
-                <option key={collection} value={collection}>
-                  {collection}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="md:col-span-full md:col-start-2 p-6 bg-white shadow-sm rounded-sm">
+          <h2 className="text-2xl my-4">Upload Data</h2>
 
-          {selectedCollection && (
-            <div className="flex flex-col md:flex-row md:items-center mb-6">
+          <form onSubmit={handleAdd} className="space-y-2">
+            {fields.map((field) => {
+              // Check for fields that should be hidden or need specific rendering
+              if (
+                field === "profile" ||
+                field === "review" ||
+                field === "time" ||
+                field === "additionalImage" ||
+                field === "image" ||
+                field === "colors" ||
+                field === "sizes" ||
+                field === "features" ||
+                field === "specifics"
+              ) {
+                return null; // Skip rendering for these fields
+              }
+
+              // Render input field for the rest of the fields
+              return (
+                <div key={field} className="flex flex-col items-start">
+                  <label htmlFor={field} className="text-lg text-neutral-700">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    type={
+                      field === "price" ||
+                      field === "weight" ||
+                      field === "quantity"
+                        ? "number"
+                        : field === "instock" || field === "onsale"
+                        ? "checkbox"
+                        : field === "url"
+                        ? "url"
+                        : "text"
+                    }
+                    id={field}
+                    value={
+                      field === "review"
+                        ? `${formData.review?.review}` // Convert review object to a string
+                        : field === "colors"
+                        ? `${formData.colors?.color}` // Display color code and name
+                        : formData[field] || ""
+                    }
+                    onChange={handleChange}
+                    className={`block border-gray-400 rounded-sm  focus:outline-primary/30 p-2 ${
+                      field === "instock" || field === "onsale"
+                        ? "w-5 ring-0"
+                        : field === "price" ||
+                          field === "quantity" ||
+                          field === "weight"
+                        ? "w-16 ring-1 ring-neutral-400"
+                        : "w-full ring-1 ring-neutral-400"
+                    } `}
+                  />
+                </div>
+              );
+            })}
+
+            {/* Dynamic Array Handling for Features, Specifics, and Sizes */}
+            {selectedCollection === "products" && (
+              <>
+                {["features", "specifics", "sizes"].map((arrayName) => (
+                  <div key={arrayName} className="mt-4">
+                    <h3 className="text-lg">
+                      {arrayName.charAt(0).toUpperCase() + arrayName.slice(1)}
+                    </h3>
+                    <input
+                      type="text"
+                      placeholder={`Add ${arrayName.slice(0, -1)}`}
+                      onBlur={(e) =>
+                        handleAddToArray(arrayName, e.target.value)
+                      }
+                      className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full"
+                    />
+
+                    <div>
+                      {formData[arrayName].map((item, index) => (
+                        <div key={index} className="flex justify-between">
+                          <span>{item}</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleRemoveFromArray(arrayName, index)
+                            }
+                            className="text-red-600"
+                          >
+                            <TrashFill />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Colors */}
+                <div className="mt-4">
+                  <h3 className="text-lg">Colors</h3>
+                  <input
+                    type="text"
+                    placeholder="Color name"
+                    onBlur={(e) =>
+                      handleAddToColorArray("colors", {
+                        color: e.target.value,
+                        code: "",
+                      })
+                    }
+                    className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Color code (e.g., #FF0000)"
+                    onBlur={(e) =>
+                      handleAddToColorArray("colors", {
+                        color: "",
+                        code: e.target.value,
+                      })
+                    }
+                    className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full mt-2"
+                  />
+
+                  <div>
+                    {formData.colors.map((color, index) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{color.color || color.code}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFromArray("colors", index)}
+                          className="text-red-600"
+                        >
+                          <TrashFill />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Main image upload */}
+            <div>
               {formData.imageUrl && (
-                <div className="md:w-1/2 mb-4 md:mb-0">
+                <div>
                   <img
                     src={formData.imageUrl}
                     alt="Selected File"
-                    className="w-full h-64 object-cover rounded-md border border-gray-200"
+                    className="w-full h-64 object-cover rounded-sm border border-gray-200"
                   />
                   <button
                     onClick={handleDeleteFile}
-                    className="mt-4 bg-red-600 text-white font-medium py-2 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="mt-4 bg-red-600 text-white font-medium py-2 rounded-sm shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
                     <TrashFill className="inline-block mr-2" />
                     Delete File
                   </button>
                 </div>
               )}
-              {fields.includes("image") && (
-                <div className="md:w-1/2">
-                  <label
-                    htmlFor="file"
-                    className="block text-lg font-medium text-gray-700 mb-2"
-                  >
-                    Click to add image:{" "}
-                    <FolderFill className="inline-block text-primary" />
-                    <span className="ml-2 text-gray-500">
-                      {formData.file && formData.file.name}
-                    </span>
-                  </label>
-                  <input
-                    type="file"
-                    id="file"
-                    onChange={(e) => {
-                      handleChange(e);
-                      handleUpload();
-                    }}
-                    className="hidden"
-                  />
-                  {uploading && (
-                    <button
-                      onClick={handleCancelUpload}
-                      className="mt-4 bg-red-600 text-white font-medium py-2 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      <XCircleFill className="inline-block mr-2" />
-                      Cancel Upload
-                    </button>
-                  )}
+              <label htmlFor="file" className="cursor-pointer mt-4">
+                <p>Upload image</p>
+                <div className="flex items-center mt-2 hover:bg-primary/45 hover:border-none hover:text-white border p-2 w-12 h-12 border-gray-400 text-gray-400 text-4xl">
+                  <Plus />
                 </div>
-              )}
+              </label>
+              <input
+                type="file"
+                id="file"
+                onChange={(e) => handleChange(e)}
+                className="hidden"
+              />
             </div>
-          )}
 
-          <form onSubmit={handleAdd} className="space-y-4">
-            {fields.map((field) => (
-              <div key={field} className="flex flex-col">
-                <label
-                  htmlFor={field}
-                  className="text-lg font-medium text-gray-700 mb-1"
-                >
-                  {field.charAt(0).toUpperCase() + field.slice(1)}
-                </label>
-                <input
-                  type={
-                    field === "price" ||
-                    field === "weight" ||
-                    field === "quantity" ||
-                    field === "totalAmount"
-                      ? "number"
-                      : field === "orderDate"
-                      ? "date"
-                      : field === "href"
-                      ? "url"
-                      : "text"
-                  }
-                  id={field}
-                  value={formData[field] || ""}
-                  onChange={handleChange}
-                  className="block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary p-2"
-                  required
-                />
+            {/* Additional Images */}
+            {selectedCollection === "products" && (
+              <div className="flex flex-col space-x-4 mt-6">
+                <div>Add images</div>
+                <div className="flex gap-2">
+                  {[...Array(4)].map((_, idx) => (
+                    <div key={idx} className="flex flex-col items-center">
+                      <label
+                        htmlFor={`addfile-${idx}`}
+                        className="cursor-pointer mt-4 text-4xl hover:bg-primary/20 hover:border-primary/20 hover:text-white text-zinc-400 border border-zinc-400 p-2 rounded-sm"
+                      >
+                        <Plus />
+                      </label>
+                      <input
+                        type="file"
+                        id={`addfile-${idx}`}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            handleAdditionalImageUpload(file, idx); // Upload the image
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      {formData.additionalImage[idx] && (
+                        <img
+                          src={formData.additionalImage[idx]}
+                          alt={`additional ${idx + 1}`}
+                          className="w-16 h-16 object-cover mt-2"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+
             <button
               type="submit"
-              className="w-full bg-primary text-white font-medium py-2 rounded-md shadow-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-primary text-white font-medium py-2 rounded-sm shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
               disabled={uploading}
             >
               {uploading ? "Uploading..." : "Upload"}
@@ -314,7 +483,6 @@ export default function UploadData() {
           </form>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

@@ -4,22 +4,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import Product from "../components/product";
 import ShopContext from "../context/cart/shop-context";
-import {
-  ChevronCompactLeft,
-  ChevronCompactRight,
-  FilterCircleFill,
-  PlusCircleFill,
-  SortAlphaDown,
-} from "react-bootstrap-icons";
+import { ChevronCompactLeft, ChevronCompactRight } from "react-bootstrap-icons";
 import Filter from "../components/Filter";
 
 export default function NewArrivals() {
   const { products } = useContext(ShopContext);
   // const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const totalPages = Math.ceil(products.newArrivals.length / productsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -37,18 +30,6 @@ export default function NewArrivals() {
     }
   };
 
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     // Filtering locally stored products for faster results
-  //     const filtered = products.filter((product) =>
-  //       product.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     setFilter(filtered);
-  //   } else {
-  //     setFilter(products); // Show all products if searchTerm is empty
-  //   }
-  // }, [searchTerm, products]);
-
   return (
     <div className="relative flex flex-col gap-10">
       <Navbar />
@@ -60,33 +41,22 @@ export default function NewArrivals() {
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">
           NEW<i>est</i> ARRIVALS
         </h2>
-        <div>
-          <div className="flex px-5 mb-6 items-end justify-end">
-            {/* <div className="ring gap-1 px-2 ring-zinc-800 flex items-center rounded-md py-1 text-white bg-zinc-800">
-              <FilterCircleFill className="w-4 h-4 text-white" /> Filters{" "}
-              {filter}
-            </div> */}
-            <div className="ring-[2px] flex gap-1 items-center ring-zinc-800 px-2 py-1 rounded-sm ">
-              <SortAlphaDown className="h-5 w-5 text-zinc-800" /> Sort by
+        <div className="mx-auto max-w-[100rem]">
+          <Filter />
+          <div className="relative group mx-auto">
+            <div className=" grid lg:grid-cols-4 lg:gap-8 md:grid-cols-3 grid-cols-2">
+              {products.newArrivals.length > 0 ? (
+                products.newArrivals.map((p) => (
+                  <Product
+                    className="w-60 lg:w-[30rem] "
+                    key={p.id}
+                    product={p}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-400 p-6">fetching new arrivals ...</p>
+              )}
             </div>
-          </div>
-          <div className="flex">
-            <Filter />
-            <div className="relative group mx-auto">
-              <div className=" lg:gap-4 grid lg:grid-cols-4 gap-2 md:grid-cols-3 grid-cols-2">
-                {products.length > 0 ? (
-                  products.map((p) => (
-                    <Product
-                      className="w-60 lg:w-[30rem] "
-                      key={p.id}
-                      product={p}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-400 p-6">No new arrivals</p>
-                )}
-              </div>
-            </div>{" "}
           </div>
         </div>
         <Pagination
@@ -115,7 +85,10 @@ function Pagination({
   const productsPerPage = 20; // Keep this consistent with the parent component
 
   const startProduct = (currentPage - 1) * productsPerPage;
-  const endProduct = Math.min(currentPage * productsPerPage, products.length);
+  const endProduct = Math.min(
+    currentPage * productsPerPage,
+    products.newArrivals.length
+  );
 
   return (
     <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6">
@@ -123,7 +96,8 @@ function Pagination({
         <p className=" lg:block text-sm text-gray-600">
           Showing <span className="font-semibold">{startProduct}</span> to{" "}
           <span className="font-semibold">{endProduct}</span> of{" "}
-          <span className="font-semibold">{products.length}</span> results
+          <span className="font-semibold">{products.newArrivals.length}</span>{" "}
+          results
         </p>
         <nav
           className="isolate inline-flex -space-x-px rounded-md shadow-sm"
@@ -142,7 +116,9 @@ function Pagination({
               key={page}
               onClick={() => handlePageChange(page)}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-medium hover:bg-gray-100 focus:z-20 ${
-                page === currentPage ? "bg-black text-white" : "text-gray-900"
+                page === currentPage
+                  ? "bg-zinc-600 text-white"
+                  : "text-gray-900"
               }`}
             >
               {page}

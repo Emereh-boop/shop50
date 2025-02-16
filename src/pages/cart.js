@@ -9,8 +9,12 @@ import { Timestamp } from "firebase/firestore";
 export default function Cart() {
   const [open, setOpen] = useState(true);
   const [subTotal, setSubTotal] = useState(0); // Initialize subTotal to 0
-  const { memoizedCartItems = [], removeItem } = useContext(ShopContext); // Default cartItem to an empty array
-  const [qty, setQty] = useState(1);
+  const {
+    formatCurrency,
+    memoizedCartItems = [],
+    removeItem,
+  } = useContext(ShopContext); // Default cartItem to an empty array
+  // const [qty, setQty] = useState(1);
   const cart = memoizedCartItems.reduce(
     (acc, item) => {
       // Check if the item id has already been added to the cart
@@ -30,10 +34,10 @@ export default function Cart() {
   ).cart;
 
   const plusQty = () => {
-    return setQty((p) => p + 1);
+    // return setQty((p) => p + 1);
   };
   const minusQty = () => {
-    return setQty((p) => p - 1);
+    // return setQty((p) => p - 1);
   };
 
   useEffect(() => {
@@ -42,14 +46,6 @@ export default function Cart() {
     }, 0);
     setSubTotal(total);
   }, [cart]);
-
-  const currencies = {
-    USD: { symbol: "$", rate: 1 },
-    Canada: { symbol: "$", rate: 0.9 },
-    UK: { symbol: "£", rate: 0.75 },
-    India: { symbol: "₹", rate: 75 },
-    NGN: { symbol: "₦", rate: 1554.39 },
-  };
 
   return (
     <>
@@ -79,7 +75,7 @@ export default function Cart() {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+                  <Dialog.Panel className="pointer-events-auto w-screen max-w-lg">
                     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                       <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                         <div className="flex items-start justify-between">
@@ -104,7 +100,7 @@ export default function Cart() {
 
                         <div className="mt-8">
                           <div className="flow-root">
-                            <ul className="-my-6 divide-y divide-gray-200">
+                            <ul className="-my-6 divide-y divide-gray-100">
                               {cart.length === 0 ? (
                                 <p>Your cart is empty</p>
                               ) : (
@@ -113,7 +109,7 @@ export default function Cart() {
                                     key={product.title + index + Timestamp}
                                     className="flex py-6"
                                   >
-                                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-100">
                                       <img
                                         src={product.imageUrl}
                                         alt={product.title}
@@ -130,8 +126,7 @@ export default function Cart() {
                                             </a>
                                           </h3>
                                           <p className="ml-4">
-                                            {currencies.NGN.symbol}{" "}
-                                            {product.price}
+                                            {formatCurrency(product.price)}
                                           </p>
                                         </div>
                                         <p className="mt-1 text-sm text-gray-500">
@@ -177,12 +172,10 @@ export default function Cart() {
                         </div>
                       </div>
 
-                      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                      <div className="border-t border-gray-100 px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Subtotal</p>
-                          <p>
-                            {currencies.NGN.symbol} {subTotal}
-                          </p>
+                          <p>{formatCurrency(subTotal)}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">
                           Shipping and taxes calculated at checkout.

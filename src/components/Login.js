@@ -1,112 +1,148 @@
 import React, { useState } from "react";
-// import googleIcon from "../images/google.svg";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { Google } from "react-bootstrap-icons";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import Toast from "../components/toast"; // Import the Toast component
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
-  const login = async (e) => {
-    e.preventDefault();
+  const login = async () => {
+    setError(""); // Clear previous errors
+
     try {
+      // Sign in with email and password
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      navigate(-1); // Navigate to the previous page
+
+      // If login is successful, navigate to home page
+      navigate("/");
     } catch (error) {
-      setError("Invalid credentials");
+      // Handle different error cases
+      if (error.code === "auth/user-not-found") {
+        setError("No user found with this email.");
+      } else if (error.code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.");
+      } else if (error.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError("Error: " + error.message);
+      }
     }
   };
+
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      navigate("/");
+    } catch (error) {
+      setError("Error with Google login: " + error.message);
+    }
+  };
+
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            // src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company"
-          />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
-        <p>{error}</p>
-
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={(e) => login(e)} className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+    <div className="p-4 h-screen flex justify-center">
+      {error && <Toast message={error} clearMessage={() => setError("")} />}
+      <div className="self-start md:px-10 md:w-full">
+        <form className="flex justify-center">
+          <div className="flex flex-col w-full gap-5">
+            <div className="mx-auto w-full max-w-sm">
+              {/* <img
+                className="mx-auto h-10 w-auto"
+                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                alt="Your Company"
+              /> */}
+              <p className="font-black text-4xl text-pink-400 text-center">
+                YNT
+              </p>
+              <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+                Sign in to your account
+              </h2>
             </div>
+            <label htmlFor="email">Email/Username</label>
+            <input
+              className="ring-1 ring-primary rounded-sm p-2"
+              type="email"
+              required
+              id="email"
+              autoComplete="username"
+              placeholder="Enter your email"
+              onChange={(event) => {
+                setLoginEmail(event.target.value);
+              }}
+            />
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Password
-                </label>
-                <div className="text-sm">
-                  <a
-                    href="/forgotpassword"
-                    className="font-semibold text-neutral-600 hover:text-neutral-500"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div>
+            <label htmlFor="password">Password </label>
+            <div className="relative">
+              <input
+                className="ring-1 ring-primary rounded-sm p-2 w-full"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                required
+                placeholder="Enter your password"
+                onChange={(e) => {
+                  setLoginPassword(e.target.value);
+                }}
+              />
               <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-neutral-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-2 text-xs text-gray-400"
               >
-                Sign in
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-          </form>
 
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?{" "}
-            <a
-              href="/register"
-              className="font-semibold leading-6 text-neutral-600 hover:text-neutral-500"
+            <button
+              onClick={login}
+              className="rounded-sm ring-1 ring-primary bg-primary text-secondary p-2"
+              type="button"
             >
-              Register Now
-            </a>
-          </p>
-        </div>
+              Login
+            </button>
+            <p className="flex justify-center">Or</p>
+
+            <div className="ring-1 ring-primary rounded-sm p-2 items-center flex justify-center gap-1">
+              <Google />
+              <input
+                onClick={handleGoogleLogin}
+                className="ring-0 outline-none text-center cursor-pointer"
+                name="Google"
+                type="button"
+                value=" Google"
+              />
+            </div>
+            <div className="flex items-center flex-col gap-1">
+              <p className="flex justify-center gap-1">
+                Don't have an account?{" "}
+                <span
+                  onClick={() => navigate("/register")}
+                  className="text-blue-600 cursor-pointer"
+                >
+                  Register{" "}
+                </span>
+              </p>
+
+              <p className="flex justify-center gap-1">
+                Forgot your password?{" "}
+                <span
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-blue-600 cursor-pointer"
+                >
+                  Reset
+                </span>
+              </p>
+            </div>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

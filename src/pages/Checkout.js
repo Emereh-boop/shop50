@@ -25,14 +25,6 @@ const CheckoutPage = () => {
     },
   ];
 
-  const currencies = {
-    USD: { symbol: "$", rate: 1 },
-    Canada: { symbol: "$", rate: 0.9 },
-    UK: { symbol: "£", rate: 0.75 },
-    India: { symbol: "₹", rate: 75 },
-    NGN: { symbol: "₦", rate: 1554.39 },
-  };
-
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [tel, setTel] = useState("");
@@ -46,6 +38,7 @@ const CheckoutPage = () => {
   const {
     removeItem,
     clearCart,
+    formatCurrency,
     memoizedCartItems = [],
   } = useContext(ShopContext);
 
@@ -394,7 +387,7 @@ const CheckoutPage = () => {
               </button>
               <button
                 type="submit"
-                className="bg-black text-white px-6 py-3 rounded-lg focus:outline-none hover:bg-gray-800"
+                className="bg-black text-white px-6 py-3 rounded-sm focus:outline-none hover:bg-gray-800"
               >
                 Continue
               </button>
@@ -410,9 +403,7 @@ const CheckoutPage = () => {
           <div className="space-y-4">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-medium">
-                {currencies.NGN.symbol} {subt}
-              </span>
+              <span className="font-medium">{formatCurrency(subt)}</span>
             </div>
             <div className="flex justify-between">
               <span>Coupons</span>
@@ -428,14 +419,12 @@ const CheckoutPage = () => {
             </div>
             <div className="flex justify-between">
               <span>Shipping </span>
-              <span className="font-medium">
-                {currencies.NGN.symbol} {shipping}
-              </span>
+              <span className="font-medium">{formatCurrency(shipping)}</span>
             </div>
             <div className="flex justify-between">
               <span>Total</span>
               <span className="font-medium">
-                {currencies.NGN.symbol} {subt + shipping - coupon}
+                {formatCurrency(subt + shipping - coupon)}
               </span>
             </div>
           </div>

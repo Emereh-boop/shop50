@@ -3,10 +3,12 @@ import ShopContext from "./shop-context";
 import CartReducer from "./cart-reducer";
 import {
   ADD_TO_CART,
+  ADD_FILTER,
   REMOVE_ITEM,
-  // SHOW_HIDE_CART,
+  REMOVE_FILTER,
   CLEAR_CART,
-  SET_PRODUCTS,
+  CLEAR_FILTER,
+  SET_ALL_DATA,
   SET_USER,
 } from "../types";
 import { collection, getDocs, query } from "firebase/firestore";
@@ -15,51 +17,91 @@ import { useQuery } from "@tanstack/react-query";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 
 const CartState = ({ children }) => {
-  const productsFromStorage =
-    JSON.parse(localStorage.getItem("products")) || [];
+  const collectionFromStorage =
+    JSON.parse(localStorage.getItem("allCollections")) || [];
+  const filtersFromStorage = JSON.parse(localStorage.getItem("filters")) || [];
   const cartItemsFromStorage =
     JSON.parse(localStorage.getItem("cartItems")) || [];
 
   const initialState = {
     showCart: false,
-    products: productsFromStorage,
+    products: collectionFromStorage,
     cartItems: cartItemsFromStorage,
+    filters: filtersFromStorage,
     currentUser: null,
   };
 
   const [state, dispatch] = useReducer(CartReducer, initialState);
   const { error, isLoading } = useQuery({
-    queryKey: ["newArrivals"],
+    queryKey: ["allCollections"],
     queryFn: async () => {
-      const productsQuery = query(collection(db, "newArrivals"));
-      const data = await getDocs(productsQuery);
-      const products = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const productsQuery = query(collection(db, "products"));
+      const collectionsQuery = query(collection(db, "collections"));
+      const newArrivalsQuery = query(collection(db, "newArrivals"));
+      const trendingQuery = query(collection(db, "trending"));
+      const bannersQuery = query(collection(db, "banners"));
 
-      // Cache the fetched products in localStorage
-      localStorage.setItem("products", JSON.stringify(products));
+      // Fetch data in parallel
+      const [
+        productsData,
+        collectionsData,
+        newArrivalsData,
+        trendingData,
+        bannersData,
+      ] = await Promise.all([
+        getDocs(productsQuery),
+        getDocs(collectionsQuery),
+        getDocs(newArrivalsQuery),
+        getDocs(trendingQuery),
+        getDocs(bannersQuery),
+      ]);
 
-      dispatch({ type: SET_PRODUCTS, payload: products });
-      console.log("Fetched products:");
+      // Format documents
+      const formattedCollections = {
+        products: productsData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        collections: collectionsData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        banners: bannersData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        newArrivals: newArrivalsData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        trending: trendingData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+      };
+      // Store all data
+      localStorage.setItem(
+        "allCollections",
+        JSON.stringify(formattedCollections)
+      );
 
-      return products;
+      dispatch({ type: SET_ALL_DATA, payload: formattedCollections });
+
+      return formattedCollections;
     },
-    onSuccess: (products) => {
-      // Update the cart state with the fetched products
-      dispatch({ type: SET_PRODUCTS, payload: products });
-    },
-    onError: (error) => {
-      // Log any errors to the console for debugging
-      console.error("Error fetching products:", error);
-    },
-    staleTime: 200000, // Forces refetch on every query, disables stale data
-    cacheTime: 43200000, // Cache data for 12 hours
-    refetchInterval: 43200000, // Refetch products every 10 seconds
-    refetchOnWindowFocus: true, // Refetch when window gains focus
+
+    staleTime: 200000,
+    cacheTime: 43200000,
+    refetchInterval: 43200000,
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
   }, [state.cartItems]);
+  useEffect(() => {
+    localStorage.setItem("filters", JSON.stringify(state.filters));
+  }, [state.filters]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -71,11 +113,18 @@ const CartState = ({ children }) => {
   const addToCart = (item) => {
     dispatch({ type: ADD_TO_CART, payload: item });
   };
-
   const removeItem = (id) => {
     dispatch({ type: REMOVE_ITEM, payload: id });
   };
-
+  const addFilter = (item) => {
+    dispatch({ type: ADD_FILTER, payload: item });
+  };
+  const removeFilter = (item) => {
+    dispatch({ type: REMOVE_FILTER, payload: item });
+  };
+  const clearFilter = () => {
+    dispatch({ type: CLEAR_FILTER });
+  };
   const clearCart = () => {
     dispatch({ type: CLEAR_CART });
   };
@@ -84,6 +133,7 @@ const CartState = ({ children }) => {
     return price - (price * discount) / 100;
   };
   const memoizedCartItems = useMemo(() => state.cartItems, [state.cartItems]);
+  const memoizedFilter = useMemo(() => state.filters, [state.filters]);
 
   const logout = async () => {
     try {
@@ -92,6 +142,12 @@ const CartState = ({ children }) => {
     } catch (error) {
       return error;
     }
+  };
+  const formatCurrency = (amount, currency = "NGN") => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: currency,
+    }).format(amount);
   };
   if (isLoading) {
     return <div>Loading...</div>;
@@ -109,11 +165,16 @@ const CartState = ({ children }) => {
         cartItems: state.cartItems,
         currentUser: state.currentUser,
         memoizedCartItems,
+        memoizedFilter,
         addToCart,
+        addFilter,
         calculateDiscount,
         clearCart,
+        clearFilter,
         removeItem,
+        removeFilter,
         logout,
+        formatCurrency,
       }}
     >
       {children}

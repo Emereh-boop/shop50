@@ -1,4 +1,11 @@
-import { SHOW_HIDE_CART, CLEAR_CART, ADD_TO_CART, REMOVE_ITEM } from "../types";
+import {
+  ADD_FILTER,
+  REMOVE_FILTER,
+  CLEAR_CART,
+  CLEAR_FILTER,
+  ADD_TO_CART,
+  REMOVE_ITEM,
+} from "../types";
 
 const CartReducer = (state, action) => {
   switch (action.type) {
@@ -19,6 +26,22 @@ const CartReducer = (state, action) => {
         }),
       };
     }
+    case ADD_FILTER: {
+      return { ...state, filters: [...state.filters, action.payload] };
+    }
+    case REMOVE_FILTER: {
+      return {
+        ...state,
+        filters: state.filters.filter((item) => {
+          return item.item !== action.payload;
+        }),
+      };
+    }
+    case CLEAR_FILTER:
+      return {
+        ...state,
+        filters: [],
+      };
 
     default:
       return state;

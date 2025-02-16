@@ -1,34 +1,45 @@
 import React, { useContext, useEffect, useState, Fragment } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ShopContext from "../context/cart/shop-context";
 import { Cart4, PersonCircle, Search } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "./Logout";
-import Logo from "../images/logo-Nahtty.jpg";
+// import Logo from "../images/logo.jpg";
 import Cart from "../pages/cart";
 // import { collection, query, orderBy, where, getDocs } from "firebase/firestore";
 // import { db } from "../firebase"; // Make sure your Firebase config is properly imported
-
-const navigation = [
-  { name: "Shop", href: "/", current: true },
-  { name: "Most Wanted", href: "/trend", current: false },
-  { name: "Collections", href: "/collections", current: false },
-  { name: "New Arrivals", href: "/new", current: false },
-];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
+  const location = useLocation();
   const { cartItem, products = [] } = useContext(ShopContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState([]);
+  const [navigation, setNavigation] = useState([
+    { name: "Shop", href: "/", current: true },
+    { name: "Most Wanted", href: "/trend", current: false },
+    { name: "Collections", href: "/collections", current: false },
+    { name: "New Arrivals", href: "/new", current: false },
+  ]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setNavigation((prev) =>
+      prev.map((item) => ({
+        ...item,
+        current: item.href === location.pathname, // Mark current if the URL matches
+      }))
+    );
+  }, [location.pathname]);
 
   useEffect(() => {
     if (searchTerm) {
       // Filtering locally stored products for faster results
-      const filtered = products.filter((product) =>
+      const filtered = products.products.filter((product) =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilter(filtered);
@@ -56,12 +67,13 @@ export default function Navbar() {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0  items-center">
-                  <img
+                <div className="font-black text-pink-400 text-xl">
+                  {/* <img
                     className=" w-40 h-5 object-contain"
                     src={Logo}
                     alt="nahtty"
-                  />
+                  /> */}
+                  YNT
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
@@ -86,7 +98,7 @@ export default function Navbar() {
               <div className="flex items-center justify-end space-x-4">
                 {/* Search Bar */}
                 <div className="relative hidden lg:block">
-                  <div className="flex items-center bg-neutral-100 rounded-full px-3 py-1.5">
+                  <div className="flex items-center bg-neutral-100 rounded-sm px-3 py-1.5">
                     <Search className="w-4 h-4 text-gray-400" />
                     <input
                       className="bg-transparent border-0 text-gray-700 placeholder-gray-400 focus:ring-0 focus:outline-none pl-2"
@@ -98,7 +110,7 @@ export default function Navbar() {
                     />
                   </div>
                   {searchTerm && (
-                    <div className="absolute z-10 w-full bg-white mt-1 rounded-md shadow-lg">
+                    <div className="absolute z-10 w-full bg-white mt-1 rounded-sm shadow-lg">
                       <ul className="py-1">
                         {filter.length > 0 ? (
                           filter.map((l, index) => (
@@ -125,7 +137,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setCart((p) => !p)}
-                  className="relative rounded-full p-1.5 text-gray-700 focus:outline-none"
+                  className="relative rounded-sm p-1.5 text-gray-700 focus:outline-none"
                 >
                   <Cart4 className="h-7 w-7" aria-hidden="true" />
                   {cartItem?.length > 0 && (
@@ -136,7 +148,7 @@ export default function Navbar() {
                 </button>
                 {/* Profile Dropdown */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center rounded-full p-1 text-gray-700 focus:outline-none">
+                  <Menu.Button className="flex items-center rounded-sm p-1 text-gray-700 focus:outline-none">
                     <PersonCircle className="h-7 w-7" />
                   </Menu.Button>
                   <Transition
@@ -148,7 +160,20 @@ export default function Navbar() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-sm bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={() => navigate("/")}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                            )}
+                          >
+                            Profile
+                          </div>
+                        )}
+                      </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
                           <a
@@ -175,6 +200,7 @@ export default function Navbar() {
                           </a>
                         )}
                       </Menu.Item>
+
                       <Menu.Item>
                         {({ active }) => (
                           <div
@@ -205,6 +231,7 @@ export default function Navbar() {
                   key={item.name}
                   as="a"
                   href={item.href}
+                  // onClick={() => handleClick(item.name)}
                   className={classNames(
                     item.current
                       ? "text-primary bg-zinc-200"
