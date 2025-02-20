@@ -17,12 +17,17 @@ import { useQuery } from "@tanstack/react-query";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 
 const CartState = ({ children }) => {
-  const collectionFromStorage =
-    JSON.parse(localStorage.getItem("allCollections")) || [];
-  const filtersFromStorage = JSON.parse(localStorage.getItem("filters")) || [];
-  const cartItemsFromStorage =
-    JSON.parse(localStorage.getItem("cartItems")) || [];
-
+  const getLocalStorage = (key, defaultValue) => {
+    try {
+      return JSON.parse(localStorage.getItem(key)) || defaultValue;
+    } catch (error) {
+      console.error(`Error parsing ${key}:`, error);
+      return defaultValue;
+    }
+  };
+  const collectionFromStorage = getLocalStorage("allCollections", []);
+  const filtersFromStorage = getLocalStorage("filters", []);
+  const cartItemsFromStorage = getLocalStorage("cartItems", []);
   const initialState = {
     showCart: false,
     products: collectionFromStorage,
@@ -140,9 +145,11 @@ const CartState = ({ children }) => {
       await signOut(auth);
       dispatch({ type: SET_USER, payload: null });
     } catch (error) {
-      return error;
+      console.error("Logout failed:", error.message);
+      alert("Logout failed! Try again.");
     }
   };
+
   const formatCurrency = (amount, currency = "NGN") => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",

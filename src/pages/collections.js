@@ -17,7 +17,7 @@ export default function Collections() {
           <div className="flex">
             <div className="relative group mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-0 grid-flow-row-dense">
-                {products.collections.length > 0 ? (
+                {products.collections?.length > 0 ? (
                   products.collections.map((p, index) => (
                     <div
                       key={p.id}

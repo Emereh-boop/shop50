@@ -57,7 +57,7 @@ export default function NewArrivals() {
           ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide snap-x snap-mandatory"
         >
-          {products.newArrivals.length > 0 ? (
+          {products.newArrivals?.length > 0 ? (
             products.newArrivals.map((p) => (
               <div
                 key={p.id}
@@ -76,7 +76,7 @@ export default function NewArrivals() {
             <p className="text-gray-400 p-6">Loading collection...</p>
           )}
         </div>
-        {products.newArrivals.length > 0 && (
+        {products.newArrivals?.length > 0 && (
           <a
             href="/new"
             className="absolute flex gap-2 lg:gap-4 items-center left-5 lg:left-10 bottom-5 lg:bottom-10 py-2 lg:py-3 border px-3 lg:px-6 rounded-sm  bg-white text-black hover:bg-gray-100 transition-colors text-center"

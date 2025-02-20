@@ -6,8 +6,8 @@ export default function Filter() {
   const [filter, setFilter] = useState([]);
   const [sortBy, setSortBy] = useState(false);
   const [order, setOrder] = useState("asc");
-  // const [sortDirection, setSortDirection] = useState("");
-  // const [sortType, setSortType] = useState("");
+  const [sortDirection, setSortDirection] = useState("");
+  const [sortType, setSortType] = useState("");
   const sortOptions = ["price", "date", "colors"];
   const filt = filter.reduce((acc, item) => {
     // Avoid duplicate entries
@@ -16,18 +16,6 @@ export default function Filter() {
     }
     return acc;
   }, []);
-
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     // Filtering locally stored products for faster results
-  //     const filtered = products.filter((product) =>
-  //       product.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     setFilter(filtered);
-  //   } else {
-  //     setFilter(products); // Show all products if searchTerm is empty
-  //   }
-  // }, [searchTerm, products]);
 
   return (
     <div className="flex max-w-[100rem] items-center justify-between mx-auto">
@@ -68,7 +56,7 @@ export default function Filter() {
               {sortOptions.map((s, index) => (
                 <li
                   key={s + index}
-                  onClick={() => setFilter((p) => [...p, s])}
+                  onClick={() => setSortType(s)}
                   className="hover:bg-neutral-100 px-2 py-1   justify-between items-center flex"
                 >
                   {s}
@@ -79,7 +67,7 @@ export default function Filter() {
             <div className="flex flex-col cursor-pointer">
               <div
                 className="flex items-center pl-2 gap-2 "
-                onClick={() => setOrder("asc")}
+                onClick={() => setSortDirection("asc")}
               >
                 <div className="w-5 h-5">
                   <Check
@@ -92,7 +80,7 @@ export default function Filter() {
               </div>
               <div
                 className=" flex items-center p-2 gap-2"
-                onClick={() => setOrder("desc")}
+                onClick={() => setSortDirection("desc")}
               >
                 <div className="w-5 h-5">
                   <Check

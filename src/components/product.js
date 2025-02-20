@@ -14,7 +14,6 @@ export default function Product(props) {
       <div className="relative">
         {props.product.onsale && (
           <div className="absolute z-50 left-4 top-4 bg-primary text-white text-sm px-2 py-1  shadow-lg transition-all duration-300 hover:bg-red-400">
-            {/* <Heart className="text-black" color="black" size={20} /> */}
             on sale
           </div>
         )}
@@ -43,14 +42,7 @@ export default function Product(props) {
         </div>
         <div className="justify-between items-center flex pb-2 px-2">
           <p className="py-1 gap-2 bg-white text-sm text-primary flex flex-col truncate">
-            <span> available colors {props.product.colors.length}</span>
-            {/* <p className="flex gap-2 ">
-              {props.product.colors?.map((c) => (
-                <div
-                  className={`p-2 ring-[1px] ring-${c} rounded-full bg-${c}`}
-                ></div>
-              ))}
-            </p> */}
+            <span> available colors {props.product.colors?.length}</span>
           </p>
           <button
             onClick={() => addToCart(props.product)}
@@ -59,35 +51,7 @@ export default function Product(props) {
           >
             <Cart4 className="h-6 w-6" />
           </button>
-          {/* <div>
-            {
-              props.product.discount > 0 && (
-                <span className="py-1 px-2 bg-white hover:bg-white/70  flex items-center text-gray-400 line-through">
-                  ${props.product.price}
-                </span>
-              )
-              ) : (
-                <span className="py-1 px-2 bg-white text-gray-400 hover:bg-white/70  flex items-center ">
-                  $
-                  {calculateDiscount(props.product.price, props.product.discount)}
-                </span>
-              )
-            }
-          </div> */}
         </div>
-        {/* <div className="flex items-center justify-between ml-1 mt-3">
-          <button
-            onClick={() => addToCart(props.product)}
-            type="button"
-            className="lg:py-2 p-2 lg:px-4 bg-primary text-white hover:bg-primary/70 transition-colors flex items-center justify-center"
-          >
-            <Cart4 className="h-6 w-6" />
-          </button>
-          <h3 className="text-md font-medium mb-1">{props.product.title}</h3>
-          <div className="flex items-center space-x-2">
-            <span className="text-lg  text-black"></span>
-          </div>
-        </div> */}
       </div>
     </div>
   );

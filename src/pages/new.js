@@ -1,18 +1,91 @@
-// new arrivals page
 import React, { useContext, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
-import Product from "../components/product";
+import Product from "../components/product.js";
+import Pagination from "../components/pagination.js";
 import ShopContext from "../context/cart/shop-context";
-import { ChevronCompactLeft, ChevronCompactRight } from "react-bootstrap-icons";
-import Filter from "../components/Filter";
+import { Check, FilterCircleFill, SortAlphaDown } from "react-bootstrap-icons";
 
 export default function NewArrivals() {
   const { products } = useContext(ShopContext);
-  // const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
-  const totalPages = Math.ceil(products.newArrivals.length / productsPerPage);
+
+  const [filter, setFilter] = useState([]);
+  const [sortBy, setSortBy] = useState(false);
+  const [filterToggle, setFilterToggle] = useState(false);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortType, setSortType] = useState("");
+  const [priceFilterToggle, setPriceFilterToggle] = useState(false);
+  const [categoryToggle, setCategoryToggle] = useState(false);
+  const [sizeToggle, setSizeToggle] = useState(false);
+
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+
+  const sortOptions = [
+    "price",
+    "date",
+    "rating",
+    "bestseller",
+    "brand",
+    "size",
+  ];
+  const filterOptions = [
+    "brand",
+    "category",
+    "size",
+    "color",
+    "price",
+    "instock",
+    "onsale",
+  ];
+
+  const filteredProducts = products?.newArrivals?.filter((product) => {
+    if (filter?.length === 0) return true; // No filter applied, show all
+
+    return filter.some((category) => {
+      if (category.startsWith("price_")) {
+        const range = category.split("_")[1]; // Get the price range part
+        const [min, max] = range.split("-").map(Number);
+        return product.price >= min && product.price <= max;
+      }
+
+      return product.category?.toLowerCase().includes(category.toLowerCase());
+    });
+  });
+
+  const totalPages = filteredProducts?.length
+    ? Math.ceil(filteredProducts.length / productsPerPage)
+    : 1; // Ensure the total pages are calculated dynamically
+
+  const toggleFilter = (category) => {
+    setFilter(
+      (prev) =>
+        prev.includes(category)
+          ? prev.filter((item) => item !== category) // Remove filter
+          : [...prev, category] // Add filter
+    );
+  };
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (!sortType) return 0; // No sorting applied
+
+    if (sortType === "price") {
+      return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
+    } else if (sortType === "date") {
+      return sortDirection === "asc"
+        ? new Date(a.timeStamp.date) - new Date(b.timeStamp.date)
+        : new Date(b.timeStamp.date) - new Date(a.timeStamp.date);
+    } else if (sortType === "rating") {
+      return sortDirection === "asc"
+        ? a.rating - b.rating
+        : b.rating - a.rating;
+    }
+  });
+
+  const handleSort = (type) => {
+    setSortType(type);
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -30,35 +103,228 @@ export default function NewArrivals() {
     }
   };
 
+  // Price range filter function
+  const handlePriceRangeFilter = (min, max) => {
+    setPriceRange([min, max]);
+
+    // Instead of adding a direct price filter, you may want to remove the previous one and add the new one.
+    setFilter((prev) => {
+      // Remove previous price filter first
+      const updatedFilter = prev.filter((item) => !item.startsWith("price_"));
+      // Then add the new one
+      return [...updatedFilter, `price_${min}-${max}`];
+    });
+  };
+
   return (
     <div className="relative flex flex-col gap-10">
       <Navbar />
-
-      <div
-        className="bg-white mb-6 mt-6"
-        tabIndex={0} // Makes the div focusable
-      >
+      <div className="bg-white mb-6 mt-6" tabIndex={0}>
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">
           NEW<i>est</i> ARRIVALS
         </h2>
         <div className="mx-auto max-w-[100rem]">
-          <Filter />
+          <div className="flex max-w-[100rem] items-center justify-between mx-auto">
+            <div className="flex items-center gap-4 w-1/2 h-20">
+              <div className="relative">
+                <div
+                  onClick={() => setFilterToggle((p) => !p)}
+                  className="ring gap-1 cursor-pointer items-center px-2 ring-neutral-600 flex rounded-sm py-1 text-white bg-zinc-600"
+                >
+                  <FilterCircleFill className="w-4 h-4 text-white" /> Filters
+                </div>
+                {filterToggle && (
+                  <div className="z-30 top-9 left-0 py-1 absolute w-60 shadow-md rounded-sm bg-secondary ">
+                    <div>
+                      {filterOptions
+                        .filter(
+                          (
+                            s // Filter out fields you don't want to render
+                          ) =>
+                            ![
+                              "size",
+                              "price",
+                              "category",
+                              "color",
+                              "brand",
+                            ].includes(s)
+                        )
+                        .map((s, index) => (
+                          <div
+                            key={s + index}
+                            onClick={() => toggleFilter(s)}
+                            className={`hover:bg-neutral-100 px-2 py-1 cursor-pointer ${
+                              filter.includes(s)
+                                ? "font-bold text-blue-500"
+                                : ""
+                            }`}
+                          >
+                            {s}
+                          </div>
+                        ))}
+                      <div className="">
+                        <div
+                          onClick={() => setPriceFilterToggle((p) => !p)}
+                          className="flex gap-1 cursor-pointer items-center px-2 py-1 rounded-sm "
+                        >
+                          Price
+                        </div>
+                        {priceFilterToggle && (
+                          <div className="flex flex-col gap-1 cursor-pointer text-sm px-2 py-1 rounded-sm">
+                            <label htmlFor="range">
+                              Range: {`${priceRange[0]} - ${priceRange[1]}`}
+                            </label>
+                            <input
+                              id="range"
+                              type="range"
+                              className={`${
+                                priceRange[1] <= 1000
+                                  ? "fill-blue-500 accent-blue-500  "
+                                  : ""
+                              } w-full h-1 rounded-sm`} // Apply blue color if altered
+                              min="0"
+                              max="1000"
+                              step="100"
+                              value={priceRange[1]}
+                              onChange={(e) => {
+                                const newValue = Number(e.target.value);
+                                handlePriceRangeFilter(priceRange[0], newValue);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="">
+                        <div
+                          onClick={() => setCategoryToggle((p) => !p)}
+                          className="flex gap-1 cursor-pointer items-center px-2 py-1 rounded-sm "
+                        >
+                          Category
+                        </div>
+                        {categoryToggle && (
+                          <div className="">
+                            <div
+                              onClick={() => toggleFilter("electronics")}
+                              className={`hover:bg-neutral-100 px-2 py-1 cursor-pointer ${
+                                filter.includes("electronics")
+                                  ? "font-bold text-blue-500"
+                                  : ""
+                              }`}
+                            >
+                              Electronics
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="">
+                        <div
+                          onClick={() => setSizeToggle((p) => !p)}
+                          className="flex gap-1 cursor-pointer items-center px-2 py-1 rounded-sm "
+                        >
+                          Size
+                        </div>
+                        {sizeToggle && (
+                          <div className=" ">
+                            <div
+                              onClick={() => toggleFilter("small")}
+                              className={`hover:bg-neutral-100 px-2 py-1 cursor-pointer ${
+                                filter.includes("small")
+                                  ? "font-bold text-blue-500"
+                                  : ""
+                              }`}
+                            >
+                              small
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="relative">
+              <div
+                onClick={() => setSortBy((p) => !p)}
+                className="ring-2 flex gap-1 cursor-pointer items-center ring-zinc-800 px-2 py-1 rounded-sm "
+              >
+                <SortAlphaDown className="h-5 w-5 text-zinc-800" /> Sort by
+              </div>
+              {sortBy && (
+                <div className="z-30 top-9 left-0 py-1 absolute w-40 shadow-md rounded-sm bg-secondary ">
+                  <div>
+                    {sortOptions.map((s, index) => (
+                      <div
+                        key={s + index}
+                        onClick={() => handleSort(s)}
+                        className={`hover:bg-neutral-100 px-2 py-1 cursor-pointer ${
+                          sortType === s ? "font-bold text-blue-500" : ""
+                        }`}
+                      >
+                        {s}
+                      </div>
+                    ))}
+                  </div>
+                  <hr className="m-2 border-neutral-400"></hr>
+                  <div className="flex flex-col cursor-pointer">
+                    <div
+                      className="flex items-center pl-2 gap-2 "
+                      onClick={() => setSortDirection("asc")}
+                    >
+                      <div className="w-5 h-5">
+                        <Check
+                          className={`${
+                            sortDirection === "asc"
+                              ? "block w-6 h-5"
+                              : "hidden "
+                          }`}
+                        />
+                      </div>
+                      <p>Ascending</p>
+                    </div>
+                    <div
+                      className=" flex items-center p-2 gap-2"
+                      onClick={() => setSortDirection("desc")}
+                    >
+                      <div className="w-5 h-5">
+                        <Check
+                          className={`${
+                            sortDirection === "desc"
+                              ? "block w-6 h-5"
+                              : "hidden "
+                          }`}
+                        />
+                      </div>
+                      <p>Descending</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Products List */}
           <div className="relative group mx-auto">
             <div className=" grid lg:grid-cols-4 lg:gap-8 md:grid-cols-3 grid-cols-2">
-              {products.newArrivals.length > 0 ? (
-                products.newArrivals.map((p) => (
+              {sortedProducts?.length > 0 ? (
+                sortedProducts.map((p) => (
                   <Product
-                    className="w-60 lg:w-[30rem] "
+                    className="w-60 lg:w-[30rem]"
                     key={p.id}
                     product={p}
                   />
                 ))
               ) : (
-                <p className="text-gray-400 p-6">fetching new arrivals ...</p>
+                <p className="text-gray-400 p-6 h-[60vh] col-span-full  text-center">
+                  No matching products found...
+                </p>
               )}
             </div>
           </div>
         </div>
+
+        {/* Pagination */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -69,71 +335,6 @@ export default function NewArrivals() {
       </div>
 
       <Footer />
-    </div>
-  );
-}
-
-function Pagination({
-  currentPage,
-  totalPages,
-  handlePageChange,
-  handleNextPage,
-  handlePreviousPage,
-}) {
-  const { products } = useContext(ShopContext);
-
-  const productsPerPage = 20; // Keep this consistent with the parent component
-
-  const startProduct = (currentPage - 1) * productsPerPage;
-  const endProduct = Math.min(
-    currentPage * productsPerPage,
-    products.newArrivals.length
-  );
-
-  return (
-    <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6">
-      <div className="flex flex-1 items-center justify-between">
-        <p className=" lg:block text-sm text-gray-600">
-          Showing <span className="font-semibold">{startProduct}</span> to{" "}
-          <span className="font-semibold">{endProduct}</span> of{" "}
-          <span className="font-semibold">{products.newArrivals.length}</span>{" "}
-          results
-        </p>
-        <nav
-          className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-          aria-label="Pagination"
-        >
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-500 bg-white hover:bg-gray-100 focus:z-20"
-          >
-            <span className="sr-only">Previous</span>
-            <ChevronCompactLeft className="h-5 w-5" aria-hidden="true" />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-medium hover:bg-gray-100 focus:z-20 ${
-                page === currentPage
-                  ? "bg-zinc-600 text-white"
-                  : "text-gray-900"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-500 bg-white hover:bg-gray-100 focus:z-20"
-          >
-            <span className="sr-only">Next</span>
-            <ChevronCompactRight className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </nav>
-      </div>
     </div>
   );
 }

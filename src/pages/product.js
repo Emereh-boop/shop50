@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
-import ShopContext from "../context/cart/shop-context"; // Importing context for cart management
-import Navbar from "../components/Navbar"; // Importing Navbar component
-import Footer from "../components/footer"; // Importing Footer component
-import { Plus } from "react-bootstrap-icons";
-import { MinusIcon } from "@heroicons/react/24/outline";
+import ShopContext from "../context/cart/shop-context";
+import Navbar from "../components/Navbar";
+import Footer from "../components/footer";
+import { Dash, Plus } from "react-bootstrap-icons";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -12,7 +11,6 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [productParam, setProductParam] = useState("");
-
   const [openSections, setOpenSections] = useState({
     description: false,
     features: false,
@@ -29,74 +27,81 @@ const ProductDetails = () => {
   };
 
   const plusQty = () => {
-    return setQty((p) => p + 1);
+    setQty((p) => p + 1);
   };
   const minusQty = () => {
-    return setQty((p) => p - 1);
+    setQty((p) => p - 1);
   };
 
   useEffect(() => {
-    const selectedProduct = products.products.find(
-      (product) => product.id === id
-    );
+    const productList = products.products; // Destructure correctly
+    const selectedProduct = productList.find((product) => product.id === id);
     setProduct(selectedProduct);
-    setProductParam(product?.brand);
-  }, [id, products, product]);
+    setProductParam(selectedProduct?.brand);
+  }, [id, products]);
 
   // Fallback if the product is not found
   if (!product) {
-    return window.history.back;
+    // return window.history.back; // Go back to the previous page if product not found
+    // return null;
   }
 
   return (
     <section className="pt-16">
       <Navbar />
-      <div className="flex h-dvh bg-secondary gap-4">
+      <div className="flex h-dvh bg-secondary gap-10">
+        {/* Product Image and Gallery */}
         <div className="w-1/2 pl-5 rounded-md flex relative justify-between">
           <img
             className="w-full h-dvh object-cover"
-            src={product.imageUrl || product.image}
-            alt={product.title}
+            src={product?.imageUrl || product?.image}
+            alt={product?.title}
           />
           <div className="absolute top-0 left-5 w-full h-full flex flex-col gap-1 ">
-            {product.additionalImages?.map((i) => {
-              return (
-                // <img
-                //   className="w-32 shadow-sm rounded-sm h-32 object-contain"
-                //   src={i.imageUrl || i.image}
-                //   alt={i.title}
-                // />
-
-                <div>{i}</div>
-              );
-            })}
+            {product?.additionalImage?.map((i) => (
+              <img
+                key={i}
+                className="w-32 shadow-sm rounded-sm h-32 object-contain"
+                src={i}
+                alt={i}
+              />
+            ))}
           </div>
         </div>
+
+        {/* Product Information */}
         <div className="w-1/2 rounded-md flex flex-col gap-y-10 bg-secondary">
           <div className="flex  flex-col gap-4 ">
-            <h1 className="text-3xl font-bold">{product.title}</h1>
-            <p className="text-sm text-gray-400 ">{product.description}</p>
-            <div className="price">{formatCurrency(product.price)}</div>
-            <p className="text-sm text-blue-500 ">
-              {product.ad} example ad for product
-            </p>
+            <h1 className="text-3xl font-bold">{product?.title}</h1>
+            <p className="text-sm text-gray-400 ">{product?.description}</p>
+            <div className="price">{formatCurrency(product?.price)}</div>
+            <p className="text-sm text-blue-500 ">{product?.ad}</p>
             <div className="star-rating">
-              ★★★★★ <span>{product.reviews?.lenght}reviews</span>
+              ★★★★★ <span>{product?.reviews?.length} reviews</span>
             </div>
           </div>
-          <div className="flex flex-col gap-4 ">
-            <hr className="text-gray-100"></hr>
+
+          {/* Product Colors and Sizes */}
+          <div className="flex flex-col gap-4">
+            <hr className="text-gray-100" />
             <div className="flex flex-col gap-4">
-              Color(s) {product.colors.color}
-              <div>
-                <input type="radio" className="hidden" />
-                <div className="w-6 h-6 bg-black rounded-full hover:bg-black/50"></div>
+              Color(s)
+              <div className="flex">
+                {product?.colors?.map((c) => (
+                  <div key={c.code + c.color}>
+                    <input type="radio" className="hidden" />
+                    <div
+                      className="w-6 h-6 rounded-full hover:bg-opacity-50"
+                      style={{ backgroundColor: c.code }}
+                    ></div>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="flex flex-col gap-5">
               Size(s)
               <div className="flex">
-                {product.sizes.map((s) => (
+                {product?.sizes.map((s) => (
                   <div
                     key={s}
                     className="w-8 ml-8 h-8 hover:bg-neutral-300 rounded-sm justify-center items-center flex text-base font-bold text-black bg-neutral-200"
@@ -107,12 +112,16 @@ const ProductDetails = () => {
               </div>
             </div>
 
+            {/* Quantity Selector */}
             <div className="flex items-center gap-2 h-20 ">
               <div
-                className="rounded-sm bg-primary hover:bg-primary/50 p-2 flex items-center"
-                onClick={() => (qty === 1 ? "" : minusQty())}
+                className={`rounded-sm bg-primary hover:bg-primary/50 p-2 flex items-center ${
+                  qty === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => (qty > 1 ? minusQty() : null)}
+                disabled={qty === 1}
               >
-                <MinusIcon className="h-6 w-6 text-white " />
+                <Dash className="h-6 w-6 text-white" />
               </div>
               <p className="text-primary text-lg w-6 text-center">{qty}</p>
               <div
@@ -123,6 +132,8 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
+
+          {/* Product Description, Features, and Specifications */}
           <div className="flex flex-col gap-4">
             <hr className="text-gray-100" />
             <div>
@@ -132,11 +143,11 @@ const ProductDetails = () => {
               >
                 <span>Product Description</span>
                 <span className="text-2xl">
-                  {openSections.description ? <Plus /> : <Plus />}
+                  {openSections.description ? <Dash /> : <Plus />}
                 </span>
               </div>
               {openSections.description && (
-                <p className="text-gray-900 ml-5">{product.longDescription}</p>
+                <p className="text-gray-900 ml-5">{product?.longDescription}</p>
               )}
             </div>
             <div>
@@ -146,15 +157,13 @@ const ProductDetails = () => {
               >
                 <span>Features</span>
                 <span className="text-2xl">
-                  {openSections.features ? <Plus /> : <Plus />}
+                  {openSections.features ? <Dash /> : <Plus />}
                 </span>
               </div>
               {openSections.features && (
                 <ul className="ml-4 list-disc text-gray-900">
-                  {product.features.map((feature, index) => (
-                    <li className="ml-5" key={index}>
-                      {feature}
-                    </li>
+                  {product?.features.map((feature, index) => (
+                    <li key={index}>{feature}</li>
                   ))}
                 </ul>
               )}
@@ -166,35 +175,41 @@ const ProductDetails = () => {
               >
                 <span>Specifications</span>
                 <span className="text-2xl">
-                  {openSections.specifications ? <Plus /> : <Plus />}
+                  {openSections.specifications ? <Dash /> : <Plus />}
                 </span>
               </div>
               {openSections.specifications && (
                 <ul className="ml-4 list-disc text-gray-900">
-                  {product.specifics.map((spec, index) => (
-                    <li className="ml-5" key={index}>
-                      {spec}
-                    </li>
+                  {product?.specifics.map((spec, index) => (
+                    <li key={index}>{spec}</li>
                   ))}
                 </ul>
               )}
             </div>
           </div>
+
+          {/* Add to Cart Button */}
           <div
             onClick={() => addToCart(product)}
-            className="flex w-1/5 py-4  rounded-sm items-center justify-center bg-primary text-secondary"
+            className="flex w-1/5 py-4 rounded-sm items-center justify-center bg-primary text-secondary"
           >
             <button>Add to Cart</button>
           </div>
         </div>
       </div>
+
+      {/* Related Products */}
       <div className="related-products mb-5">
         <h3 className="p-5 text-xl font-black uppercase">Related Products</h3>
         <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">
           <div className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory">
-            {
-              (products.products.brand = productParam ? (
-                products.products.slice(0, 4).map((product) => (
+            {productParam &&
+            products?.products.filter((p) => p.brand === productParam).length >
+              0 ? (
+              products?.products
+                .filter((p) => p.brand === productParam)
+                .slice(0, 4)
+                .map((product) => (
                   <div
                     key={product.id}
                     className="flex-shrink-0 w-60 sm:w-72 lg:w-80 snap-start"
@@ -213,18 +228,13 @@ const ProductDetails = () => {
                     </div>
                   </div>
                 ))
-              ) : (
-                <p className="text-gray-400">Loading ...</p>
-              ))
-            }
+            ) : (
+              <p className="text-gray-400">Loading ...</p>
+            )}
           </div>
         </div>
       </div>
-      {/* <div className="customer-reviews">
-        <h3>Customer Reviews</h3>
 
-         Individual customer reviews 
-      </div> */}
       <Footer />
     </section>
   );

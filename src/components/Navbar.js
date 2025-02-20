@@ -112,7 +112,7 @@ export default function Navbar() {
                   {searchTerm && (
                     <div className="absolute z-10 w-full bg-white mt-1 rounded-sm shadow-lg">
                       <ul className="py-1">
-                        {filter.length > 0 ? (
+                        {filter?.length > 0 ? (
                           filter.map((l, index) => (
                             <li
                               key={index}
@@ -142,7 +142,7 @@ export default function Navbar() {
                   <Cart4 className="h-7 w-7" aria-hidden="true" />
                   {cartItem?.length > 0 && (
                     <span className="absolute top-0 right-0 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
-                      {cartItem.length}
+                      {cartItem?.length}
                     </span>
                   )}
                 </button>

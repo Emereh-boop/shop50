@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import ErrorBoundary from "./Errorboundry.js";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -11,13 +12,15 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
 
 root.render(
-  <QueryClientProvider client={queryClient}>
-    <React.StrictMode>
-      <CartState>
-        <App />
-      </CartState>
-    </React.StrictMode>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <React.StrictMode>
+        <CartState>
+          <App />
+        </CartState>
+      </React.StrictMode>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 reportWebVitals();

@@ -35,7 +35,6 @@ const collectionsConfig = {
     "instock",
     "onsale",
     "profile",
-    "time",
   ],
   newArrivals: [
     "title",
@@ -85,11 +84,22 @@ export default function UploadData() {
     instock: false,
     onsale: false,
     profile: { image: "", name: "", email: "" },
-    time: serverTimestamp(),
   });
   const [uploading, setUploading] = useState(false);
   const [uploadTask, setUploadTask] = useState(null);
   const { currentUser } = useContext(ShopContext);
+  const [formInputs, setFormInputs] = useState({});
+
+  const handleAddToArray = (arrayName) => {
+    if (!formInputs[arrayName]?.trim()) return; // Prevent empty entries
+
+    setFormData((prev) => ({
+      ...prev,
+      [arrayName]: [...prev[arrayName], formInputs[arrayName]],
+    }));
+
+    setFormInputs((prev) => ({ ...prev, [arrayName]: "" })); // Clear input
+  };
 
   useEffect(() => {
     if (selectedCollection) {
@@ -101,7 +111,7 @@ export default function UploadData() {
     const { id, files, value, checked } = e.target;
 
     if (id === "file") {
-      if (files && files.length > 0) {
+      if (files && files?.length > 0) {
         setFormData((prev) => ({ ...prev, file: files[0], imageUrl: "" }));
         handleUpload(files[0]);
       }
@@ -137,14 +147,14 @@ export default function UploadData() {
     );
   };
 
-  const handleCancelUpload = () => {
-    if (uploadTask) {
-      uploadTask.cancel();
-      setUploading(false);
-      setUploadTask(null);
-      alert("Upload canceled.");
-    }
-  };
+  // const handleCancelUpload = () => {
+  //   if (uploadTask) {
+  //     uploadTask.cancel();
+  //     setUploading(false);
+  //     setUploadTask(null);
+  //     alert("Upload canceled.");
+  //   }
+  // };
 
   const handleDeleteFile = async () => {
     if (!formData.imageUrl) return;
@@ -210,32 +220,28 @@ export default function UploadData() {
       },
       async () => {
         const downloadURL = await getDownloadURL(task.snapshot.ref);
-        setFormData((prev) => {
-          const newAdditionalImages = [...prev.additionalImage];
-          newAdditionalImages[index] = downloadURL;
-          return { ...prev, additionalImage: newAdditionalImages };
-        });
+        setFormData((prev) => ({
+          ...prev,
+          additionalImage: [...(prev.additionalImage || []), downloadURL], // Append the URL
+        }));
         setUploading(false);
       }
     );
   };
   // Handlers for dynamic arrays
-  const handleAddToArray = (arrayName, value) => {
-    if (value.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        [arrayName]: [...prev[arrayName], value],
-      }));
-    }
-  };
 
-  const handleAddToColorArray = (arrayName, colorData) => {
-    if (colorData.color.trim() !== "" && colorData.code.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        [arrayName]: [...prev[arrayName], colorData],
-      }));
-    }
+  const handleAddToColorArray = () => {
+    if (!formInputs.color.trim() || !formInputs.colorCode.trim()) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      colors: [
+        ...prev.colors,
+        { color: formInputs.color, code: formInputs.colorCode },
+      ],
+    }));
+
+    setFormInputs((prev) => ({ ...prev, color: "", colorCode: "" })); // Clear inputs
   };
   const handleRemoveFromArray = (arrayName, index) => {
     setFormData((prev) => ({
@@ -332,18 +338,35 @@ export default function UploadData() {
                     <h3 className="text-lg">
                       {arrayName.charAt(0).toUpperCase() + arrayName.slice(1)}
                     </h3>
-                    <input
-                      type="text"
-                      placeholder={`Add ${arrayName.slice(0, -1)}`}
-                      onBlur={(e) =>
-                        handleAddToArray(arrayName, e.target.value)
-                      }
-                      className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full"
-                    />
 
-                    <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={`Add ${arrayName.slice(0, -1)}`}
+                        value={formInputs[arrayName] || ""}
+                        onChange={(e) =>
+                          setFormInputs((prev) => ({
+                            ...prev,
+                            [arrayName]: e.target.value,
+                          }))
+                        }
+                        className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddToArray(arrayName)}
+                        className="bg-blue-600 text-white px-3 py-2 rounded-sm"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="mt-2">
                       {formData[arrayName].map((item, index) => (
-                        <div key={index} className="flex justify-between">
+                        <div
+                          key={index}
+                          className="flex justify-between items-center border p-2 rounded-sm"
+                        >
                           <span>{item}</span>
                           <button
                             type="button"
@@ -363,33 +386,50 @@ export default function UploadData() {
                 {/* Colors */}
                 <div className="mt-4">
                   <h3 className="text-lg">Colors</h3>
-                  <input
-                    type="text"
-                    placeholder="Color name"
-                    onBlur={(e) =>
-                      handleAddToColorArray("colors", {
-                        color: e.target.value,
-                        code: "",
-                      })
-                    }
-                    className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Color code (e.g., #FF0000)"
-                    onBlur={(e) =>
-                      handleAddToColorArray("colors", {
-                        color: "",
-                        code: e.target.value,
-                      })
-                    }
-                    className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 w-full mt-2"
-                  />
 
-                  <div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Color name"
+                      value={formInputs.color || ""}
+                      onChange={(e) =>
+                        setFormInputs((prev) => ({
+                          ...prev,
+                          color: e.target.value,
+                        }))
+                      }
+                      className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Color code (e.g., #FF0000)"
+                      value={formInputs.colorCode || ""}
+                      onChange={(e) =>
+                        setFormInputs((prev) => ({
+                          ...prev,
+                          colorCode: e.target.value,
+                        }))
+                      }
+                      className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddToColorArray("colors")}
+                      className="bg-blue-600 text-white px-3 py-2 rounded-sm"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <div className="mt-2">
                     {formData.colors.map((color, index) => (
-                      <div key={index} className="flex justify-between">
-                        <span>{color.color || color.code}</span>
+                      <div
+                        key={index}
+                        className="flex justify-between items-center border p-2 rounded-sm"
+                      >
+                        <span>
+                          {color.color} {color.code && `(${color.code})`}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveFromArray("colors", index)}
@@ -411,7 +451,7 @@ export default function UploadData() {
                   <img
                     src={formData.imageUrl}
                     alt="Selected File"
-                    className="w-full h-64 object-cover rounded-sm border border-gray-200"
+                    className="w-1/4 h-64 object-contain rounded-sm border border-gray-200"
                   />
                   <button
                     onClick={handleDeleteFile}

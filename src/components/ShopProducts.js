@@ -35,7 +35,7 @@ export default function Example() {
           ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory"
         >
-          {products.trending.length > 0 ? (
+          {products.trending?.length > 0 ? (
             products.trending.slice(0, 4).map((product) => (
               <div
                 key={product.id}

@@ -1,28 +1,23 @@
 import React, { useContext, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/20/solid"; // Importing XMarkIcon from Heroicons
-import { Bank, CreditCard } from "react-bootstrap-icons"; // Importing icons from react-bootstrap-icons
-import ShopContext from "../context/cart/shop-context"; // Importing context for cart management
-import Navbar from "../components/Navbar"; // Importing Navbar component
-import Footer from "../components/footer"; // Importing Footer component
+import { XMarkIcon } from "@heroicons/react/20/solid";
+import { Bank, CreditCard } from "react-bootstrap-icons";
+import ShopContext from "../context/cart/shop-context";
+import Navbar from "../components/Navbar";
+import Footer from "../components/footer";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { doc, setDoc, collection } from "firebase/firestore";
+import { db } from "../../src/firebase"; // import your firebase config
+
+// Firebase function
+const functions = getFunctions();
+const validateCoupon = httpsCallable(functions, "validateCoupon");
 
 const CheckoutPage = () => {
   const countries = [
-    {
-      name: "United States",
-      cities: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"],
-    },
-    {
-      name: "Canada",
-      cities: ["Toronto", "Montreal", "Vancouver", "Calgary", "Ottawa"],
-    },
-    {
-      name: "United Kingdom",
-      cities: ["London", "Manchester", "Birmingham", "Glasgow", "Liverpool"],
-    },
-    {
-      name: "Nigeria",
-      cities: ["Abuja", "Lagos", "Port-Harcourt", "Enugu", "Delta"],
-    },
+    { name: "United States", cities: ["New York", "Los Angeles", "Chicago"] },
+    { name: "Canada", cities: ["Toronto", "Montreal", "Vancouver"] },
+    { name: "United Kingdom", cities: ["London", "Manchester", "Birmingham"] },
+    { name: "Nigeria", cities: ["Abuja", "Lagos", "Port-Harcourt"] },
   ];
 
   const [name, setName] = useState("");
@@ -35,6 +30,7 @@ const CheckoutPage = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
+  const [coupon, setCoupon] = useState("");
   const {
     removeItem,
     clearCart,
@@ -44,37 +40,26 @@ const CheckoutPage = () => {
 
   const cart = memoizedCartItems.reduce(
     (acc, item) => {
-      // Check if the item id has already been added to the cart
       const existingItem = acc.cart.find((cartItem) => cartItem.id === item.id);
-
       if (!existingItem) {
-        // If the item is new, add it to the cart
         acc.cart.push({ ...item, qty: item.quantity });
       } else {
-        // If the item already exists, increase the quantity
         existingItem.qty += item.quantity;
       }
-
       return acc;
     },
-    { cart: [] } // Start with an empty cart
+    { cart: [] }
   ).cart;
 
-  const subt = cart.reduce(
-    (acc, item) => acc + Number(item.qty) * Number(item.price),
-    0
-  );
-
+  const subt = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
   const shipping = 0;
-  const coupon = 0;
-
-  const tot = subt + (shipping - coupon);
+  const tot = subt + shipping - coupon;
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const orderData = {
@@ -92,87 +77,30 @@ const CheckoutPage = () => {
       subt,
       shipping,
       tot,
+      createdAt: new Date().toISOString(),
     };
 
-    const itemsList = orderData.itemsInCart
-      .map((item) => `- ${item.title} x ${item.qty}`)
-      .join("\n");
-
-    const whatsappMessage = `
-    New Order
-    Customer Name: ${orderData.name} ${orderData.lastName}
-    Phone: ${orderData.tel}
-    Email: ${orderData.email}
-    Address: ${orderData.address}
-    Zipcode: ${orderData.zipCode}
-    City: ${orderData.selectedCity}
-    Country: ${orderData.selectedCountry}
-    Payment Method: ${orderData.paymentMethod}
-    Delivery Method: ${orderData.deliveryMethod}
-    Subtotal: ${orderData.subt}
-    Shipping: ${orderData.shipping}
-    Total: ${orderData.tot}
-    Items in Cart:
-    ${itemsList}`;
-
-    const sellerPhoneNumber = "+2348104421182";
-    const whatsappUrl = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(
-      whatsappMessage
-    )}`;
-    window.open(whatsappUrl, "_blank");
-
-    // Clear the form
-    setName("");
-    setLastName("");
-    setTel("");
-    setEmail("");
-    setAddress("");
-    setZipCode("");
-    setSelectedCity("");
-    setSelectedCountry("");
-    setDeliveryMethod("");
-    setPaymentMethod("credit-card");
-    clearCart();
-    window.location.href = "/";
-
-    // Show success pop-up
-    alert("Order placed successfully! We'll process your order shortly.");
+    // Send order data to Firestore
+    try {
+      await setDoc(doc(collection(db, "orders")), orderData);
+      alert("Order placed successfully!");
+      setName("");
+      setLastName("");
+      setTel("");
+      setEmail("");
+      setAddress("");
+      setZipCode("");
+      setSelectedCity("");
+      setSelectedCountry("");
+      setDeliveryMethod("");
+      setPaymentMethod("credit-card");
+      clearCart();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error placing order: ", error);
+      alert("There was an error placing your order.");
+    }
   };
-
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   const orderData = {
-  //     name,
-  //     lastName,
-  //     tel,
-  //     email,
-  //     address,
-  //     zipCode,
-  //     paymentMethod,
-  //     deliveryMethod,
-  //     itemsInCart,
-  //   };
-
-  //   try {
-  //     const response = await fetch("http://localhost:3000/send-order", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(orderData),
-  //     });
-
-  //     if (response.ok) {
-  //       alert("Order email sent successfully!");
-  //     } else {
-  //       alert("Failed to send order email.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     alert("An error occurred while sending the email.");
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-white">
@@ -217,11 +145,15 @@ const CheckoutPage = () => {
                 ))
               )}
             </div>
+
             <span className="text-xs flex justify-end md:text-sm text-blue-500">
               scroll to see more
             </span>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="text-red-500 text-sm">
+              {name === "" ? "Required items are listed with an *" : ""}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -405,16 +337,24 @@ const CheckoutPage = () => {
               <span>Subtotal</span>
               <span className="font-medium">{formatCurrency(subt)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Coupons</span>
-              <span className="font-medium">
-                {coupon > 0 ? (
-                  coupon
-                ) : (
-                  <span className="text-xs text-gray-100">
-                    no coupons available
-                  </span>
-                )}
+            <div className="flex items-center w-full">
+              <span className="font-medium w-full">
+                <div className="flex justify-between w-full">
+                  <input
+                    type="text"
+                    placeholder="coupon"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => validateCoupon()}
+                    className="bg-blue-600 text-white px-3 py-2 rounded-sm"
+                  >
+                    +
+                  </button>
+                </div>
               </span>
             </div>
             <div className="flex justify-between">
@@ -435,40 +375,40 @@ const CheckoutPage = () => {
               Payment Method
             </h2>
             <div className="gap-2 flex items-start flex-col w-full">
-              <div className="">
+              <div>
                 <input
-                  id="tnx"
+                  id="transfer"
                   name="payment-method"
                   type="radio"
                   value="Bank transfer"
-                  checked={paymentMethod === "transfer"}
+                  checked={paymentMethod === "Bank transfer"}
                   onChange={handlePaymentMethodChange}
                   className="hidden"
                 />
                 <label
-                  htmlFor="paypal"
+                  htmlFor="transfer"
                   className="flex items-center justify-center w-full p-2 rounded-sm cursor-pointer hover:bg-gray-100 "
                 >
                   <Bank className="w-4 h-4 text-gray-500" />
                   <span className="ml-4 text-gray-900">Bank Transfer</span>
                 </label>
               </div>
-              <div className="">
+              <div>
                 <input
                   id="credit-card"
                   name="payment-method"
                   type="radio"
-                  // value="credit-card"
-                  // checked={paymentMethod === "credit-card"}
-                  // onChange={handlePaymentMethodChange}
+                  value="Credit Card"
+                  checked={paymentMethod === "Credit Card"}
+                  onChange={handlePaymentMethodChange}
                   className="hidden"
                 />
                 <label
                   htmlFor="credit-card"
-                  className="flex items-center justify-center w-full p-2 rounded-lg cursor-pointer bg-gray-0"
+                  className="flex items-center justify-center w-full p-2 rounded-lg cursor-pointer hover:bg-gray-100"
                 >
-                  <CreditCard className="w-4 h-4 text-gray-100" />
-                  <span className="ml-4 text-gray-100">Credit Card</span>
+                  <CreditCard className="w-4 h-4 text-gray-900" />
+                  <span className="ml-4 text-gray-900">Credit Card</span>
                 </label>
               </div>
             </div>

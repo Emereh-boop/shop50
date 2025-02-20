@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.1.3",
     "@tailwindcss/aspect-ratio": "^0.4.2",
@@ -11,7 +12,9 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "firebase": "^10.8.1",
+    "cors": "^2.8.5",
+    "firebase": "^10.14.1",
+    "firebase-functions": "^6.3.2",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
     "nanoid": "^5.0.6",
