@@ -1,19 +1,66 @@
-// trending page
 import React, { useContext, useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/footer";
-import Product from "../components/product";
-import ShopContext from "../context/cart/shop-context";
-import { ChevronCompactLeft, ChevronCompactRight } from "react-bootstrap-icons";
-import Filter from "../components/Filter";
+import Navbar from "../components/layout/navbar";
+import Footer from "../components/layout/footer";
+import Product from "../components/products/product";
+import Pagination from "../components/common/pagination";
+import { Check, FilterCircleFill, SortAlphaDown } from "react-bootstrap-icons";
+import { useProducts } from "../context/products/context";
 
 export default function Trending() {
-  const { products } = useContext(ShopContext);
-  // const [searchTerm, setSearchTerm] = useState("");
-
+  const { products = {} } = useProducts();
+  const trending = products?.trending || [];
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
-  const totalPages = Math.ceil(products.trending.length / productsPerPage);
+
+  const [filter, setFilter] = useState([]);
+  const [sortBy, setSortBy] = useState(false);
+  const [filterToggle, setFilterToggle] = useState(false);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortType, setSortType] = useState("");
+  const [priceFilterToggle, setPriceFilterToggle] = useState(false);
+  const [categoryToggle, setCategoryToggle] = useState(false);
+  const [sizeToggle, setSizeToggle] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+
+  const sortOptions = ["price", "date", "rating", "bestseller", "brand", "size"];
+  const filterOptions = ["brand", "category", "size", "color", "price", "instock", "onsale"];
+
+  const filteredProducts = trending.filter((product) => {
+    if (filter?.length === 0) return true;
+    return filter.some((category) => {
+      if (category.startsWith("price_")) {
+        const range = category.split("_")[1];
+        const [min, max] = range.split("-").map(Number);
+        return product.price >= min && product.price <= max;
+      }
+      return product.category?.toLowerCase().includes(category.toLowerCase());
+    });
+  });
+
+  const totalPages = filteredProducts?.length ? Math.ceil(filteredProducts.length / productsPerPage) : 1;
+
+  const toggleFilter = (category) => {
+    setFilter((prev) =>
+      prev.includes(category) ? prev.filter((item) => item !== category) : [...prev, category]
+    );
+  };
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (!sortType) return 0;
+    if (sortType === "price") {
+      return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
+    } else if (sortType === "date") {
+      return sortDirection === "asc"
+        ? new Date(a.timeStamp.date) - new Date(b.timeStamp.date)
+        : new Date(b.timeStamp.date) - new Date(a.timeStamp.date);
+    } else if (sortType === "rating") {
+      return sortDirection === "asc" ? a.rating - b.rating : b.rating - a.rating;
+    }
+  });
+
+  const handleSort = (type) => {
+    setSortType(type);
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -31,49 +78,47 @@ export default function Trending() {
     }
   };
 
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     // Filtering locally stored products for faster results
-  //     const filtered = products.filter((product) =>
-  //       product.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     setFilter(filtered);
-  //   } else {
-  //     setFilter(products); // Show all products if searchTerm is empty
-  //   }
-  // }, [searchTerm, products]);
-
   return (
     <div className="relative flex flex-col gap-10">
       <Navbar />
-
-      <div
-        className="bg-white mb-6 mt-6"
-        tabIndex={0} // Makes the div focusable
-      >
+      <div className="bg-white mb-6 mt-6" tabIndex={0}>
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">
-          MOST WANTED
+          TRENDING COLLECTION
         </h2>
         <div className="mx-auto max-w-[100rem]">
-          <Filter />
+          <div className="flex max-w-[100rem] items-center justify-between mx-auto">
+            <div className="flex items-center gap-4 w-1/2 h-20">
+              <div className="relative">
+                <div onClick={() => setFilterToggle((p) => !p)}
+                  className="ring gap-1 cursor-pointer items-center px-2 ring-neutral-600 flex rounded-sm py-1 text-white bg-zinc-600">
+                  <FilterCircleFill className="w-4 h-4 text-white" /> Filters
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div onClick={() => setSortBy((p) => !p)}
+                className="ring-2 flex gap-1 cursor-pointer items-center ring-zinc-800 px-2 py-1 rounded-sm">
+                <SortAlphaDown className="h-5 w-5 text-zinc-800" /> Sort by
+              </div>
+            </div>
+          </div>
+
           <div className="relative group mx-auto">
             <div className=" grid lg:grid-cols-4 lg:gap-8 md:grid-cols-3 grid-cols-2">
-              {products.trending.length > 0 ? (
-                products.trending.map((p) => (
-                  <Product
-                    className="w-60 lg:w-[30rem] "
-                    key={p.id}
-                    product={p}
-                  />
+              {sortedProducts?.length > 0 ? (
+                sortedProducts.map((p) => (
+                  <Product className="w-60 lg:w-[30rem]" key={p.id} product={p} />
                 ))
               ) : (
-                <p className="text-gray-400 p-6">
-                  fetching trending products ...
+                <p className="text-gray-400 p-6 h-[60vh] col-span-full  text-center">
+                  No matching products found...
                 </p>
               )}
             </div>
           </div>
         </div>
+
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -82,73 +127,7 @@ export default function Trending() {
           handlePreviousPage={handlePreviousPage}
         />
       </div>
-
       <Footer />
-    </div>
-  );
-}
-
-function Pagination({
-  currentPage,
-  totalPages,
-  handlePageChange,
-  handleNextPage,
-  handlePreviousPage,
-}) {
-  const { products } = useContext(ShopContext);
-
-  const productsPerPage = 20; // Keep this consistent with the parent component
-
-  const startProduct = (currentPage - 1) * productsPerPage;
-  const endProduct = Math.min(
-    currentPage * productsPerPage,
-    products.trending.length
-  );
-
-  return (
-    <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-6">
-      <div className="flex flex-1 items-center justify-between">
-        <p className=" lg:block text-sm text-gray-600">
-          Showing <span className="font-semibold">{startProduct}</span> to{" "}
-          <span className="font-semibold">{endProduct}</span> of{" "}
-          <span className="font-semibold">{products.trending.length}</span>{" "}
-          results
-        </p>
-        <nav
-          className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-          aria-label="Pagination"
-        >
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-500 bg-white hover:bg-gray-100 focus:z-20"
-          >
-            <span className="sr-only">Previous</span>
-            <ChevronCompactLeft className="h-5 w-5" aria-hidden="true" />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-medium hover:bg-gray-100 focus:z-20 ${
-                page === currentPage
-                  ? "bg-zinc-600 text-white"
-                  : "text-gray-900"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-500 bg-white hover:bg-gray-100 focus:z-20"
-          >
-            <span className="sr-only">Next</span>
-            <ChevronCompactRight className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </nav>
-      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { storage, db } from "../../firebase";
+import { storage, db } from "../../firebase/firebase";
 import {
   ref,
   getDownloadURL,
@@ -7,9 +7,9 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
-import ShopContext from "../../context/cart/shop-context";
+import ShopContext from "../../context/cart/context";
 import { Plus, TrashFill } from "react-bootstrap-icons";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/layout/navbar";
 
 const collectionsConfig = {
   banners: ["title", "href", "brand", "subtitle", "image", "category"],
@@ -29,12 +29,10 @@ const collectionsConfig = {
     "colors",
     "url",
     "ad",
-    "coupon",
     "image",
     "additionalImage",
     "instock",
     "onsale",
-    "profile",
   ],
   newArrivals: [
     "title",
@@ -78,15 +76,15 @@ export default function UploadData() {
     colors: [],
     url: "",
     ad: [],
-    coupon: [],
+    // coupon: [],
     imageUrl: "",
     additionalImage: [],
     instock: false,
     onsale: false,
-    profile: { image: "", name: "", email: "" },
+    // profile: { image: "", name: "", email: "" },
   });
   const [uploading, setUploading] = useState(false);
-  const [uploadTask, setUploadTask] = useState(null);
+  // const [uploadTask, setUploadTask] = useState(null);
   const { currentUser } = useContext(ShopContext);
   const [formInputs, setFormInputs] = useState({});
 
@@ -129,7 +127,7 @@ export default function UploadData() {
     const storageRef = ref(storage, `${selectedCollection}/${file.name}`);
 
     const task = uploadBytesResumable(storageRef, file);
-    setUploadTask(task);
+    // setUploadTask(task);
 
     task.on(
       "state_changed",
@@ -142,7 +140,7 @@ export default function UploadData() {
         const downloadURL = await getDownloadURL(task.snapshot.ref);
         setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
         setUploading(false);
-        setUploadTask(null);
+        // setUploadTask(null);
       }
     );
   };

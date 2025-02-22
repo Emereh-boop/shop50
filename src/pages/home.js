@@ -1,15 +1,13 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import ShopProducts from "../components/ShopProducts";
-import NewArrivals from "../components/new-arrivals";
-import Collections from "../components/collections";
-import Footer from "../components/footer";
-import HeroPage from "../components/HeroPage";
+import ShopProducts from "../components/layout/trendingcomp";
+import NewArrivals from "../components/layout/newarrivalscomp";
+import Collections from "../components/layout/collectioncomp";
+import Footer from "../components/layout/footer";
+import HeroPage from "../components/layout/hero";
 
 export default function Home() {
   return (
     <div className="relative h-dvh flex flex-col">
-      <Navbar />
       <HeroPage />
       <ShopProducts />
       <NewArrivals />

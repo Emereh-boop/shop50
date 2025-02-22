@@ -1,0 +1,10 @@
+I0220 13:05:15.623006   29640 load.go:37] Reloading schema and connectors...
+I0220 13:05:15.660828   29640 control.go:59] [/emulator/my-first-react a037] UpdateResources(): done
+Schema: sources: schema\schema.gql [2088B] 
+Connector "default": sources: connector\mutations.gql [1233B] connector\queries.gql [1802B] 
+I0220 13:05:15.679812   29640 codegen.go:82] [connector "default" javascriptSdk] Generating sources into "C:\\Users\\DELL\\Documents\\projects\\projectlibrary\\my-first-react\\dataconnect-generated\\js\\default-connector"
+I0220 13:05:15.696636   29640 collector.go:107] schema extensions wrote into "C:\\Users\\DELL\\Documents\\projects\\projectlibrary\\my-first-react\\dataconnect\\.dataconnect\\schema"
+Generated sources: prelude.gql [65317B] 
+I0220 13:05:15.713750   29640 collector.go:107] connector "default" javascriptSdk wrote into "C:\\Users\\DELL\\Documents\\projects\\projectlibrary\\my-first-react\\dataconnect-generated\\js\\default-connector"
+Generated sources: esm\package.json [17B] index.cjs.js [214B] README.md [2740B] react\index.d.ts [227B] react\esm\package.json [17B] react\index.cjs.js [194B] index.d.ts [259B] esm\index.esm.js [173B] react\esm\index.esm.js [181B] package.json [819B] react\package.json [468B] 
+I0220 13:05:15.745130   29640 installsdk.go:76] Running command: C:\Program Files\nodejs\npm.cmd install file:dataconnect-generated\js\default-connector

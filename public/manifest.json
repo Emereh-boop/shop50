@@ -1,17 +1,17 @@
 {
-  "short_name": "Bag Harmony ",
-  "name": "Bag Harmony Online Store",
+  "short_name": "YNT ",
+  "name": "YNT",
   "icons": [
     {
-      "src": "",
+      "src": "../../../../../Pictures/Screenshots/yntlogo.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
 
 
   ],
-  "start_url": "onlinestore",
+  "start_url": "YNT",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ffffff",
+  "background_color": "#000000"
 }

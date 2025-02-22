@@ -1,16 +1,33 @@
 import React, { useContext, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Bank, CreditCard } from "react-bootstrap-icons";
-import ShopContext from "../context/cart/shop-context";
-import Navbar from "../components/Navbar";
-import Footer from "../components/footer";
+import { useCart } from "../context/cart/context";
+import Navbar from "../components/layout/navbar";
+import Footer from "../components/layout/footer";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { doc, setDoc, collection } from "firebase/firestore";
-import { db } from "../../src/firebase"; // import your firebase config
+import { db } from "../firebase/firebase"; // import your firebase config
+import { formatCurrency } from "../utils/format";
+import { useNavigate } from "react-router-dom";
+
 
 // Firebase function
 const functions = getFunctions();
 const validateCoupon = httpsCallable(functions, "validateCoupon");
+const handleValidation = async (coupon) => {
+  if (!coupon) {
+    alert("Please enter a coupon code.");
+    return;
+  }
+  try {
+    const result = await validateCoupon({ coupon });
+    console.log("Coupon validated:", result.data);
+    alert(`Discount applied: ${result.data.discount}`);
+  } catch (error) {
+    console.error("Error validating coupon:", error);
+    alert("Invalid coupon or error applying discount.");
+  }
+};
 
 const CheckoutPage = () => {
   const countries = [
@@ -28,17 +45,13 @@ const CheckoutPage = () => {
   const [zipCode, setZipCode] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [deliveryMethod, setDeliveryMethod] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [coupon, setCoupon] = useState("");
-  const {
-    removeItem,
-    clearCart,
-    formatCurrency,
-    memoizedCartItems = [],
-  } = useContext(ShopContext);
+  const { removeItem, clearCart, cartItems = [] } = useCart();
+  const navigate = useNavigate();
 
-  const cart = memoizedCartItems.reduce(
+  const cart = cartItems.reduce(
     (acc, item) => {
       const existingItem = acc.cart.find((cartItem) => cartItem.id === item.id);
       if (!existingItem) {
@@ -50,10 +63,11 @@ const CheckoutPage = () => {
     },
     { cart: [] }
   ).cart;
-
+  
+  const discount = isNaN(parseFloat(coupon)) ? 0 : parseFloat(coupon);
   const subt = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
   const shipping = 0;
-  const tot = subt + shipping - coupon;
+  const tot = subt + shipping - discount;
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
@@ -95,7 +109,7 @@ const CheckoutPage = () => {
       setDeliveryMethod("");
       setPaymentMethod("credit-card");
       clearCart();
-      window.location.href = "/";
+      navigate("/");
     } catch (error) {
       console.error("Error placing order: ", error);
       alert("There was an error placing your order.");
@@ -113,11 +127,8 @@ const CheckoutPage = () => {
               {cart.length === 0 ? (
                 <p className="text-xs text-gray-400">No products in cart.</p>
               ) : (
-                cart.map((product, index) => (
-                  <div
-                    key={product.title + index}
-                    className="flex py-4 gap-2 shadow-sm"
-                  >
+                cart.map((product) => (
+                  <div key={product.id} className="flex py-4 gap-2 shadow-sm">
                     <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-100">
                       <img
                         src={product.imageUrl}
@@ -152,7 +163,7 @@ const CheckoutPage = () => {
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-red-500 text-sm">
-              {name === "" ? "Required items are listed with an *" : ""}
+              {name === "" ? "* indicates required field" : ""}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
@@ -338,18 +349,18 @@ const CheckoutPage = () => {
               <span className="font-medium">{formatCurrency(subt)}</span>
             </div>
             <div className="flex items-center w-full">
-              <span className="font-medium w-full">
+              <span className="font-thin w-full">
                 <div className="flex justify-between w-full">
                   <input
                     type="text"
-                    placeholder="coupon"
+                    placeholder="enter coupon code"
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
                     className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
                   />
                   <button
                     type="button"
-                    onClick={() => validateCoupon()}
+                    onClick={() => handleValidation(coupon)}
                     className="bg-blue-600 text-white px-3 py-2 rounded-sm"
                   >
                     +
@@ -405,7 +416,7 @@ const CheckoutPage = () => {
                 />
                 <label
                   htmlFor="credit-card"
-                  className="flex items-center justify-center w-full p-2 rounded-lg cursor-pointer hover:bg-gray-100"
+                  className="flex items-center justify-center w-full p-2 rounded-sm cursor-pointer hover:bg-gray-100"
                 >
                   <CreditCard className="w-4 h-4 text-gray-900" />
                   <span className="ml-4 text-gray-900">Credit Card</span>

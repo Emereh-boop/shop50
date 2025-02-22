@@ -27,6 +27,7 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.22.2",
     "react-scripts": "^5.0.1",
+    "react-toastify": "^11.0.3",
     "reactjs-popup": "^2.0.6",
     "sort-by": "^0.0.2",
     "tailwind-scrollbar-hide": "^1.1.7",
@@ -57,6 +58,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.27.7",
     "tailwindcss": "^3.4.1"
   }

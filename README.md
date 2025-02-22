@@ -1,16 +1,16 @@
-# Description
+# YNT – Your Ultimate Online Fashion Destination  
 
-This is an online store for all your Bags, clothes, shoes and accessories
+## About YNT  
+YNT is a premier online shopping platform offering a curated selection of high-quality clothing and fashion essentials. Whether you're looking for trendy outfits, timeless classics, or everyday wear, YNT delivers a seamless shopping experience with the latest styles and exclusive collections.  
 
-## Images
+## Preview  
+![Website Preview](./src/images/website-image.png)  
 
-![website Image](./src/images/wesite-image.png)
+## Development Setup  
 
-### `Live`
+### Live Preview  
+Run the application in development mode:  
+```sh
+npm start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 

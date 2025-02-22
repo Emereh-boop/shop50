@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import ErrorBoundary from "./Errorboundry.js";
-import "./index.css";
+import ErrorBoundary from "./utils/errorboundry.js";
+import "./styles/index.css";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import CartState from "./context/cart/cart-state";
+import reportWebVitals from "./pages/reportWebVitals.js";
+import { CartProvider } from "./context/cart/context.js";
+import { UserProvider } from "./context/user/context";
+import { ProductProvider } from "./context/products/context.js";
+import { AuthProvider } from "./context/auth/context"; // Import AuthProvider
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "react-query";
 
@@ -14,11 +17,19 @@ const queryClient = new QueryClient();
 root.render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <React.StrictMode>
-        <CartState>
-          <App />
-        </CartState>
-      </React.StrictMode>
+      <AuthProvider>
+        {" "}
+        {/* Wrap everything inside AuthProvider */}
+        <UserProvider>
+          <CartProvider>
+            <ProductProvider>
+              <React.StrictMode>
+                <App />
+              </React.StrictMode>
+            </ProductProvider>
+          </CartProvider>
+        </UserProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>
 );
