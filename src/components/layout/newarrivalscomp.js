@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, {  useRef, useState, useEffect } from "react";
 import { ArrowRight } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
 
@@ -37,14 +37,14 @@ export default function NewArrivalsComp() {
     if (isFocused) {
       autoSlide = setInterval(() => {
         slideRight();
-      }, 3000); // Slide every 3 seconds
+      }, 5000); // Slide every 5 seconds
     }
     return () => clearInterval(autoSlide);
   }, [isFocused]);
 
   return (
     <div
-      className="bg-white"
+      className="md:px-4"
       tabIndex={0} // Makes the div focusable
       onMouseEnter={() => setIsFocused(true)}
       onMouseLeave={() => setIsFocused(false)}
@@ -66,7 +66,7 @@ export default function NewArrivalsComp() {
               >
                 <div className="relative p-1">
                   <img
-                    className="w-full h-60 lg:h-[35rem] ring-1 ring-primary object-cover rounded-sm transition-transform duration-500 ease-in-out"
+                    className="w-full h-60 object-center lg:h-[35rem] ring-1 ring-gray-700 object object-cover rounded-sm transition-transform duration-500 ease-in-out"
                     src={p.imageUrl || p.image}
                     alt={p.title}
                   />

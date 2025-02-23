@@ -79,7 +79,7 @@ export default function Trending() {
   };
 
   return (
-    <div className="relative flex flex-col gap-10">
+    <div className="relative flex flex-col md:px-4 gap-10">
       <Navbar />
       <div className="bg-white mb-6 mt-6" tabIndex={0}>
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">

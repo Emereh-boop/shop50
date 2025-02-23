@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
-import ShopContext, { useCart } from "../context/cart/context";
+import React, { useEffect, useState } from "react";
+import { useCart } from "../context/cart/context";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import { Dash, Plus } from "react-bootstrap-icons";
@@ -11,7 +11,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { products = {} } = useProducts();
-  const prod = products?.products || []
+  const prod = products?.products 
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [productParam, setProductParam] = useState("");
@@ -23,7 +23,7 @@ const ProductDetails = () => {
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
-      description: section === "description" ? !prev.description : false,
+      description: section === "description" ? !prev.description : true,
       features: section === "features" ? !prev.features : false,
       specifications:
         section === "specifications" ? !prev.specifications : false,
@@ -212,15 +212,14 @@ const ProductDetails = () => {
               0 ? (
               products?.products
                 .filter((p) => p.brand === productParam)
-                .slice(0, 4)
                 .map((product) => (
                   <div
                     key={product.id}
-                    className="flex-shrink-0 w-60 sm:w-72 lg:w-80 snap-start"
+                    className="flex-shrink-0 w-60 sm:w-48 lg:w-52 snap-start"
                   >
                     <div className="relative">
                       <img
-                        className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:sale-105"
+                        className="w-full h-40 lg:h-60 object-cover transition-transform duration-300 hover:sale-105"
                         src={product.imageUrl}
                         alt={product.title}
                       />

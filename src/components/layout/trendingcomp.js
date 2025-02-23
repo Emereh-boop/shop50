@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef } from "react";
 import { formatCurrency } from "../../utils/format";
 import {
   // CartPlus,
@@ -28,7 +28,7 @@ export default function TrendingComp() {
   };
 
   return (
-    <div className=" bg-white">
+    <div className=" bg-secondary px-4">
       <div className="text-start text-4xl font-extrabold text-black my-5">
         TRENDING
       </div>
@@ -55,11 +55,6 @@ export default function TrendingComp() {
                     </div>
                   </span>
                 </div>
-                <div className="mt-4">
-                  <h3 className="text-md font-semibold text-black">
-                    {product.title}
-                  </h3>
-                </div>
               </div>
             ))
           ) : (
@@ -69,14 +64,14 @@ export default function TrendingComp() {
 
         <ChevronCompactLeft
           onClick={slideLeft}
-          size={40}
-          className="hidden group-hover:block absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white cursor-pointer rounded-full z-10 hover:bg-black transition"
+          size={30}
+          className="hidden group-hover:block absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
         />
 
         <ChevronCompactRight
           onClick={slideRight}
-          size={40}
-          className="hidden group-hover:block absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white cursor-pointer rounded-full z-10 hover:bg-black transition"
+          size={30}
+          className="hidden group-hover:block absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
         />
       </div>
     </div>

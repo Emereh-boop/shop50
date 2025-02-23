@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getFirestore, collection, query, where, getDocs, limit, startAfter } from "firebase/firestore";
+import { 
+  getFirestore, collection, query, where, getDocs, limit, startAfter, onSnapshot 
+} from "firebase/firestore";
 
 const ProductContext = createContext(null);
 
@@ -9,42 +11,43 @@ export const ProductProvider = ({ children }) => {
   const [lastVisibleDocs, setLastVisibleDocs] = useState({});
   const db = getFirestore();
 
-  // Helper function to get data from localStorage
-  const getLocalStorage = (key, defaultValue) => {
-    try {
-      return JSON.parse(localStorage.getItem(key)) || defaultValue;
-    } catch (error) {
-      console.error(`Error parsing ${key}:`, error);
-      return defaultValue;
-    }
-  };
-
   // Load data from localStorage initially
   useEffect(() => {
-    const storedData = getLocalStorage("allCollections", {});
-    setProducts(storedData);
+    try {
+      const storedData = JSON.parse(localStorage.getItem("allCollections")) || {};
+      setProducts(storedData);
+    } catch (error) {
+      console.error("Error parsing localStorage data:", error);
+    }
   }, []);
+
+  // Sync products state to localStorage
+  useEffect(() => {
+    localStorage.setItem("allCollections", JSON.stringify(products));
+  }, [products]);
 
   // Function to fetch a collection with filtering & pagination
   const fetchProducts = async (collectionName, filters = {}, limitSize = 20, nextPage = false) => {
     setLoading(true);
     try {
-      let collectionRef = collection(db, collectionName);
-      let productQuery = query(collectionRef, limit(limitSize));
+      const collectionRef = collection(db, collectionName);
+      let constraints = [limit(limitSize)];
 
       // Apply filters
       Object.keys(filters).forEach((key) => {
-        productQuery = query(productQuery, where(key, "==", filters[key]));
+        constraints.push(where(key, "==", filters[key]));
       });
 
       // Apply pagination
       if (nextPage && lastVisibleDocs[collectionName]) {
-        productQuery = query(productQuery, startAfter(lastVisibleDocs[collectionName]), limit(limitSize));
+        constraints.push(startAfter(lastVisibleDocs[collectionName]));
       }
 
-      // Fetch documents
+      const productQuery = query(collectionRef, ...constraints);
       const snapshot = await getDocs(productQuery);
       const fetchedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      console.log(`Fetched ${collectionName}:`, fetchedData); // Debugging log
 
       // Update last visible document for pagination
       if (snapshot.docs.length > 0) {
@@ -57,11 +60,10 @@ export const ProductProvider = ({ children }) => {
       // Merge with previous data for the same collection
       setProducts(prev => ({
         ...prev,
-        [collectionName]: nextPage ? [...(prev[collectionName] || []), ...fetchedData] : fetchedData
+        [collectionName]: nextPage
+          ? [...(prev[collectionName] || []), ...fetchedData]
+          : fetchedData
       }));
-
-      // Store in localStorage for caching
-      localStorage.setItem("allCollections", JSON.stringify(products));
     } catch (error) {
       console.error(`Error fetching ${collectionName}:`, error);
     } finally {
@@ -69,14 +71,40 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Fetch all collections in parallel (like old method)
+  // Real-time listener for changes in Firestore
+  useEffect(() => {
+    const collectionNames = ["products", "collections", "newArrivals", "trending", "banners"];
+    const unsubscribers = [];
+
+    collectionNames.forEach((collectionName) => {
+      const collectionRef = collection(db, collectionName);
+      const q = query(collectionRef);
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const updatedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        setProducts(prev => ({
+          ...prev,
+          [collectionName]: updatedData
+        }));
+
+        console.log(`Realtime update for ${collectionName}:`, updatedData);
+      });
+
+      unsubscribers.push(unsubscribe);
+    });
+
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
+  }, [db]);
+
+  // Fetch all collections in parallel
   const fetchAllCollections = async () => {
     setLoading(true);
     try {
       const collectionNames = ["products", "collections", "newArrivals", "trending", "banners"];
-      const fetchPromises = collectionNames.map(name => fetchProducts(name, {}, 20, false));
-
-      await Promise.all(fetchPromises);
+      await Promise.all(collectionNames.map(name => fetchProducts(name, {}, 20, false)));
     } catch (error) {
       console.error("Error fetching collections:", error);
     } finally {

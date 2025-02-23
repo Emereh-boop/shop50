@@ -39,6 +39,7 @@ function App() {
           <Route path="/new" element={<NewArrival />} />
           <Route path="/trend" element={<Trending />} />
           <Route path="/products/:category" element={<Products />} />
+          <Route path="/:user/order" element={<Products />} />
           <Route path="/collections" element={<Collection />} />
           <Route path="/admin" element={<AdminManagement />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />

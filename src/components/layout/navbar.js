@@ -2,24 +2,23 @@ import React, { useEffect, useState, Fragment } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cart/context";
 import { useProducts } from "../../context/products/context";
-import { Cart4, PersonCircle, Search } from "react-bootstrap-icons";
+import { Cart4, PersonCircle, Search, X } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
 // import Logo from "../images/logo.jpg";
 import Cart from "../../pages/cart";
-// import { collection, query, orderBy, where, getDocs } from "firebase/firestore";
-// import { db } from "../firebase"; // Make sure your Firebase config is properly imported
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
-  const location = useLocation()
+  const location = useLocation();
   const { cartItems = [] } = useCart();
   const { products = {} } = useProducts();
-  const prod = products?.products ;
+  const prod = products?.products;
+  const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState([]);
   const [navigation, setNavigation] = useState([
@@ -44,7 +43,7 @@ export default function Navbar() {
       setFilter([]);
       return;
     }
-  
+
     if (searchTerm) {
       const filtered = prod.filter((product) =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,7 +53,7 @@ export default function Navbar() {
       setFilter(prod);
     }
   }, [searchTerm, prod]);
-  
+
   const [logout, setLogout] = useState(false);
   const [cart, setCart] = useState(false);
 
@@ -83,15 +82,15 @@ export default function Navbar() {
                   /> */}
                   YNT
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4">
+                <div className="hidden ml-6 sm:block">
+                  <div className="flex space-x-1 md:space-x-4">
                     {navigation.map((item) => (
                       <a
                         key={item.name}
                         href={item.href}
                         className={classNames(
                           item.current
-                            ? "text-primary bg-zinc-200"
+                            ? "text-black bg-gray-200"
                             : "text-gray-400 hover:text-black",
                           "rounded-sm px-3 py-1 text-sm font-medium"
                         )}
@@ -104,7 +103,58 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="flex items-center justify-end space-x-4">
-                {/* Search Bar */}
+                {/* Search Icon for Mobile */}
+                <button
+                  onClick={() => setShowSearch(true)}
+                  className="block lg:hidden p-2 text-gray-700 focus:outline-none"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+
+                {/* Full-Screen Mobile Search Overlay */}
+                {showSearch && (
+                  <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center px-4">
+                    <div className="relative w-full max-w-md">
+                      <input
+                        type="search"
+                        className="w-full p-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <button
+                        onClick={() => setShowSearch(false)}
+                        className="absolute right-3 top-3 text-gray-500"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+                    {searchTerm && (
+                      <ul className="w-full max-w-md bg-white mt-2 shadow-lg rounded-md">
+                        {filter.length > 0 ? (
+                          filter.map((product) => (
+                            <li
+                              key={product.id}
+                              onClick={() => {
+                                window.location.href = `/product/${product.id}`;
+                                setShowSearch(false);
+                              }}
+                              className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
+                            >
+                              {product.title}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="px-4 py-2 text-gray-700">
+                            No results found
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* Search Bar (Visible on Larger Screens) */}
                 <div className="relative hidden lg:block">
                   <div className="flex items-center bg-neutral-100 rounded-sm px-3 py-1.5">
                     <Search className="w-4 h-4 text-gray-400" />
@@ -120,16 +170,16 @@ export default function Navbar() {
                   {searchTerm && (
                     <div className="absolute z-10 w-full bg-white mt-1 rounded-sm shadow-lg">
                       <ul className="py-1">
-                        {filter?.length > 0 ? (
-                          filter.map((l, index) => (
+                        {filter.length > 0 ? (
+                          filter.map((product) => (
                             <li
-                              key={index}
+                              key={product.id}
                               onClick={() =>
-                                (window.location.href = `/product/${l.id}`)
+                                (window.location.href = `/product/${product.id}`)
                               }
                               className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                             >
-                              {l.title}
+                              {product.title}
                             </li>
                           ))
                         ) : (
@@ -141,6 +191,8 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
+              </div>
+              <div className="flex items-center justify-end space-x-4">
                 {/* Cart Icon */}
                 <button
                   type="button"
@@ -242,9 +294,9 @@ export default function Navbar() {
                   // onClick={() => handleClick(item.name)}
                   className={classNames(
                     item.current
-                      ? "text-primary bg-zinc-200"
+                      ? "text-blue-950 bg-gray-200"
                       : "text-gray-400 hover:text-black",
-                    "block rounded-sm px-3 py-1 text-base font-medium"
+                    "block rounded-sm px-3 py-1 text-sm font-medium"
                   )}
                   aria-current={item.current ? "page" : undefined}
                 >

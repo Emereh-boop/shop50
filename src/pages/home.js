@@ -7,7 +7,7 @@ import HeroPage from "../components/layout/hero";
 
 export default function Home() {
   return (
-    <div className="relative h-dvh flex flex-col">
+    <div className="relative h-dvh">
       <HeroPage />
       <ShopProducts />
       <NewArrivals />
