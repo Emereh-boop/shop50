@@ -74,7 +74,7 @@ export default function Navbar() {
                   )}
                 </Disclosure.Button>
               </div>
-              <div className="flex flex-1 gap-3 lg:items-center lg:justify-center">
+              <div className="flex flex-1 gap-3 lg:items-center lg:justify-start">
                 <div className="mx-10">
                   <img
                     className=" object-cover w-10 h-10 rounded-full"
@@ -224,7 +224,7 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            onClick={() => navigate("/")}
+                            onClick={() => navigate("/profile")}
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
