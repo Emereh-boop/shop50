@@ -6,6 +6,7 @@ import { Cart4, PersonCircle, Search, X } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
+import Logo from "../../images/yntlogo.png"
 // import Logo from "../images/logo.jpg";
 import Cart from "../../pages/cart";
 
@@ -73,14 +74,13 @@ export default function Navbar() {
                   )}
                 </Disclosure.Button>
               </div>
-              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="font-black text-primary text-xl">
-                  {/* <img
-                    className=" w-40 h-5 object-contain"
+              <div className="flex flex-1 gap-3 lg:items-center lg:justify-center">
+                <div className="mx-10">
+                  <img
+                    className=" object-cover w-10 h-10 rounded-full"
                     src={Logo}
                     alt="nahtty"
-                  /> */}
-                  YNT
+                  />
                 </div>
                 <div className="hidden ml-6 sm:block">
                   <div className="flex space-x-1 md:space-x-4">
@@ -113,7 +113,7 @@ export default function Navbar() {
 
                 {/* Full-Screen Mobile Search Overlay */}
                 {showSearch && (
-                  <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center px-4">
+                  <div className="fixed inset-0 bg-white z-50 flex flex-col items-start justify-start p-4">
                     <div className="relative w-full max-w-md">
                       <input
                         type="search"

@@ -29,7 +29,7 @@ export default function TrendingComp() {
 
   return (
     <div className=" bg-secondary px-4">
-      <div className="text-start text-4xl font-extrabold text-black my-5">
+      <div className="text-start text-xl lg:text-4xl font-extrabold text-black my-5">
         TRENDING
       </div>
       <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">

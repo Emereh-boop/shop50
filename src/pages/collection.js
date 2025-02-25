@@ -1,5 +1,5 @@
 // trending page
-import React, { useContext } from "react";
+import React from "react";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
@@ -47,9 +47,9 @@ export default function Collections() {
                             {/* <p className="hidden text-white text-base lg:text-xl font-[100] mt-2 mb-4">
                               {p.description || p.subtitle}
                             </p> */}
-                            <button className="mt-2 underline px-2 py-1 md:px-4 md:py-1 bg-white text-black font-bold rounded-sm hover:bg-gray-100">
+                            {/* <button className="mt-2 underline px-2 py-1 md:px-4 md:py-1 bg-white text-black font-bold rounded-sm hover:bg-gray-100">
                               Shop
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       </Link>

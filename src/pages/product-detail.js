@@ -38,8 +38,7 @@ const ProductDetails = () => {
   };
 
   useEffect(() => {
-    const productList = prod; // Destructure correctly
-    const selectedProduct = productList.find((product) => product.id === id);
+    const selectedProduct = prod?.find((product) => product.id === id);
     setProduct(selectedProduct);
     setProductParam(selectedProduct?.brand);
   }, [id, products, prod]);

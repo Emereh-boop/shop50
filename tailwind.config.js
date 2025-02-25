@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#f472b6", // Elegant, mature pink (YNT Brand)
+        primary: "#000000", // Elegant, mature pink (YNT Brand)
         secondary: "#f8f8fb", // Deep charcoal (Professional & Trustworthy)
         accent: "#0099FF", // Subtle blue accent (Modern & Fresh)
         background: "#F8F9FA", // Soft white-gray background
@@ -41,11 +41,17 @@ module.exports = {
       animation: {
         "fade-in": "fadeIn 1.2s ease-in-out",
         "wiggle": "wiggle 2s ease-in-out infinite",
+        "check": "check 1s ease-out forwards", // Custom checkmark animation
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
+        },
+        // This defines the stroke animation
+        check: {
+          "0%": { "stroke-dasharray": "0, 100" }, // Start with the path invisible
+          "100%": { "stroke-dasharray": "100, 0" }, // End with the full path drawn
         },
         wiggle: {
           "0%, 100%": { transform: "rotate(-3deg)" },

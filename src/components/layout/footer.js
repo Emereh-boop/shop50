@@ -6,7 +6,7 @@ export default function Footer() {
   const {user}= useAuth()
   return (
     <footer
-      className={`px-10 static gap-5 flex flex-col bg-secondary dark:invert-0 invert text-primary`}
+      className={`py-10 px-5 static gap-5 flex flex-col bg-secondary dark:invert-0 invert text-black`}
     >
       <div className="flex text-7xl font-black justify-center md:text-9xl">
         YNT
@@ -21,12 +21,12 @@ export default function Footer() {
           <form method="post" href="#" className="flex items-center">
             <input
               type="email"
-              className="flex-1 p-2 rounded-l-sm bg-transparent text-primary ring-1 ring-primary focus:outline-none"
+              className="flex-1 p-2 rounded-l-sm bg-transparent text-black ring-1 ring-black focus:outline-none"
               placeholder="Email"
             />
             <button
               type="submit"
-              className="p-2 bg-primary rounded-r-md text-secondary hover:bg-primary/80"
+              className="p-2 bg-black rounded-r-md text-secondary hover:bg-black/80"
             >
               Join
             </button>

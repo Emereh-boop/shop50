@@ -17,7 +17,7 @@ function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [currentIndex, nextSlide]); // Restart interval when currentIndex changes
@@ -41,8 +41,8 @@ function Hero() {
   const goToSlide = (index) => setCurrentIndex(index); // Jump to a specific slide
 
   return (
-    <div className="relative flex items-center justify-center min-h-[80vh] bg-black">
-      {banners.length > 0 && (
+    <div className="relative flex items-center justify-center min-h-[40vh] lg:min-h-[80vh] bg-black">
+      {banners?.length > 0 && (
         <>
           <img
             src={banners[currentIndex].imageUrl}

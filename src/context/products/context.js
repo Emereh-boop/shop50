@@ -47,7 +47,6 @@ export const ProductProvider = ({ children }) => {
       const snapshot = await getDocs(productQuery);
       const fetchedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      console.log(`Fetched ${collectionName}:`, fetchedData); // Debugging log
 
       // Update last visible document for pagination
       if (snapshot.docs.length > 0) {
@@ -88,7 +87,6 @@ export const ProductProvider = ({ children }) => {
           [collectionName]: updatedData
         }));
 
-        console.log(`Realtime update for ${collectionName}:`, updatedData);
       });
 
       unsubscribers.push(unsubscribe);

@@ -1,13 +1,14 @@
-import React, {  useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
+import { useNavigate } from "react-router-dom";
 
 export default function NewArrivalsComp() {
   const { products = {} } = useProducts();
-  const newArrivals = products?.newArrivals || []
+  const newArrivals = products?.newArrivals || [];
   const sliderRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
-
+  const navigate = useNavigate();
   const slideRight = () => {
     if (
       sliderRef.current.scrollLeft + sliderRef.current.clientWidth >=
@@ -44,16 +45,16 @@ export default function NewArrivalsComp() {
 
   return (
     <div
-      className="md:px-4"
+      className="md:px-4 mt-16"
       tabIndex={0} // Makes the div focusable
       onMouseEnter={() => setIsFocused(true)}
       onMouseLeave={() => setIsFocused(false)}
     >
-      <h2 className="text-start text-4xl font-extrabold text-black my-5">
+      <h2 className="text-start text-xl lg:text-4xl font-extrabold text-black px-4 lg:px-1 my-5">
         NEW ARRIVALS
       </h2>
 
-      <div className="relative group lg:px-0 mx-auto">
+      <div className="relative group px-0 lg:px-0 mx-auto">
         <div
           ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide snap-x snap-mandatory"
@@ -64,9 +65,9 @@ export default function NewArrivalsComp() {
                 key={p.id}
                 className="flex-shrink-0 w-60 lg:w-[30rem] snap-start"
               >
-                <div className="relative p-1">
+                <div className="relative">
                   <img
-                    className="w-full h-60 object-center lg:h-[35rem] ring-1 ring-gray-700 object object-cover rounded-sm transition-transform duration-500 ease-in-out"
+                    className="w-full h-60 object-center lg:h-[35rem] lg:ring-1 ring-gray-700 object object-cover rounded-sm transition-transform duration-500 ease-in-out"
                     src={p.imageUrl || p.image}
                     alt={p.title}
                   />
@@ -77,13 +78,13 @@ export default function NewArrivalsComp() {
             <p className="text-gray-400 p-6">Loading collection...</p>
           )}
         </div>
-        {products.newArrivals?.length > 0 && (
-          <a
-            href="/new"
-            className="absolute flex gap-2 lg:gap-4 items-center left-5 lg:left-10 bottom-5 lg:bottom-10 py-2 lg:py-3 border px-3 lg:px-6 rounded-sm  bg-white text-black hover:bg-gray-100 transition-colors text-center"
+        {products.newArrivals && (
+          <button
+            onClick={() => navigate("/new")}
+            className="absolute flex gap-2 lg:gap-4 items-center left-5 lg:left-10 bottom-5 lg:bottom-10 py-2 lg:py-3 border px-3 lg:px-6 rounded-sm bg-white text-black hover:bg-gray-100 transition-colors text-center"
           >
             shop the collection <ArrowRight />
-          </a>
+          </button>
         )}
       </div>
     </div>

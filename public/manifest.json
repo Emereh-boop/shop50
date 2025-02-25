@@ -1,14 +1,12 @@
 {
-  "short_name": "YNT ",
+  "short_name": "YNT",
   "name": "YNT",
   "icons": [
     {
-      "src": "../../../../../Pictures/Screenshots/yntlogo.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "./assets/logo_circle_pinkbg.png",
+      "sizes": "116x117",
+      "type": "image/png"
     }
-
-
   ],
   "start_url": "YNT",
   "display": "standalone",

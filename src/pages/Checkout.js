@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Bank, CreditCard } from "react-bootstrap-icons";
 import { useCart } from "../context/cart/context";
