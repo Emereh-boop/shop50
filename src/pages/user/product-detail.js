@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { useCart } from "../context/cart/context";
-import Navbar from "../components/layout/navbar";
-import Footer from "../components/layout/footer";
+import { useCart } from "../../context/cart/context";
+import Navbar from "../../components/layout/navbar";
+import Footer from "../../components/layout/footer";
 import { Dash, Plus } from "react-bootstrap-icons";
-import { formatCurrency } from "../utils/format";
-import { useProducts } from "../context/products/context";
+import { formatCurrency } from "../../utils/format";
+import { useProducts } from "../../context/products/context";
 
 const ProductDetails = () => {
   const { id } = useParams();

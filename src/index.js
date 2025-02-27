@@ -15,23 +15,23 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
 
 root.render(
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {" "}
-        {/* Wrap everything inside AuthProvider */}
-        <UserProvider>
-          <CartProvider>
-            <ProductProvider>
-              <React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      {" "}
+      {/* Wrap everything inside AuthProvider */}
+      <UserProvider>
+        <CartProvider>
+          <ProductProvider>
+            <React.StrictMode>
+              <ErrorBoundary>
                 <App />
-              </React.StrictMode>
-            </ProductProvider>
-          </CartProvider>
-        </UserProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+              </ErrorBoundary>
+            </React.StrictMode>
+          </ProductProvider>
+        </CartProvider>
+      </UserProvider>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 reportWebVitals();

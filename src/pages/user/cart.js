@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useCart } from "../context/cart/context";
+import { useCart } from "../../context/cart/context";
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Plus } from "react-bootstrap-icons";
 import { XMarkIcon, MinusIcon } from "@heroicons/react/24/outline";
-import { formatCurrency } from "../utils/format";
-import { useAuth } from "../context/auth/context";
+import { formatCurrency } from "../../utils/format";
+import { useAuth } from "../../context/auth/context";
 
 export default function Cart() {
   const [open, setOpen] = useState(true);

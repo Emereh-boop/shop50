@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { formatCurrency } from "../../utils/format";
+import { filterTrendingProducts } from "../../utils/filtertrending";
 import {
   // CartPlus,
   ChevronCompactLeft,
@@ -7,11 +8,14 @@ import {
   // HeartFill,
 } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
+import { Load } from "../common/loading";
 
 export default function TrendingComp() {
   const sliderRef = useRef(null);
   const { products = {} } = useProducts();
-  const trending = products?.trending || [];
+  const prods = products?.products || [];
+
+  const trending = filterTrendingProducts(prods);
 
   const slideLeft = () => {
     sliderRef.current.scrollBy({
@@ -58,7 +62,7 @@ export default function TrendingComp() {
               </div>
             ))
           ) : (
-            <p className="text-gray-400">Loading ...</p>
+            <Load />
           )}
         </div>
 

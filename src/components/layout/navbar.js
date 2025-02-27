@@ -4,11 +4,12 @@ import { useCart } from "../../context/cart/context";
 import { useProducts } from "../../context/products/context";
 import { Cart4, PersonCircle, Search, X } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLongLeftIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
-import Logo from "../../images/yntlogo.png"
+import Logo from "../../images/yntlogo.png";
 // import Logo from "../images/logo.jpg";
-import Cart from "../../pages/cart";
+import Cart from "../../pages/user/cart";
+import { useAuth } from "../../context/auth/context";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -18,6 +19,7 @@ export default function Navbar() {
   const location = useLocation();
   const { cartItems = [] } = useCart();
   const { products = {} } = useProducts();
+  const { user } = useAuth();
   const prod = products?.products;
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -234,46 +236,50 @@ export default function Navbar() {
                           </div>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="/register"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
+                      {!user ? (
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href="/register"
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                Sign Up
+                              </a>
                             )}
-                          >
-                            Sign Up
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="/login"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href="/login"
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                Login
+                              </a>
                             )}
-                          >
-                            Login
-                          </a>
-                        )}
-                      </Menu.Item>
-
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={() => setLogout(true)}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                            )}
-                          >
-                            Log out
-                          </div>
-                        )}
-                      </Menu.Item>
+                          </Menu.Item>
+                        </>
+                      ) : (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              onClick={() => setLogout(true)}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                              )}
+                            >
+                              Log out 
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -285,7 +291,7 @@ export default function Navbar() {
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="flex space-y-1 p-2">
+            <div className="flex space-y-1 items-center p-1">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}

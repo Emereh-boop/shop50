@@ -1,19 +1,19 @@
 import React from "react";
-import Home from "./pages/home";
+import Home from "./pages/user/home";
 import "./styles/index.css";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import Cart from "./pages/cart";
+import Cart from "./pages/user/cart";
 import NotFound from "./components/layout/not-found";
-import Products from "./pages/products";
-import Collection from "./pages/collection";
-import NewArrival from "./pages/new-arrival";
+import Products from "./pages/user/products";
+import Collection from "./pages/user/collection";
+import NewArrival from "./pages/user/new-arrival";
 import Navbar from "./components/layout/navbar";
 import ResetPass from "./pages/auth/ResetPass";
-import Trending from "./pages/trend";
+import Trending from "./pages/user/trend";
 import PrivateRoute from "./routes/PrivateRoute";
 import AdminRoute from "./routes/AdminRoute";
-import Product from "./pages/product-detail";
-import Checkout from "./pages/checkout";
+import Product from "./pages/user/product-detail";
+import Checkout from "./pages/user/checkout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AdminManagement from "./pages/admin/admin";
@@ -22,6 +22,7 @@ import UnauthorizedPage from "./pages/auth/un-auth";
 import UploadProduct from "./pages/admin/upload";
 import CouponUpload from "./pages/admin/coupon";
 import { AuthProvider } from "./context/auth/context";
+import Profile from "./pages/user/profile";
 
 function App() {
   return (
@@ -33,13 +34,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ResetPass />} />
           <Route path="/new" element={<NewArrival />} />
           <Route path="/trend" element={<Trending />} />
           <Route path="/products/:category" element={<Products />} />
-          <Route path="/:uid/order" element={<Products />} />
+          <Route path="/:user/orders" element={<Products />} />
           <Route path="/collections" element={<Collection />} />
           <Route path="/admin" element={<AdminManagement />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />

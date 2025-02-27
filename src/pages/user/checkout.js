@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Bank, CreditCard } from "react-bootstrap-icons";
-import { useCart } from "../context/cart/context";
-import Navbar from "../components/layout/navbar";
-import Footer from "../components/layout/footer";
+import { useCart } from "../../context/cart/context";
+import Navbar from "../../components/layout/navbar";
+import Footer from "../../components/layout/footer";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { doc, setDoc, collection } from "firebase/firestore";
-import { db } from "../firebase/firebase"; // import your firebase config
-import { formatCurrency } from "../utils/format";
+import { db } from "../../firebase/firebase"; // import your firebase config
+import { formatCurrency } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
-
+import { useUser } from "../../context/user/context";
 
 // Firebase function
 const functions = getFunctions();
@@ -49,6 +49,7 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [coupon, setCoupon] = useState("");
   const { removeItem, clearCart, cartItems = [] } = useCart();
+  const { userData } = useUser();
   const navigate = useNavigate();
 
   const cart = cartItems.reduce(
@@ -63,7 +64,7 @@ const CheckoutPage = () => {
     },
     { cart: [] }
   ).cart;
-  
+
   const discount = isNaN(parseFloat(coupon)) ? 0 : parseFloat(coupon);
   const subt = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
   const shipping = 0;
@@ -77,6 +78,7 @@ const CheckoutPage = () => {
     event.preventDefault();
 
     const orderData = {
+      userId: userData.uid, // Include user ID to link the order to the user
       name,
       lastName,
       tel,

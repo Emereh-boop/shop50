@@ -72,7 +72,7 @@ export const ProductProvider = ({ children }) => {
 
   // Real-time listener for changes in Firestore
   useEffect(() => {
-    const collectionNames = ["products", "collections", "newArrivals", "trending", "banners"];
+    const collectionNames = ["products", "banners"];
     const unsubscribers = [];
 
     collectionNames.forEach((collectionName) => {
@@ -101,7 +101,7 @@ export const ProductProvider = ({ children }) => {
   const fetchAllCollections = async () => {
     setLoading(true);
     try {
-      const collectionNames = ["products", "collections", "newArrivals", "trending", "banners"];
+      const collectionNames = ["products", "banners"];
       await Promise.all(collectionNames.map(name => fetchProducts(name, {}, 20, false)));
     } catch (error) {
       console.error("Error fetching collections:", error);

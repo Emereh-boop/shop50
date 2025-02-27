@@ -64,7 +64,7 @@ export default function Login() {
           />
 
           <h2 className="text-center text-xl font-bold leading-9 tracking-tight text-black">
-            Sign in to your account
+            Login to your account
           </h2>
         </div>
         <form className="lg:w-1/4 w-full lg:shadow-lg flex flex-col gap-3 p-5">

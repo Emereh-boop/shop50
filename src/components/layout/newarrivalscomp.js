@@ -2,10 +2,16 @@ import React, { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
 import { useNavigate } from "react-router-dom";
+import { Load } from "../common/loading";
 
 export default function NewArrivalsComp() {
   const { products = {} } = useProducts();
-  const newArrivals = products?.newArrivals || [];
+  const newArrivals = Array.isArray(products?.products)
+    ? products.products
+        .sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)) // Sort by date, descending
+        .slice(0, 20) // Adjust the number of products displayed
+    : []; // Fallback to an empty array if products is undefined or not an array
+  
   const sliderRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
@@ -38,7 +44,7 @@ export default function NewArrivalsComp() {
     if (isFocused) {
       autoSlide = setInterval(() => {
         slideRight();
-      }, 5000); // Slide every 5 seconds
+      }, 3000); // Slide every 5 seconds
     }
     return () => clearInterval(autoSlide);
   }, [isFocused]);
@@ -75,7 +81,7 @@ export default function NewArrivalsComp() {
               </div>
             ))
           ) : (
-            <p className="text-gray-400 p-6">Loading collection...</p>
+            <Load/>
           )}
         </div>
         {products.newArrivals && (

@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.1.3",
+    "@mui/icons-material": "^6.4.5",
+    "@mui/material": "^6.4.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tanstack/react-query": "^5.27.5",
     "@tanstack/react-query-devtools": "^5.28.4",

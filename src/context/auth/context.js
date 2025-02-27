@@ -11,12 +11,14 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const auth = getAuth();
   const db = getFirestore();
 
@@ -62,7 +64,11 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (email, password, displayName) => {
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       const adminRef = doc(db, "adminList", user.uid); // Check if user is pre-approved as admin
       const adminSnap = await getDoc(adminRef);
@@ -153,7 +159,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, register, login, googleSignIn, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, register, login, googleSignIn, logout, loading, error }}
+    >
       {children}
     </AuthContext.Provider>
   );

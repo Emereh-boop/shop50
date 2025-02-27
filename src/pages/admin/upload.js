@@ -468,6 +468,7 @@ export default function UploadData() {
               </label>
               <input
                 type="file"
+                accept="image/jpeg, image/png, image/jpg"
                 id="file"
                 onChange={(e) => handleChange(e)}
                 className="hidden"
