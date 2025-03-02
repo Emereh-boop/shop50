@@ -5,7 +5,7 @@ import { useCart } from "../../context/cart/context";
 import Navbar from "../../components/layout/navbar";
 import Footer from "../../components/layout/footer";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { doc, setDoc, collection, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase"; // import your firebase config
 import { formatCurrency } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
@@ -57,8 +57,10 @@ const CheckoutPage = () => {
   const validateCoupon = async (couponCode) => {
     try {
       const couponQuerySnapshot = await getDocs(collection(db, "coupons"));
-      const coupons = couponQuerySnapshot.docs.map(doc => doc.data());
-      const couponData = coupons.find(c => c.code === couponCode);
+      const coupons = couponQuerySnapshot.docs.map((doc) => doc.data());
+      const couponData = coupons.find(
+        (c) => c.code.toLowerCase() === couponCode.toLowerCase()
+      );
 
       if (!couponData) {
         alert("Invalid coupon code.");
@@ -83,46 +85,75 @@ const CheckoutPage = () => {
     }
   };
 
-  // Convert USD to Naira (Example conversion rate: 1 USD = 800 NGN)
-  const convertToNaira = (usdAmount) => {
-    const exchangeRate = 800; // Example exchange rate, should be dynamic if needed
+  const fetchExchangeRate = async () => {
+    try {
+      const response = await fetch(
+        "https://api.exchangerate-api.com/v4/latest/USD"
+      );
+      const data = await response.json();
+      return data.rates.NGN;
+    } catch (error) {
+      console.error("Failed to fetch exchange rate:", error);
+      return 800; // Fallback rate
+    }
+  };
+
+  const convertToNaira = async (usdAmount) => {
+    const exchangeRate = await fetchExchangeRate();
     return usdAmount * exchangeRate;
   };
 
-  // Handle payment method change
-  const handlePaymentMethodChange = (event) => {
-    setPaymentMethod(event.target.value);
-    handlePayment(); // Trigger payment on change
-  };
-
   // Stripe Payment handling
-  const handlePayment = async () => {
-    // Convert total to Naira
-    const amountInNaira = convertToNaira(tot);
+  const handlePayment = async (event) => {
+    event.preventDefault();
 
-    const paymentData = {
-      amount: amountInNaira * 100, // Convert to cents (Stripe works with cents)
-      currency: "NGN", // Naira currency
-      token: "tok_visa", // You should replace this with the actual token from Stripe
-    };
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+        type: "card",
+        card: elements.getElement(CardElement),
+    });
+
+    if (error) {
+        console.error("Stripe Error:", error);
+        return;
+    }
+
+    await processPayment(1000, paymentMethod.id);  // Pass only the ID
+};
+
+
+  async function applyCoupon(code) {
+    const response = await fetch("/api/coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      console.log(`Discount applied: ${data.discount}%`);
+    } else {
+      console.error(data.error);
+    }
+  }
+  async function processPayment(amount, paymentMethodId) {
+    if (typeof paymentMethodId !== "string") {
+      console.error("Invalid paymentMethodId:", paymentMethodId);
+      return;
+    }
 
     const response = await fetch("/api/charge", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(paymentData),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount,
+        currency: "usd",
+        paymentMethodId, // Ensure this is a string
+      }),
     });
 
-    const result = await response.json();
-
-    if (result.error) {
-      alert(`Payment failed: ${result.error}`);
-    } else {
-      alert("Payment successful!");
-      handleSubmit(); // Proceed to submit order after successful payment
-    }
-  };
+    const data = await response.json();
+    console.log("Payment Response:", data);
+  }
 
   // Handle the order submission
   const handleSubmit = async (event) => {
@@ -154,7 +185,8 @@ const CheckoutPage = () => {
 
     // Send order data to Firestore
     try {
-      await setDoc(doc(collection(db, "orders")), orderData);
+      // await setDoc(doc(collection(db, "orders")), orderData);
+      await addDoc(collection(db, "orders"), orderData);
       alert("Order placed successfully!");
       setName("");
       setLastName("");
@@ -417,7 +449,7 @@ const CheckoutPage = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => validateCoupon(coupon)}
+                    onClick={() => applyCoupon(coupon)}
                     className="bg-blue-600 text-white px-3 py-2 rounded-sm"
                   >
                     +
@@ -450,7 +482,7 @@ const CheckoutPage = () => {
                   type="radio"
                   value="Bank transfer"
                   checked={paymentMethod === "Bank transfer"}
-                  onChange={handlePaymentMethodChange}
+                  onChange={(e)=>handlePayment(e)}
                   className="hidden"
                 />
                 <label
@@ -468,7 +500,7 @@ const CheckoutPage = () => {
                   type="radio"
                   value="Credit Card"
                   checked={paymentMethod === "Credit Card"}
-                  onChange={handlePaymentMethodChange}
+                  onChange={(e)=>handlePayment(e)}
                   className="hidden"
                 />
                 <label

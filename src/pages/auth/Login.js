@@ -50,7 +50,7 @@ export default function LoginModal({ isOpen, setIsOpen }) {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
+      <Dialog as="div" className="relative z-50" onClose={() => setIsOpen(false)}>
         {/* ✅ Fixed: No need for show={isOpen} here */}
         <Transition.Child
           show={isOpen}

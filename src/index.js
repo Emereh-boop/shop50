@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/auth/context"; // Import AuthProvider
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "react-query";
 
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
 
@@ -18,8 +19,6 @@ root.render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {" "}
-        {/* Wrap everything inside AuthProvider */}
         <UserProvider>
           <CartProvider>
             <ProductProvider>

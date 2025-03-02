@@ -8,16 +8,14 @@ import { formatCurrency } from "../../utils/format";
 import { useAuth } from "../../context/auth/context";
 import { useNavigate } from "react-router-dom";
 import Toast from "../../components/common/toast";
+import LoginModal from "../auth/Login";
 
 export default function Cart() {
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const [subTotal, setSubTotal] = useState(0);
-  const {
-    cartItems = [],
-    removeItem,
-    updateQuantity,
-  } = useCart();
+  const { cartItems = [], removeItem, updateQuantity } = useCart();
   const { user } = useAuth();
 
   const cart = cartItems.reduce(
@@ -43,15 +41,17 @@ export default function Cart() {
 
   // Function to handle checkout
   const handleCheckout = () => {
-    if (cart.length === 0) {
-      <Toast type="error" message="Your cart is empty! Please add some items before proceeding."/>
+    if (!user) {
+      setIsOpen(true); // Now it correctly shows the login modal
+    } else {
+      setOpen(false)
+      navigate(`/checkout/${user?.uid}`);
     }
-    navigate(`/checkout/${user?.uid}`)
   };
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={setOpen}>
+      <Dialog as="div" className="relative z-10" onClose={setOpen}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -77,6 +77,14 @@ export default function Cart() {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-lg">
+                  {isOpen && (
+                    <LoginModal
+                      isOpen={isOpen}
+                      setIsOpen={setIsOpen}
+                      onClose={() => setIsOpen(false)}
+                    />
+                  )}
+
                   <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                       <div className="flex items-start justify-between">
@@ -184,12 +192,13 @@ export default function Cart() {
                       </p>
                       <div className="mt-6 w-full">
                         {cart.length > 0 ? (
-                          <a
-                          href={`/checkout/${user?.uid}`}
+                          <button
+                            // href={`/checkout/${user?.uid}`}
+                            onClick={() => handleCheckout()}
                             className="flex items-center justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
                           >
                             Checkout
-                          </a>
+                          </button>
                         ) : (
                           <button
                             className="flex items-center w-full justify-center rounded-md border border-transparent bg-gray-500 px-6 py-3 text-base font-medium text-white cursor-not-allowed"
