@@ -4,12 +4,14 @@ import { useCart } from "../../context/cart/context";
 import { useProducts } from "../../context/products/context";
 import { Cart4, PersonCircle, Search, X } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { ArrowLongLeftIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
 import Logo from "../../images/yntlogo.png";
 // import Logo from "../images/logo.jpg";
 import Cart from "../../pages/user/cart";
 import { useAuth } from "../../context/auth/context";
+import LoginModal from "../../pages/auth/Login";
+import { useUser } from "../../context/user/context";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -20,6 +22,7 @@ export default function Navbar() {
   const { cartItems = [] } = useCart();
   const { products = {} } = useProducts();
   const { user } = useAuth();
+  const { userData, loading, setUserData } = useUser();
   const prod = products?.products;
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,8 +60,9 @@ export default function Navbar() {
     }
   }, [searchTerm, prod]);
 
-  const [logout, setLogout] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [cart, setCart] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
     <Disclosure as="nav" className=" shadow-md ">
@@ -211,7 +215,8 @@ export default function Navbar() {
                 {/* Profile Dropdown */}
                 <Menu as="div" className="relative">
                   <Menu.Button className="flex items-center rounded-sm p-1 text-gray-700 focus:outline-none">
-                    <PersonCircle className="h-7 w-7" />
+                   
+                    {userData? <img src={userData.photoURL } alt=""/> :  <PersonCircle className="h-7 w-7" />}
                   </Menu.Button>
                   <Transition
                     as={Fragment}
@@ -223,19 +228,6 @@ export default function Navbar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-sm bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={() => navigate("/profile")}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                            )}
-                          >
-                            Profile
-                          </div>
-                        )}
-                      </Menu.Item>
                       {!user ? (
                         <>
                           <Menu.Item>
@@ -253,38 +245,62 @@ export default function Navbar() {
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
-                              <a
-                                href="/login"
+                              <button
+                                onClick={() => setShowLoginModal(true)}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-gray-700 w-full text-left"
                                 )}
                               >
                                 Login
-                              </a>
+                              </button>
                             )}
                           </Menu.Item>
                         </>
                       ) : (
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              onClick={() => setLogout(true)}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                              )}
-                            >
-                              Log out 
-                            </div>
-                          )}
-                        </Menu.Item>
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                onClick={() => navigate("/profile")}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                )}
+                              >
+                                Profile
+                              </div>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                onClick={() => setIsLogoutOpen(true)}
+                                className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer ${
+                                  active ? "bg-gray-100" : ""
+                                }`}
+                              >
+                                Log out
+                              </div>
+                            )}
+                          </Menu.Item>
+                        </>
                       )}
                     </Menu.Items>
                   </Transition>
                 </Menu>
                 {/* Conditional Rendering of Cart and Logout Components */}
-                {logout && <Logout />}
+                {showLoginModal && (
+                  <LoginModal
+                    setIsOpen={setShowLoginModal}
+                    isOpen={showLoginModal}
+                    onClose={() => setShowLoginModal(false)}
+                  />
+                )}
+
+                {isLogoutOpen && (
+                  <Logout isOpen={isLogoutOpen} setIsOpen={setIsLogoutOpen} />
+                )}
                 {cart && <Cart />}
               </div>
             </div>

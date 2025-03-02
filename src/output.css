@@ -67,6 +67,9 @@ body {
   color: white;
   /* 2 */
 }
+.grid {
+  grid-auto-rows: auto; /* Each row adapts to image height */
+}
 
 /*
 1. Add the correct height in Firefox.

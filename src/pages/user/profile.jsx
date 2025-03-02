@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { updateProfile, updateEmail } from "firebase/auth";
 import { useAuth } from "../../context/auth/context";
 import { useUser } from "../../context/user/context";
-import { Plus, Pencil } from "react-bootstrap-icons";
+import { Plus, Pencil, PersonCheck } from "react-bootstrap-icons";
 import { doc, updateDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase"; // assuming you already initialized Firebase
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, fetchSignInMethodsForEmail } from "firebase/auth";
+import { Load } from "../../components/common/loading";
+import LoginModal from "../auth/Login";
+import { formatCurrency } from "../../utils/format";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -18,6 +21,7 @@ export default function Profile() {
     const [imagePreview, setImagePreview] = useState(""); // Profile picture preview
     const [orders, setOrders] = useState([]); // Store orders
     const [loadingOrders, setLoadingOrders] = useState(true); // Loading state for orders
+    const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 
     // Capitalize the first letter of the name
     const capitalizeFirstLetter = (string) => {
@@ -30,8 +34,7 @@ export default function Profile() {
             if (loading) return; // Don't proceed until loading is done
 
             if (!user) {
-                navigate("/login"); // Redirect to login if no user is logged in
-                return; // Exit the function if no user is logged in
+                setLoginModalOpen(true)
             }
             try {
                 setLoadingOrders(true);
@@ -84,80 +87,80 @@ export default function Profile() {
         }
     };
 
-// Function to check if the email already exists
-const checkIfEmailExists = async (email) => {
-    try {
-        const methods = await fetchSignInMethodsForEmail(auth, email);
-        return methods.length > 0; // If any methods exist, it means the email is already used
-    } catch (error) {
-        console.error("Error checking if email exists:", error);
-        return false;
-    }
-};
-
-// Function to reauthenticate the user (make sure to use the correct Firebase Auth instance)
-const reauthenticate = async (user, currentPassword) => {
-    const auth = getAuth(); // Get the Firebase auth instance
-    const credential = EmailAuthProvider.credential(user.email, currentPassword); // Create a credential from current email and password
-
-    try {
-        await reauthenticateWithCredential(user, credential); // Reauthenticate with the credential
-    } catch (error) {
-        console.error("Error during reauthentication: ", error);
-        alert("Reauthentication required");
-        throw new Error("Reauthentication required");
-    }
-};
-
-// Handle Email Change
-const handleEmailChange = async () => {
-    if (!newEmail || newEmail === user?.email) {
-        alert("Please enter a valid email or use a different one.");
-        return;
-    }
-
-    try {
-        if (!user) {
-            throw new Error("User is not logged in.");
+    // Function to check if the email already exists
+    const checkIfEmailExists = async (email) => {
+        try {
+            const methods = await fetchSignInMethodsForEmail(auth, email);
+            return methods.length > 0; // If any methods exist, it means the email is already used
+        } catch (error) {
+            console.error("Error checking if email exists:", error);
+            return false;
         }
+    };
 
-        // Check if email already exists in Firebase Auth
-        const emailExists = await checkIfEmailExists(newEmail);
-        if (emailExists) {
-            alert("Email is already in use. Please try a different email.");
+    // Function to reauthenticate the user (make sure to use the correct Firebase Auth instance)
+    const reauthenticate = async (user, currentPassword) => {
+        const auth = getAuth(); // Get the Firebase auth instance
+        const credential = EmailAuthProvider.credential(user.email, currentPassword); // Create a credential from current email and password
+
+        try {
+            await reauthenticateWithCredential(user, credential); // Reauthenticate with the credential
+        } catch (error) {
+            console.error("Error during reauthentication: ", error);
+            alert("Reauthentication required");
+            throw new Error("Reauthentication required");
+        }
+    };
+
+    // Handle Email Change
+    const handleEmailChange = async () => {
+        if (!newEmail || newEmail === user?.email) {
+            alert("Please enter a valid email or use a different one.");
             return;
         }
 
-        // Request the user to enter their password for reauthentication
-        const currentPassword = prompt("Please enter your current password for reauthentication.");
-        if (!currentPassword) {
-            alert("Password is required for reauthentication.");
-            return;
+        try {
+            if (!user) {
+                throw new Error("User is not logged in.");
+            }
+
+            // Check if email already exists in Firebase Auth
+            const emailExists = await checkIfEmailExists(newEmail);
+            if (emailExists) {
+                alert("Email is already in use. Please try a different email.");
+                return;
+            }
+
+            // Request the user to enter their password for reauthentication
+            const currentPassword = prompt("Please enter your current password for reauthentication.");
+            if (!currentPassword) {
+                alert("Password is required for reauthentication.");
+                return;
+            }
+
+            // Reauthenticate user before updating email
+            await reauthenticate(user, currentPassword);
+
+            // Update email in Firebase Auth
+            const auth = getAuth();
+            await updateEmail(user, newEmail);
+
+            // Update email in Firestore
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, { email: newEmail });
+
+            // Update local state with the new email
+            setUserData((prev) => ({ ...prev, email: newEmail }));
+            alert("Email updated successfully!");
+        } catch (error) {
+            if (error.code === 'auth/requires-recent-login') {
+                alert("You need to log in again to update your email.");
+            } else {
+                console.error("Error updating email:", error);
+                alert("Failed to update email.");
+            }
         }
-
-        // Reauthenticate user before updating email
-        await reauthenticate(user, currentPassword);
-
-        // Update email in Firebase Auth
-        const auth = getAuth();
-        await updateEmail(user, newEmail);
-
-        // Update email in Firestore
-        const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, { email: newEmail });
-
-        // Update local state with the new email
-        setUserData((prev) => ({ ...prev, email: newEmail }));
-        alert("Email updated successfully!");
-    } catch (error) {
-        if (error.code === 'auth/requires-recent-login') {
-            alert("You need to log in again to update your email.");
-        } else {
-            console.error("Error updating email:", error);
-            alert("Failed to update email.");
-        }
-    }
-};
+    };
 
     // Handle Profile Image Change
     const handleProfileImageChange = async (event) => {
@@ -193,46 +196,60 @@ const handleEmailChange = async () => {
     const handlePasswordReset = () => {
         navigate("/forgot-password");
     };
+    const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-    if (loading || loadingOrders) return <div>Loading...</div>;
+    const handlePopupClose = () => {
+        setShowLoginPopup(false);
+    };
+
+    const handleActionClick = (e) => {
+        // Prevent interaction if user is not logged in
+        if (!user) {
+            setShowLoginPopup(true); // Show the login prompt popup
+            e.preventDefault(); // Prevent default action like navigating or submitting
+        }
+    };
+    if (loading || loadingOrders) return <Load />;
 
     return (
         <div className="flex flex-col lg:flex-row">
+            {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} setIsOpen={setLoginModalOpen} onClose={() => setLoginModalOpen(false)} />}
             <div className="w-full md:w-64 bg-secondary text-black/80 lg:min-h-screen p-1 text-sm lg:text-base lg:p-4">
                 <h3 className="text-lg font-bold mb-6">Menu</h3>
                 <ul className="list-none flex lg:flex-col">
                     <li
                         onClick={() => navigate("/profile")}
-                        className="cursor-pointer hover:bg-gray-100 p-2"
+                        className="cursor-pointer hover:bg-gray-200 p-2"
                     >
                         Profile
                     </li>
                     <li
-                        onClick={() => navigate(`/${user.uid}/orders`)}
-                        className="cursor-pointer hover:bg-gray-100 p-2"
+                        onClick={(e) => user? navigate(`/${user?.uid}/orders`) : handleActionClick(e)}
+                        className="cursor-pointer hover:bg-gray-200 p-2"
                     >
                         Orders
                     </li>
-                    <li
+                    {/* <li
                         onClick={() => navigate("#")}
                         className="cursor-pointer hover:bg-gray-100 p-2"
                     >
                         Settings
-                    </li>
+                    </li> */}
                 </ul>
             </div>
-            <div className="flex-1 p-8 bg-black/5 lg:mt-16">
+            <div className={`flex-1 p-8 bg-black/5 lg:mt-16 ${!user ? "opacity-50 cursor-not-allowed" : ""}`}>
                 <div className="flex flex-col items-start">
                     {/* Profile Image */}
                     <div className="relative mb-4 flex justify-self-center flex-col">
                         <img
-                            src={userData?.photoURL || "default-avatar.png"}
+                            src={userData.photoURL || "default-avatar.png"}
                             alt="Profile"
                             className="h-32 w-32 object-cover rounded-full"
                         />
                         <label
                             htmlFor="file-upload"
                             className="absolute bottom-0 right-0 bg-black text-white rounded-full p-2 cursor-pointer"
+                            onClick={handleActionClick}
                         >
                             <Plus />
                         </label>
@@ -248,6 +265,7 @@ const handleEmailChange = async () => {
                         {userData?.displayName ? capitalizeFirstLetter(userData.displayName) : "Name not set"}
                     </h2>
                     <p className="text-xs lg:text-sm text-gray-600">{user?.email}</p>
+
                     {/* Edit Name */}
                     <div className="mt-4 w-full max-w-md">
                         <label className="text-sm text-gray-600" htmlFor="name">Name</label>
@@ -256,18 +274,20 @@ const handleEmailChange = async () => {
                                 className="ring-1 ring-gray-300 rounded-sm p-2 w-full"
                                 type="text"
                                 id="name"
-                                value={ newName}
+                                value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
-                                placeholder={`${userData?.displayName || 'Enter your name' }`}
+                                placeholder={`${userData?.displayName || 'Enter your name'}`}
+                                onClick={handleActionClick}
                             />
                             <button
                                 className="bg-blue-600 text-white rounded-sm p-2"
-                                onClick={handleNameChange}
+                                onClick={(e) => { handleNameChange(e); handleActionClick(e); }}
                             >
                                 <Pencil />
                             </button>
                         </div>
                     </div>
+
                     {/* Edit Email */}
                     <div className="mt-4 w-full max-w-md">
                         <label className="text-sm text-gray-600" htmlFor="email">Email</label>
@@ -278,45 +298,76 @@ const handleEmailChange = async () => {
                                 id="email"
                                 value={newEmail}
                                 onChange={(e) => setNewEmail(e.target.value)}
-                                placeholder={`${userData?.email || 'Enter your email' }`}
+                                placeholder={`${userData?.email || 'Enter your email'}`}
+                                onClick={handleActionClick}
                             />
                             <button
                                 className="bg-blue-600 text-white rounded-sm p-2"
-                                onClick={handleEmailChange}
+                                onClick={(e) => { handleEmailChange(e); handleActionClick(e); }}
                             >
                                 <Pencil />
                             </button>
                         </div>
                     </div>
+
                     {/* Reset Password */}
                     <button
-                        className="mt-4 bg--600 text-blue-400 p- rounded-sm text-sm"
-                        onClick={handlePasswordReset}
+                        className="mt-4 bg-blue-600 text-white p-2 rounded-sm text-sm mb-3"
+                        onClick={(e) => { user ? handlePasswordReset() : handleActionClick(e); }}
                     >
                         Password Reset
                     </button>
+
                     {/* Orders Section */}
-                    <div className="mt-6 w-full max-w-md">
-                        <h3 className="text-lg font-bold mb-2">Your Orders</h3>
-                        <div>
-                            {orders.length > 0 ? (
-                                <ul>
-                                    {orders.map((order, index) => (
-                                        <li key={index} className="mb-2 p-2 border rounded-sm">
-                                            <p>Order ID: {order?.id}</p>
-                                            <p>Status: {order?.status}</p>
-                                            <p>Address: {order?.address}</p>
-                                            <p>Total: {order?.tot}</p>
-                                            <p>Payment Method: {order?.paymentMethod}</p>
-                                        </li>
+                    <div className="p-6 bg-white shadow-md rounded-sm hidden lg:block">
+                        <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
+
+                        {/* Check if there are orders */}
+                        {orders.length > 0 ? (
+                            <table className="w-full table-auto border-collapse">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="p-2 border-b text-left">Order ID</th>
+                                        <th className="p-2 border-b text-left">Status</th>
+                                        <th className="p-2 border-b text-left">Address</th>
+                                        <th className="p-2 border-b text-left">Total</th>
+                                        <th className="p-2 border-b text-left">Payment Method</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.slice(0, 4).map((order, index) => (
+                                        <tr key={index} className="border-b text-xs">
+                                            <td className="p-2">{order?.id}</td>
+                                            <td className="p-2">{order?.status}</td>
+                                            <td className="p-2">{order?.address}</td>
+                                            <td className="p-2">{formatCurrency(order?.tot)}</td>
+                                            <td className="p-2">{order?.paymentMethod}</td>
+                                        </tr>
                                     ))}
-                                </ul>
-                            ) : (
-                                <p>No orders found.</p>
-                            )}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p>No orders found.</p>
+                        )}
+                    </div>
+
+                </div>
+
+                {/* Login Popup */}
+                {showLoginPopup && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-sm w-80">
+                            <h2 className="text-lg font-semibold mb-4">Please Log In</h2>
+                            <p className="text-sm mb-4">You need to be logged in to perform this action.</p>
+                            <button
+                                className="bg-blue-600 text-white rounded-sm p-2 w-full"
+                                onClick={handlePopupClose} // Close the popup
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

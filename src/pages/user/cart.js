@@ -6,9 +6,12 @@ import { Plus } from "react-bootstrap-icons";
 import { XMarkIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { formatCurrency } from "../../utils/format";
 import { useAuth } from "../../context/auth/context";
+import { useNavigate } from "react-router-dom";
+import Toast from "../../components/common/toast";
 
 export default function Cart() {
   const [open, setOpen] = useState(true);
+  const navigate = useNavigate()
   const [subTotal, setSubTotal] = useState(0);
   const {
     cartItems = [],
@@ -37,6 +40,14 @@ export default function Cart() {
     );
     setSubTotal(total);
   }, [cart]);
+
+  // Function to handle checkout
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      <Toast type="error" message="Your cart is empty! Please add some items before proceeding."/>
+    }
+    navigate(`/checkout/${user?.uid}`)
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -171,13 +182,22 @@ export default function Cart() {
                       <p className="mt-0.5 text-sm text-gray-500">
                         Shipping and taxes calculated at checkout.
                       </p>
-                      <div className="mt-6">
-                        <a
+                      <div className="mt-6 w-full">
+                        {cart.length > 0 ? (
+                          <a
                           href={`/checkout/${user?.uid}`}
-                          className="flex items-center justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
-                        >
-                          Checkout
-                        </a>
+                            className="flex items-center justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
+                          >
+                            Checkout
+                          </a>
+                        ) : (
+                          <button
+                            className="flex items-center w-full justify-center rounded-md border border-transparent bg-gray-500 px-6 py-3 text-base font-medium text-white cursor-not-allowed"
+                            disabled
+                          >
+                            Checkout
+                          </button>
+                        )}
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                         <p>

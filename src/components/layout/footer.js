@@ -3,19 +3,19 @@ import { Facebook, Instagram, TwitterX } from "react-bootstrap-icons";
 import { useAuth } from "../../context/auth/context";
 
 export default function Footer() {
-  const {user}= useAuth()
+  const { user } = useAuth();
   return (
     <footer
       className={`py-10 px-5 static gap-5 flex flex-col bg-secondary dark:invert-0 invert text-black`}
     >
-      <div className="flex text-7xl font-black justify-center md:text-9xl">
+      <div className="flex text-7xl font-black justify-center lg:text-9xl">
         YNT
       </div>
       <hr className="text-gray-400" />
-      <div className="flex gap-4 md:gap-2 justify-between flex-col md:flex-row">
-        <div className="lg:col-span-2 text-slate-400">
-          <h1 className="uppercase font-semibold mb-4">NEWSLETTER</h1>
-          <p className="mb-4">
+      <div className="flex gap-2 justify-between flex-col lg:flex-row">
+        <div className="lg:col-span-2 text-gray-400">
+          <h1 className="uppercase font-semibold mb-1 lg:mb-4 text-black">NEWSLETTER</h1>
+          <p className="lg:mb-4 text-sm lg:text-base mb-1">
             Stay in touch with the latest updates about our products and offers.
           </p>
           <form method="post" href="#" className="flex items-center">
@@ -26,95 +26,90 @@ export default function Footer() {
             />
             <button
               type="submit"
-              className="p-2 bg-black rounded-r-md text-secondary hover:bg-black/80"
+              className="p-2 bg-black rounded-r-md ring-black ring-1 text-secondary hover:bg-black/80"
             >
               Join
             </button>
           </form>
         </div>
-        <div className="rev">
-          <h1 className="font-bold">STORE</h1>
-          <ul>
+        <div>
+          <h1 className="font-bold text-sm lg:text-lg">STORE</h1>
+          <ul className="text-gray-300 text-xs lg:text-base hover:underline">
             <li>
-              <a href="/about" className="text-gray-300 hover:underline">
-                About us
-              </a>
+              <a href="/about">About us</a>
             </li>
             <li>
-              <a href="/find" className="text-gray-300 hover:underline">
-                Find store
-              </a>
+              <a href="/find">Find store</a>
             </li>
             <li>
-              <a href="/collections" className="text-gray-300 hover:underline">
-                Categories
-              </a>
+              <a href="/collections">Categories</a>
             </li>
             <li>
-              <a href="/blogs" className="text-gray-300 hover:underline">
-                Blogs
-              </a>
+              <a href="/blogs">Blogs</a>
             </li>
           </ul>
         </div>
-        <div className="rev">
-          <h1 className="font-bold"> INFORMATION</h1>
-          <ul>
+        <div >
+          <h1 className="font-bold text-sm lg:text-lg"> INFORMATION</h1>
+          <ul className="text-gray-300 text-xs lg:text-base hover:underline">
             <li>
-              <a href="/refund" className="text-gray-300 hover:underline">
+              <a href="/refund">
                 Money refund
               </a>
             </li>
             <li>
-              <a href="/shipping" className="text-gray-300 hover:underline">
+              <a href="/shipping">
                 Shipping info
               </a>
             </li>
             <li>
-              <a href="/refunds" className="text-gray-300 hover:underline">
+              <a href="/refunds">
                 Refunds
               </a>
             </li>
           </ul>
         </div>
-        <div className="flex flex-col gap-2 ">
-          <h1 className="font-bold">SUPPORT</h1>
-          <div className="flex gap-4 flex-row md:flex-col">
-            <ul>
+        <div >
+          <h1 className="font-bold text-sm lg:text-lg">SUPPORT</h1>
+          <div className="flex gap-4 flex-row lg:flex-col">
+            <ul className="text-gray-300 text-xs lg:text-base hover:underline">
               <li>
-                <a href="/help" className="text-gray-300 hover:underline">
+                <a href="/help" >
                   Help center
                 </a>
               </li>
               <li>
-                <a href="/documents" className="text-gray-300 hover:underline">
+                <a href="/documents">
                   Documents
                 </a>
               </li>
               <li>
-                <a href="/account" className="text-gray-300 hover:underline">
+                <a href="/account">
                   Account restore
                 </a>
               </li>
               <li>
-                <a href={`/${user?.uid}/order`} className="text-gray-300 hover:underline">
+                <a
+                  href={`/${user?.uid}/order`}
+                  className="text-gray-300 hover:underline"
+                >
                   My orders
                 </a>
               </li>
             </ul>
           </div>
         </div>
-        <div className="flex flex-col gap-2 ">
-          <h1 className="font-bold">FOLLOW US</h1>
-          <div className="flex gap-4 flex-row md:flex-col">
-            <Facebook href="www.facebook.com/ynt" size={23} />
-            <Instagram href="www.instagram.com/ynt" size={23} />
-            <TwitterX href="www.twitter.com/ynt" size={23} />
+        <div>
+          <h1 className="font-bold text-sm lg:text-lg">FOLLOW US</h1>
+          <div className="flex gap-4 flex-row lg:flex-col">
+           <a href="www.facebook.com/ynt"> <Facebook  className="text-blue-500 " size={20} /> </a>
+           <a href="www.instagram.com/ynt"><Instagram href="www.instagram.com/ynt" className="bg-gradient-to-r from-[#F58529] via-[#DD2A7B] via-[#8134AF] to-[#515BD4] text-white p-[0.09rem] rounded-sm " size={20} /></a>
+           <a href="www.twitter.com/ynt"> <TwitterX href="www.twitter.com/ynt" className="text-black " size={20} /></a>
           </div>
         </div>
       </div>
-      <hr className="text-gray-400" />
-      <p className="flex justify-center text-sm text-gray-400 p-3 md:p-8">
+      <hr className="text-gray-400 hidden lg:block" />
+      <p className="flex justify-center text-xs lg:text-sm text-gray-500 p-2 lg:p-4">
         COPYRIGHT 2023 COMPANY ALL RIGHTS RESERVED
       </p>
     </footer>

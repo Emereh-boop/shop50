@@ -32,7 +32,7 @@ export default function CollectionComp() {
 
   return (
     <div className="flex flex-auto flex-wrap mt-5">
-      {collections?.map((collection) => (
+      {collections?.slice(0,4).map((collection) => (
         <div
           key={collection.id}
           onClick={() => navigate(`products/${collection.category}`)}

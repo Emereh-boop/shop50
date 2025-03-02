@@ -7,10 +7,11 @@ import {
 import { auth } from "../../firebase/firebase";
 import Toast from "../../components/common/toast"; // Import the Toast component
 import Logo from "../../images/yntlogo.png";
-import { Plus } from "react-bootstrap-icons";
+import { Person, Plus } from "react-bootstrap-icons";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage imports
 import { db } from "../../firebase/firebase"; // Firestore import
 import { doc, setDoc } from "firebase/firestore"; // Firestore methods
+import { Person2 } from "@mui/icons-material";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -115,8 +116,8 @@ export default function Register() {
         </div>
         <form className="lg:w-1/4 w-full lg:shadow-lg flex flex-col gap-3 p-5">
           {/* Hidden file input */}
-          <label className="text-sm text-[#00000088]" htmlFor="file-upload">
-            <Plus />
+          <label className="text-base flex items-center gap-2 text-[#000]" htmlFor="file-upload">
+            <Person className=" w-14 h-14 ring-[0.5px] rounded-full ring-black"/> profile photo
           </label>
           <input
             type="file"

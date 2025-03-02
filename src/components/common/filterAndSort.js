@@ -37,7 +37,7 @@ const FilterAndSort = ({
   };
 
   return (
-    <div className="flex justify-between mb-6">
+    <div className="flex justify-between mb-4 px-2 lg:px-4">
       {/* Filter Toggle */}
       <div className="relative">
         <button

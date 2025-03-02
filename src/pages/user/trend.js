@@ -6,32 +6,12 @@ import Pagination from "../../components/common/pagination.js";
 import { useProducts } from "../../context/products/context.js";
 import FilterSortComponent from "../../components/common/filterAndSort.js";
 import { Load } from "../../components/common/loading.jsx";
+import { filterTrendingProducts } from "../../utils/filtertrending.jsx";
 
 export default function Trending() {
   const { products = {} } = useProducts();
 
-  // Filter products that are on sale, in stock, have good quantity (quantity > 10), and a good review (rating >= 4)
-  const filterTrendingProducts = (products) => {
-    if (!Array.isArray(products)) return []; // Return an empty array if `products` is not an array
-
-    const filteredBySaleAndStock = products.filter(product =>
-      product.onsale &&
-      product.instock &&
-      parseInt(product.quantity) > 10
-    );
-
-    const filteredByReviews = filteredBySaleAndStock.filter(product =>
-      product.reviewrating >= 4
-    );
-
-    const trendingByNewness = filteredByReviews.sort((a, b) =>
-      new Date(b.timeStamp) - new Date(a.timeStamp) // Newest first
-    );
-
-    return trendingByNewness;
-  };
-
-  const trending = filterTrendingProducts(products?.products || []); // Default to empty array if no products are available
+    const trending = filterTrendingProducts(products?.products || []); // Default to empty array if no products are available
   const productsPerPage = 20;
   const [currentPage, setCurrentPage] = useState(1);
 

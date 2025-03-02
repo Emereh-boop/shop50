@@ -1,63 +1,89 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { formatCurrency } from "../../utils/format";
 import { filterTrendingProducts } from "../../utils/filtertrending";
 import {
-  // CartPlus,
   ChevronCompactLeft,
   ChevronCompactRight,
-  // HeartFill,
 } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
 import { Load } from "../common/loading";
+import { useNavigate } from "react-router-dom";
 
 export default function TrendingComp() {
   const sliderRef = useRef(null);
   const { products = {} } = useProducts();
   const prods = products?.products || [];
-
   const trending = filterTrendingProducts(prods);
+  const navigate = useNavigate();
+
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (sliderRef.current) {
+        setCanScrollLeft(sliderRef.current.scrollLeft > 0);
+        setCanScrollRight(
+          sliderRef.current.scrollLeft + sliderRef.current.clientWidth <
+            sliderRef.current.scrollWidth
+        );
+      }
+    };
+
+    checkScroll();
+    sliderRef.current?.addEventListener("scroll", checkScroll);
+    return () => sliderRef.current?.removeEventListener("scroll", checkScroll);
+  }, []);
 
   const slideLeft = () => {
     sliderRef.current.scrollBy({
-      left: -300, // Adjust based on the product card width
+      left: -300,
       behavior: "smooth",
     });
   };
 
   const slideRight = () => {
     sliderRef.current.scrollBy({
-      left: 300, // Adjust based on the product card width
+      left: 300,
       behavior: "smooth",
     });
   };
 
   return (
-    <div className=" bg-secondary px-4">
-      <div className="text-start text-xl lg:text-4xl font-extrabold text-black my-5">
-        TRENDING
+    <div className="bg-secondary px-4">
+      <div className="flex justify-between items-center my-5">
+        <h2 className="text-xl lg:text-4xl font-extrabold text-black">
+          TRENDING
+        </h2>
+        <button
+          onClick={() => navigate("/trend")}
+          className="text-black hover:underline text-sm lg:text-base"
+        >
+          See More →
+        </button>
       </div>
+
       <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">
         <div
           ref={sliderRef}
-          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory"
+          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
         >
           {trending?.length ? (
             trending.slice(0, 16).map((product) => (
               <div
                 key={product.id}
                 className="flex-shrink-0 w-72 lg:w-80 snap-start"
+                onClick={() => navigate(`/product/${product.id}`)}
               >
-                <div className="relative">
+                <div className="relative cursor-pointer">
                   <img
-                    className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:sale-105"
+                    className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
                     src={product.imageUrl}
                     alt={product.title}
                   />
-                  <span>
-                    <div className="absolute bg-white p-2 bottom-4 left-1 text-sm font-medium text-gray-400">
-                      {formatCurrency(product.price)}
-                    </div>
-                  </span>
+                  <div className="absolute bg-white p-2 bottom-4 left-1 text-sm font-medium text-gray-400">
+                    {formatCurrency(product.price)}
+                  </div>
                 </div>
               </div>
             ))
@@ -66,17 +92,21 @@ export default function TrendingComp() {
           )}
         </div>
 
-        <ChevronCompactLeft
-          onClick={slideLeft}
-          size={30}
-          className="hidden group-hover:block absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
-        />
+        {canScrollLeft && (
+          <ChevronCompactLeft
+            onClick={slideLeft}
+            size={30}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+          />
+        )}
 
-        <ChevronCompactRight
-          onClick={slideRight}
-          size={30}
-          className="hidden group-hover:block absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
-        />
+        {canScrollRight && (
+          <ChevronCompactRight
+            onClick={slideRight}
+            size={30}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+          />
+        )}
       </div>
     </div>
   );

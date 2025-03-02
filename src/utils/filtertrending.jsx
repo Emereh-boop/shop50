@@ -7,11 +7,11 @@ export const filterTrendingProducts = (products) => {
       parseInt(product.quantity) > 10
     );
 
-    const filteredByReviews = filteredBySaleAndStock.filter(product =>
-      product.reviewrating >= 4
-    );
+    // const filteredByReviews = filteredBySaleAndStock.filter(product =>
+    //   product.reviewrating >= 4
+    // );
 
-    const trendingByNewness = filteredByReviews.sort((a, b) =>
+    const trendingByNewness = filteredBySaleAndStock.sort((a, b) =>
       new Date(b.timeStamp) - new Date(a.timeStamp) // Newest first
     );
 
