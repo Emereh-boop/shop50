@@ -5,29 +5,11 @@ import { useCart } from "../../context/cart/context";
 import Navbar from "../../components/layout/navbar";
 import Footer from "../../components/layout/footer";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { doc, setDoc, collection } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase"; // import your firebase config
 import { formatCurrency } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/user/context";
-
-// Firebase function
-const functions = getFunctions();
-const validateCoupon = httpsCallable(functions, "validateCoupon");
-const handleValidation = async (coupon) => {
-  if (!coupon) {
-    alert("Please enter a coupon code.");
-    return;
-  }
-  try {
-    const result = await validateCoupon({ coupon });
-    console.log("Coupon validated:", result.data);
-    alert(`Discount applied: ${result.data.discount}`);
-  } catch (error) {
-    console.error("Error validating coupon:", error);
-    alert("Invalid coupon or error applying discount.");
-  }
-};
 
 const CheckoutPage = () => {
   const countries = [
@@ -48,6 +30,7 @@ const CheckoutPage = () => {
   const [deliveryMethod, setDeliveryMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [coupon, setCoupon] = useState("");
+  const [discount, setDiscount] = useState(0);
   const { removeItem, clearCart, cartItems = [] } = useCart();
   const { userData } = useUser();
   const navigate = useNavigate();
@@ -65,20 +48,93 @@ const CheckoutPage = () => {
     { cart: [] }
   ).cart;
 
-  const discount = isNaN(parseFloat(coupon)) ? 0 : parseFloat(coupon);
   const subt = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
   const shipping = 0;
-  const tot = subt + shipping - discount;
 
-  const handlePaymentMethodChange = (event) => {
-    setPaymentMethod(event.target.value);
+  let tot = subt + shipping - discount; // In USD (need to convert to Naira)
+
+  // Handle coupon validation (Fetch coupon from Firestore)
+  const validateCoupon = async (couponCode) => {
+    try {
+      const couponQuerySnapshot = await getDocs(collection(db, "coupons"));
+      const coupons = couponQuerySnapshot.docs.map(doc => doc.data());
+      const couponData = coupons.find(c => c.code === couponCode);
+
+      if (!couponData) {
+        alert("Invalid coupon code.");
+        return;
+      }
+
+      const currentDate = new Date();
+      const { discount, startDate, endDate } = couponData;
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (currentDate < start || currentDate > end) {
+        alert("Coupon has expired or is not valid yet.");
+        return;
+      }
+
+      setDiscount(discount); // Apply the discount
+      alert(`Coupon applied! Discount: ${discount}%`);
+    } catch (error) {
+      console.error("Error fetching coupon:", error);
+      alert("There was an error fetching the coupon.");
+    }
   };
 
+  // Convert USD to Naira (Example conversion rate: 1 USD = 800 NGN)
+  const convertToNaira = (usdAmount) => {
+    const exchangeRate = 800; // Example exchange rate, should be dynamic if needed
+    return usdAmount * exchangeRate;
+  };
+
+  // Handle payment method change
+  const handlePaymentMethodChange = (event) => {
+    setPaymentMethod(event.target.value);
+    handlePayment(); // Trigger payment on change
+  };
+
+  // Stripe Payment handling
+  const handlePayment = async () => {
+    // Convert total to Naira
+    const amountInNaira = convertToNaira(tot);
+
+    const paymentData = {
+      amount: amountInNaira * 100, // Convert to cents (Stripe works with cents)
+      currency: "NGN", // Naira currency
+      token: "tok_visa", // You should replace this with the actual token from Stripe
+    };
+
+    const response = await fetch("/api/charge", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentData),
+    });
+
+    const result = await response.json();
+
+    if (result.error) {
+      alert(`Payment failed: ${result.error}`);
+    } else {
+      alert("Payment successful!");
+      handleSubmit(); // Proceed to submit order after successful payment
+    }
+  };
+
+  // Handle the order submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (cart.length === 0) {
+      alert("Your cart is empty. Please add items before checkout.");
+      return;
+    }
+
     const orderData = {
-      userId: userData.uid, // Include user ID to link the order to the user
+      userId: userData.uid,
       name,
       lastName,
       tel,
@@ -111,13 +167,12 @@ const CheckoutPage = () => {
       setDeliveryMethod("");
       setPaymentMethod("credit-card");
       clearCart();
-      navigate("/");
+      navigate(`/${userData?.uid}/orders`);
     } catch (error) {
       console.error("Error placing order: ", error);
       alert("There was an error placing your order.");
     }
   };
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar /> {/* Render the Navbar component */}
@@ -362,7 +417,7 @@ const CheckoutPage = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => handleValidation(coupon)}
+                    onClick={() => validateCoupon(coupon)}
                     className="bg-blue-600 text-white px-3 py-2 rounded-sm"
                   >
                     +

@@ -215,8 +215,7 @@ export default function Navbar() {
                 {/* Profile Dropdown */}
                 <Menu as="div" className="relative">
                   <Menu.Button className="flex items-center rounded-sm p-1 text-gray-700 focus:outline-none">
-                   
-                    {userData? <img src={userData.photoURL } alt=""/> :  <PersonCircle className="h-7 w-7" />}
+                    <PersonCircle className="h-7 w-7" />
                   </Menu.Button>
                   <Transition
                     as={Fragment}

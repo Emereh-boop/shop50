@@ -116,9 +116,15 @@ export default function Register() {
         </div>
         <form className="lg:w-1/4 w-full lg:shadow-lg flex flex-col gap-3 p-5">
           {/* Hidden file input */}
-          <label className="text-base flex items-center gap-2 text-[#000]" htmlFor="file-upload">
-            <Person className=" w-14 h-14 ring-[0.5px] rounded-full ring-black"/> profile photo
-          </label>
+          {!imagePreview && (
+            <label
+              className="text-base flex items-center gap-2 text-[#000]"
+              htmlFor="file-upload"
+            >
+              <Person className=" w-14 h-14 p-2 ring-2 rounded-full ring-black" />{" "}
+              profile photo
+            </label>
+          )}
           <input
             type="file"
             id="file-upload"
@@ -129,13 +135,21 @@ export default function Register() {
 
           {/* Display the selected image preview */}
           {imagePreview && (
-            <div className="mb-3">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-20 h-20 object-cover rounded-full border"
-              />
-            </div>
+            <>
+              <div className="mb-3">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-20 h-20 object-cover rounded-full border"
+                />
+              </div>
+              <label
+                className="text-base flex items-center gap-2 text-[#00000088] underline"
+                htmlFor="file-upload"
+              >
+                change profile photo
+              </label>
+            </>
           )}
 
           <label className="text-sm text-[#00000088]" htmlFor="name">

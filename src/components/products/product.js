@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useCart } from "../../context/cart/context";
 import { Cart4 } from "react-bootstrap-icons";
 import { formatCurrency } from "../../utils/format";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function Product(props) {
   const { addToCart } = useCart();

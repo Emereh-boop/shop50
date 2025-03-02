@@ -139,7 +139,7 @@ const OrdersPage = () => {
                     </div>
                 </>
             ) : (
-                <Load />
+                <p>No orders found</p>
             )}
         </div>
     );
