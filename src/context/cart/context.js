@@ -31,7 +31,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const userCartKey = `cartItems_${user?.uid}`;
+  const userCartKey = `cart`;
   const cartItemsFromStorage = getLocalStorage(userCartKey, []);
 
   const initialState = {

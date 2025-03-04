@@ -15,7 +15,6 @@ import PrivateRoute from "./routes/PrivateRoute";
 import AdminRoute from "./routes/AdminRoute";
 import Product from "./pages/user/product-detail";
 import Checkout from "./pages/user/checkout";
-import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AdminManagement from "./pages/admin/admin";
 import UnauthorizedPage from "./pages/auth/un-auth";
@@ -29,10 +28,10 @@ import OrdersPage from "./pages/user/orders";
 import OrderDetailPage from "./pages/user/order-details";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import PaymentComponent from "./PaymentComponent";
+import ShippingPage from "./pages/user/shipping";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  `pk_test_51QyK8V4c8WUQECbxYXyZzSp0P4on8rgu9wMroRlbt6kNkQTxPrjQJa10xdjU2XOgFEEhw81xqR8PItoFIq0OHWrD00BUqoV2uc`
 );
 
 function AnimatedRoutes({ toggleLoginModal }) {
@@ -71,14 +70,6 @@ function AnimatedRoutes({ toggleLoginModal }) {
           element={
             <StaggeredWrapper>
               <Profile />
-            </StaggeredWrapper>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <StaggeredWrapper>
-              <Login />
             </StaggeredWrapper>
           }
         />
@@ -131,6 +122,14 @@ function AnimatedRoutes({ toggleLoginModal }) {
           }
         />
         <Route
+          path="/shipping/:order"
+          element={
+            <StaggeredWrapper>
+              <ShippingPage />
+            </StaggeredWrapper>
+          }
+        />
+        <Route
           path="/orders/:orderId"
           element={
             <StaggeredWrapper>
@@ -146,14 +145,7 @@ function AnimatedRoutes({ toggleLoginModal }) {
             </StaggeredWrapper>
           }
         />
-        <Route
-          path="/admin"
-          element={
-            <StaggeredWrapper>
-              <AdminManagement />
-            </StaggeredWrapper>
-          }
-        />
+
         <Route
           path="/unauthorized"
           element={
@@ -177,7 +169,9 @@ function AnimatedRoutes({ toggleLoginModal }) {
             path="/checkout/:userId"
             element={
               <StaggeredWrapper>
-                <Checkout />
+                <Elements stripe={stripePromise}>
+                  <Checkout />
+                </Elements>
               </StaggeredWrapper>
             }
           />
@@ -191,6 +185,14 @@ function AnimatedRoutes({ toggleLoginModal }) {
             element={
               <StaggeredWrapper>
                 <UploadProduct />
+              </StaggeredWrapper>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <StaggeredWrapper>
+                <AdminManagement />
               </StaggeredWrapper>
             }
           />
@@ -227,22 +229,19 @@ const StaggeredWrapper = ({ children }) => (
 function App() {
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   return (
-    <Elements stripe={stripePromise}>
-      <AuthProvider>
-        <BrowserRouter>
-          <PaymentComponent />
-          <Navbar toggleLoginModal={() => setLoginModalOpen(true)} />
-          <AnimatedRoutes toggleLoginModal={() => setLoginModalOpen(true)} />
-          {isLoginModalOpen && (
-            <LoginModal
-              isOpen={isLoginModalOpen}
-              setIsOpen={setLoginModalOpen}
-              onClose={() => setLoginModalOpen(false)}
-            />
-          )}
-        </BrowserRouter>
-      </AuthProvider>
-    </Elements>
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar toggleLoginModal={() => setLoginModalOpen(true)} />
+        <AnimatedRoutes toggleLoginModal={() => setLoginModalOpen(true)} />
+        {isLoginModalOpen && (
+          <LoginModal
+            isOpen={isLoginModalOpen}
+            setIsOpen={setLoginModalOpen}
+            onClose={() => setLoginModalOpen(false)}
+          />
+        )}
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -4,6 +4,7 @@ import NewArrivals from "../../components/layout/newarrivalscomp";
 import Collections from "../../components/layout/collectioncomp";
 import Footer from "../../components/layout/footer";
 import HeroPage from "../../components/layout/hero";
+import MostPurchased from "../../components/layout/bestsellercomp";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <HeroPage />
       <ShopProducts />
       <NewArrivals />
+      <MostPurchased />
       <Collections />
       <Footer />
     </div>

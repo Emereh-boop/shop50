@@ -7,11 +7,10 @@ import {
 import { auth } from "../../firebase/firebase";
 import Toast from "../../components/common/toast"; // Import the Toast component
 import Logo from "../../images/yntlogo.png";
-import { Person, Plus } from "react-bootstrap-icons";
+import { Person } from "react-bootstrap-icons";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage imports
 import { db } from "../../firebase/firebase"; // Firestore import
 import { doc, setDoc } from "firebase/firestore"; // Firestore methods
-import { Person2 } from "@mui/icons-material";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -27,8 +26,8 @@ export default function Register() {
   const storage = getStorage();
 
   // Password format validation regex (minimum 8 characters, 1 number, 1 special character)
-  const passwordPattern =
-    /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  // const passwordPattern =
+  //   /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   const register = async () => {
     setError(""); // Clear previous errors

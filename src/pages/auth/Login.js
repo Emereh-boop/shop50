@@ -31,7 +31,7 @@ export default function LoginModal({ isOpen, setIsOpen }) {
       }
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
       setIsOpen(false);
-      navigate(from, { replace: true });
+      // navigate(from, { replace: true });
     } catch (error) {
       setError(error.message);
     }

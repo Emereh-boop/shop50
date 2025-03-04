@@ -11,7 +11,6 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 

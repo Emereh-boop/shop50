@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { updateProfile, updateEmail } from "firebase/auth";
 import { useAuth } from "../../context/auth/context";
 import { useUser } from "../../context/user/context";
-import { Plus, Pencil, PersonCheck } from "react-bootstrap-icons";
+import { Plus, Pencil, PersonCheck, Person } from "react-bootstrap-icons";
 import { doc, updateDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase"; // assuming you already initialized Firebase
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -11,6 +11,7 @@ import { getAuth, reauthenticateWithCredential, EmailAuthProvider, fetchSignInMe
 import { Load } from "../../components/common/loading";
 import LoginModal from "../auth/Login";
 import { formatCurrency } from "../../utils/format";
+import { Person2 } from "@mui/icons-material";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -214,38 +215,18 @@ export default function Profile() {
     return (
         <div className="flex flex-col lg:flex-row">
             {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} setIsOpen={setLoginModalOpen} onClose={() => setLoginModalOpen(false)} />}
-            <div className="w-full md:w-64 bg-secondary text-black/80 lg:min-h-screen p-1 text-sm lg:text-base lg:p-4">
-                <h3 className="text-lg font-bold mb-6">Menu</h3>
-                <ul className="list-none flex lg:flex-col">
-                    <li
-                        onClick={() => navigate("/profile")}
-                        className="cursor-pointer hover:bg-gray-200 p-2"
-                    >
-                        Profile
-                    </li>
-                    <li
-                        onClick={(e) => user? navigate(`/${user?.uid}/orders`) : handleActionClick(e)}
-                        className="cursor-pointer hover:bg-gray-200 p-2"
-                    >
-                        Orders
-                    </li>
-                    {/* <li
-                        onClick={() => navigate("#")}
-                        className="cursor-pointer hover:bg-gray-100 p-2"
-                    >
-                        Settings
-                    </li> */}
-                </ul>
-            </div>
-            <div className={`flex-1 p-8 bg-black/5 lg:mt-16 ${!user ? "opacity-50 cursor-not-allowed" : ""}`}>
-                <div className="flex flex-col items-start">
+            <div className={`flex-1 lg:items-center lg:justify-center w-full p-8 bg-black/5 lg:mt-16 ${!user ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className="flex flex-col lg:justify-center items-start">
                     {/* Profile Image */}
                     <div className="relative mb-4 flex justify-self-center flex-col">
-                        <img
+                        {/* <img
                             src={userData.photoURL || "default-avatar.png"}
                             alt="Profile"
                             className="h-32 w-32 object-cover rounded-full"
-                        />
+                        /> */}
+                        <div >
+                            <Person className="h-32 w-32 object-cover rounded-full"/>
+                        </div>
                         <label
                             htmlFor="file-upload"
                             className="absolute bottom-0 right-0 bg-black text-white rounded-full p-2 cursor-pointer"
@@ -280,7 +261,7 @@ export default function Profile() {
                                 onClick={handleActionClick}
                             />
                             <button
-                                className="bg-blue-600 text-white rounded-sm p-2"
+                                className="bg-black text-white rounded-sm p-2"
                                 onClick={(e) => { handleNameChange(e); handleActionClick(e); }}
                             >
                                 <Pencil />
@@ -302,7 +283,7 @@ export default function Profile() {
                                 onClick={handleActionClick}
                             />
                             <button
-                                className="bg-blue-600 text-white rounded-sm p-2"
+                                className="bg-black text-white rounded-sm p-2"
                                 onClick={(e) => { handleEmailChange(e); handleActionClick(e); }}
                             >
                                 <Pencil />
@@ -312,44 +293,11 @@ export default function Profile() {
 
                     {/* Reset Password */}
                     <button
-                        className="mt-4 bg-blue-600 text-white p-2 rounded-sm text-sm mb-3"
+                        className="mt-4 bg-black text-white p-2 rounded-sm text-sm mb-3"
                         onClick={(e) => { user ? handlePasswordReset() : handleActionClick(e); }}
                     >
                         Password Reset
                     </button>
-
-                    {/* Orders Section */}
-                    <div className="p-6 bg-white shadow-md rounded-sm hidden lg:block">
-                        <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
-
-                        {/* Check if there are orders */}
-                        {orders.length > 0 ? (
-                            <table className="w-full table-auto border-collapse">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="p-2 border-b text-left">Order ID</th>
-                                        <th className="p-2 border-b text-left">Status</th>
-                                        <th className="p-2 border-b text-left">Address</th>
-                                        <th className="p-2 border-b text-left">Total</th>
-                                        <th className="p-2 border-b text-left">Payment Method</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.slice(0, 4).map((order, index) => (
-                                        <tr key={index} className="border-b text-xs">
-                                            <td className="p-2">{order?.id}</td>
-                                            <td className="p-2">{order?.status}</td>
-                                            <td className="p-2">{order?.address}</td>
-                                            <td className="p-2">{formatCurrency(order?.tot)}</td>
-                                            <td className="p-2">{order?.paymentMethod}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p>No orders found.</p>
-                        )}
-                    </div>
 
                 </div>
 
@@ -360,7 +308,7 @@ export default function Profile() {
                             <h2 className="text-lg font-semibold mb-4">Please Log In</h2>
                             <p className="text-sm mb-4">You need to be logged in to perform this action.</p>
                             <button
-                                className="bg-blue-600 text-white rounded-sm p-2 w-full"
+                                className="bg-black text-white rounded-sm p-2 w-full"
                                 onClick={handlePopupClose} // Close the popup
                             >
                                 Close

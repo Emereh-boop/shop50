@@ -10,7 +10,7 @@ import { ProductProvider } from "./context/products/context.js";
 import { AuthProvider } from "./context/auth/context"; // Import AuthProvider
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "react-query";
-
+import { OrdersProvider } from "./context/orders/context.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
@@ -22,9 +22,11 @@ root.render(
         <UserProvider>
           <CartProvider>
             <ProductProvider>
+              <OrdersProvider>
               <React.StrictMode>
                 <App />
               </React.StrictMode>
+              </OrdersProvider>
             </ProductProvider>
           </CartProvider>
         </UserProvider>

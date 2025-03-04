@@ -1,39 +1,38 @@
-// OrderDetailPage.js
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase"; // Import your firebase configuration
-import { doc, getDoc } from "firebase/firestore"; // Firestore functions to fetch a document
-import { formatCurrency } from "../../utils/format"; // Assuming you have a format function for currency
 import { Load } from "../../components/common/loading";
 import Toast from "../../components/common/toast";
 import { useAuth } from "../../context/auth/context";
+import { useOrders } from "../../context/orders/context";
+import { formatCurrency } from "../../utils/format"; // Assuming you have a format function for currency
 
 const OrderDetailPage = () => {
-    const { orderId } = useParams(); // Extract orderId from the URL params
+    const { orderId } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const { orders, setOrders } = useOrders(); // Use orders context to access and update orders
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const {user} = useAuth()
+    const [showModal, setShowModal] = useState(false);
+    const [cancellationReason, setCancellationReason] = useState("");
+    const [isCancelling, setIsCancelling] = useState(false);
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
-                // Get a reference to the order document in Firestore
                 const orderDocRef = doc(db, "orders", orderId);
                 const docSnap = await getDoc(orderDocRef);
 
                 if (docSnap.exists()) {
-                    // If the document exists, set the order details
                     setOrderDetails(docSnap.data());
                 } else {
-                    // If the document doesn't exist
                     setError("Order not found.");
                 }
             } catch (err) {
-                console.error("Error fetching order details:", err);
-                setError("There was an error fetching the order details.");
+                setError("Error fetching order details.");
             } finally {
                 setLoading(false);
             }
@@ -42,53 +41,105 @@ const OrderDetailPage = () => {
         fetchOrderDetails();
     }, [orderId]);
 
-    const handleGoBack = () => {
-        navigate(`/${user?.uid}/orders`); // Navigate back to the orders page
+    const handleCancelOrder = async () => {
+        if (orderDetails?.status === "shipped") {
+            setError("Cannot cancel a shipped order.");
+            return;
+        }
+
+        // Update the order status to 'cancelled' and add the cancellation reason
+        setIsCancelling(true);
+        try {
+            const orderRef = doc(db, "orders", orderId);
+            await updateDoc(orderRef, {
+                status: "cancelled",
+                cancellationReason: cancellationReason,
+            });
+
+            // Update the local context or state to reflect the changes
+            setOrders(prevOrders => 
+                prevOrders.map(order =>
+                    order.id === orderId ? { ...order, status: "cancelled", cancellationReason } : order
+                )
+            );
+
+            setError("Order has been cancelled successfully.");
+        } catch (err) {
+            setError("Error cancelling the order.");
+        } finally {
+            setIsCancelling(false);
+            setShowModal(false);
+        }
     };
 
-    if (loading) {
-        return <Load />;
-    }
+    const handleGoBack = () => {
+        navigate(`/${user?.uid}/orders`);
+    };
 
-    if (error) {
-        return <Toast type='error' message={error}/>;
-    }
+    if (loading) return <Load />;
+    if (error) return <Toast type="error" message={error} />;
 
     return (
         <div className="p-6 bg-white shadow-md rounded-sm">
             <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
 
-            {/* Order Details */}
-            <div className="space-y-4">
-                <p><strong>Order ID:</strong> {orderId}</p>
-                <p><strong>Created At:</strong> {new Date(orderDetails?.createdAt).toLocaleString()}</p>
-                <p><strong>Status:</strong> {orderDetails?.status}</p>
-                <p><strong>Delivery Method:</strong> {orderDetails?.deliveryMethod}</p>
-                <p><strong>Address:</strong> {orderDetails?.address}</p>
-                <p><strong>City:</strong> {orderDetails?.selectedCity}</p>
-                <p><strong>Country:</strong> {orderDetails?.selectedCountry}</p>
-                <p><strong>Email:</strong> {orderDetails?.email}</p>
-                <p><strong>Payment Method:</strong> {orderDetails?.paymentMethod}</p>
-                <p><strong>Total:</strong> {formatCurrency(orderDetails?.tot)}</p>
+            {/* Order Status */}
+            <p><strong>Status:</strong> {orderDetails?.status}</p>
 
-                {/* Display Items in Cart */}
-                <h3 className="font-semibold mt-4">Items in Cart:</h3>
-                <ul className="space-y-2">
-                    {orderDetails?.itemsInCart?.map((item, index) => (
-                        <li key={index} className="border p-2 rounded-sm">
-                            <img src={item.imageUrl} alt={item.title} className="w-24 h-24 object-cover" />
-                            <p><strong>Title:</strong> {item.title}</p>
-                            <p><strong>Brand:</strong> {item.brand}</p>
-                            <p><strong>Category:</strong> {item.category}</p>
-                            <p><strong>Price:</strong> {formatCurrency(item.price)}</p>
-                            <p><strong>Quantity:</strong> {item.quantity}</p>
-                            <p><strong>Description:</strong> {item.longDescription}</p>
-                        </li>
-                    ))}
-                </ul>
+            {/* Product Images - Scrollable on mobile */}
+            <div className="flex overflow-x-auto space-x-4 py-4">
+                {orderDetails?.itemsInCart?.map((item, index) => (
+                    <div key={index} className="flex-shrink-0">
+                        <img src={item.imageUrl} alt={item.title} className="w-24 h-24 object-cover" />
+                    </div>
+                ))}
             </div>
 
-            {/* Action buttons */}
+            {/* Cancel Order Button */}
+            {orderDetails?.status !== "shipped" && (
+                <button
+                    className="bg-red-600 text-white p-2 rounded-sm mt-4"
+                    onClick={() => setShowModal(true)}
+                >
+                    Cancel Order
+                </button>
+            )}
+            {orderDetails?.status === "shipped" && (
+                <p className="text-red-500 mt-4">Cannot cancel a shipped order.</p>
+            )}
+
+            {/* Modal for Cancellation */}
+            {showModal && (
+                <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-10">
+                    <div className="bg-white p-6 rounded-sm w-96">
+                        <h3 className="text-xl font-semibold mb-4">Cancel Order</h3>
+                        <p>Please provide a reason for cancellation:</p>
+                        <textarea
+                            value={cancellationReason}
+                            onChange={(e) => setCancellationReason(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded-sm mt-2"
+                            rows="4"
+                        />
+                        <div className="mt-4 flex space-x-4">
+                            <button
+                                className="bg-gray-600 text-white p-2 rounded-sm"
+                                onClick={() => setShowModal(false)}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="bg-red-600 text-white p-2 rounded-sm"
+                                onClick={handleCancelOrder}
+                                disabled={isCancelling}
+                            >
+                                {isCancelling ? "Cancelling..." : "Confirm Cancel"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Go Back Button */}
             <div className="mt-4">
                 <button
                     className="bg-gray-600 text-white p-2 rounded-sm"

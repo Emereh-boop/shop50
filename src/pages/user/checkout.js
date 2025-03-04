@@ -10,6 +10,17 @@ import { db } from "../../firebase/firebase"; // import your firebase config
 import { formatCurrency } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/user/context";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_test_51QyK8V4c8WUQECbxYXyZzSp0P4on8rgu9wMroRlbt6kNkQTxPrjQJa10xdjU2XOgFEEhw81xqR8PItoFIq0OHWrD00BUqoV2uc"
+); // Replace with your Stripe public key
 
 const CheckoutPage = () => {
   const countries = [
@@ -77,7 +88,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      setDiscount(discount); // Apply the discount
+      setDiscount(discount); 
       alert(`Coupon applied! Discount: ${discount}%`);
     } catch (error) {
       console.error("Error fetching coupon:", error);
@@ -91,7 +102,7 @@ const CheckoutPage = () => {
         "https://api.exchangerate-api.com/v4/latest/USD"
       );
       const data = await response.json();
-      return data.rates.NGN;
+      return data.rates?.NGN ?? "000";
     } catch (error) {
       console.error("Failed to fetch exchange rate:", error);
       return 800; // Fallback rate
@@ -102,24 +113,6 @@ const CheckoutPage = () => {
     const exchangeRate = await fetchExchangeRate();
     return usdAmount * exchangeRate;
   };
-
-  // Stripe Payment handling
-  const handlePayment = async (event) => {
-    event.preventDefault();
-
-    const { paymentMethod, error } = await stripe.createPaymentMethod({
-        type: "card",
-        card: elements.getElement(CardElement),
-    });
-
-    if (error) {
-        console.error("Stripe Error:", error);
-        return;
-    }
-
-    await processPayment(1000, paymentMethod.id);  // Pass only the ID
-};
-
 
   async function applyCoupon(code) {
     const response = await fetch("/api/coupon", {
@@ -145,9 +138,9 @@ const CheckoutPage = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        amount,
-        currency: "usd",
-        paymentMethodId, // Ensure this is a string
+        amount: Math.round(amount * 100), // Stripe expects amount in cents
+        currency: "usd", // Change to "ngn" if converted
+        paymentMethodId,
       }),
     });
 
@@ -197,6 +190,8 @@ const CheckoutPage = () => {
       setSelectedCity("");
       setSelectedCountry("");
       setDeliveryMethod("");
+      setSelectedCountry("");
+      setSelectedCity("");
       setPaymentMethod("credit-card");
       clearCart();
       navigate(`/${userData?.uid}/orders`);
@@ -482,7 +477,7 @@ const CheckoutPage = () => {
                   type="radio"
                   value="Bank transfer"
                   checked={paymentMethod === "Bank transfer"}
-                  onChange={(e)=>handlePayment(e)}
+                  onChange={(e) => processPayment(tot, e.target.id)}
                   className="hidden"
                 />
                 <label
@@ -500,7 +495,7 @@ const CheckoutPage = () => {
                   type="radio"
                   value="Credit Card"
                   checked={paymentMethod === "Credit Card"}
-                  onChange={(e)=>handlePayment(e)}
+                  onChange={(e) => processPayment(tot, e.target.id)}
                   className="hidden"
                 />
                 <label
