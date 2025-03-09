@@ -7,8 +7,6 @@ const AdminRoute = () => {
 
   if (loading) return <Load />;
 
-  console.log("Checking user role:", user); // Debugging
-
   return user?.role === "admin" ? <Outlet /> : <Navigate to="/" replace />;
 };
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import Toast from "./toast";
 
 const PaymentComponent = ({ totalAmount }) => {
   const stripe = useStripe();
@@ -10,7 +11,6 @@ const PaymentComponent = ({ totalAmount }) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
-      console.error("Stripe has not loaded yet.");
       return;
     }
 
@@ -20,7 +20,7 @@ const PaymentComponent = ({ totalAmount }) => {
     });
 
     if (error) {
-      alert(`Payment error: ${error.message}`);
+      <Toast type='error' message='Payment Failed'/>
       return;
     }
 
@@ -43,12 +43,11 @@ const PaymentComponent = ({ totalAmount }) => {
       setLoading(false);
 
       if (result.error) {
-        alert(`Payment failed: ${result.error}`);
+        <Toast type='error' message='Payment Failed'/>
       } else {
-        alert("Payment successful!");
+        <Toast type='success' message='Payment successful!'/>
       }
     } catch (err) {
-      console.error("Payment error:", err);
     }
   };
 

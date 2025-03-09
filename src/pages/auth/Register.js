@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import Toast from "../../components/common/toast"; // Import the Toast component
-import Logo from "../../images/yntlogo.png";
-import { Person } from "react-bootstrap-icons";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage imports
 import { db } from "../../firebase/firebase"; // Firestore import
 import { doc, setDoc } from "firebase/firestore"; // Firestore methods
+
+import LoginModal from "./Login"; // Import the Login component
 
 export default function Register() {
   const navigate = useNavigate();
@@ -18,16 +18,9 @@ export default function Register() {
   const [registerName, setRegisterName] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const [selectedImage, setSelectedImage] = useState(null); // Store the selected image
-  const [imagePreview, setImagePreview] = useState(null); // Store the image preview URL
-
-  // Firebase storage instance
-  const storage = getStorage();
-
-  // Password format validation regex (minimum 8 characters, 1 number, 1 special character)
-  // const passwordPattern =
-  //   /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const [isOpen, setIsOpen] = useState(false); // State to handle modal visibility
 
   const register = async () => {
     setError(""); // Clear previous errors
@@ -46,30 +39,31 @@ export default function Register() {
         registerPassword
       );
 
-      // If there's an image, upload it to Firebase Storage
-      let imageURL = "";
-      if (selectedImage) {
-        const imageRef = ref(storage, `profile_pictures/${selectedImage.name}`);
-        await uploadBytes(imageRef, selectedImage);
-        imageURL = await getDownloadURL(imageRef);
-      }
-
       // Store user data in Firestore
       const userRef = doc(db, "users", userCredential.user.uid);
       await setDoc(userRef, {
         displayName: registerName,
         email: registerEmail,
-        photoURL: imageURL,
         role: "user", // Default role is "user"
         uid: userCredential.user.uid,
       });
 
-      // Sign in the user after registration
+      // Send email verification
+      await sendEmailVerification(userCredential.user);
+
+      // Show success message
+      setSuccess(
+        "Registration successful! A verification email has been sent. Please check your inbox."
+      );
+
+      // Optionally sign in the user after registration (if desired)
       await signInWithEmailAndPassword(auth, registerEmail, registerPassword);
 
-      // Success, navigate to home page
-      setError("Registration successful!"); // Success message
-      navigate("/");
+
+      // Redirect after a few seconds (optional)
+      setTimeout(() => {
+        navigate('/')
+      }, 3000);
     } catch (error) {
       // Handle different error cases
       if (error.message === "auth/email-already-in-use") {
@@ -85,16 +79,28 @@ export default function Register() {
   };
 
   // Handle image selection
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      setImagePreview(URL.createObjectURL(file)); // Preview image
-    }
+  // const handleImageChange = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     setSelectedImage(file);
+  //     setImagePreview(URL.createObjectURL(file)); // Preview image
+  //   }
+  // };
+  // Function to open the Login modal
+  const openLoginModal = () => {
+    setIsOpen(true);
   };
 
   return (
-    <div className="p-4 h-screen flex justify-center">
+    <div
+      className="p-4 h-screen flex justify-center items-center"
+      style={{
+        backgroundImage: `url('https://your-ecommerce-background-image-url.jpg')`, // Add the eCommerce background image URL here
+        backgroundSize: "cover", // Ensures the background image covers the screen
+        backgroundPosition: "center", // Centers the background image
+        backgroundRepeat: "no-repeat", // Prevents the background from repeating
+      }}
+    >
       {error && (
         <Toast
           message={error}
@@ -102,54 +108,25 @@ export default function Register() {
           clearMessage={() => setError("")}
         />
       )}
-      <div className="md:px-10 w-full flex flex-col justify-center items-center">
-        <div className="mx-auto w-full max-w-sm gap-3">
-          <img
+      {success && (
+        <Toast
+          message={success}
+          type="success"
+          clearMessage={() => setSuccess("")}
+        />
+      )}
+      <div className="md:px-10 w-full flex flex-col justify-center items-center bg-white bg-opacity-80 p-5 rounded-md">
+        <div className="mx-auto w-full max-w-sm gap-2">
+          {/* <img
             className="mx-auto h-16 w-16 object-cover rounded-full"
             src={Logo}
             alt="YNT"
-          />
+          /> */}
           <h2 className="text-center text-xl font-bold leading-9 tracking-tight text-black">
-            Sign up for an account
+            Sign up
           </h2>
         </div>
-        <form className="lg:w-1/4 w-full lg:shadow-lg flex flex-col gap-3 p-5">
-          {/* Hidden file input */}
-          {!imagePreview && (
-            <label
-              className="text-base flex items-center gap-2 text-[#000]"
-              htmlFor="file-upload"
-            >
-              <Person className=" w-14 h-14 p-2 ring-2 rounded-full ring-black" />{" "}
-              profile photo
-            </label>
-          )}
-          <input
-            type="file"
-            id="file-upload"
-            accept="image/jpeg, image/png, image/jpg"
-            style={{ display: "none" }}
-            onChange={handleImageChange}
-          />
-
-          {/* Display the selected image preview */}
-          {imagePreview && (
-            <>
-              <div className="mb-3">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-20 h-20 object-cover rounded-full border"
-                />
-              </div>
-              <label
-                className="text-base flex items-center gap-2 text-[#00000088] underline"
-                htmlFor="file-upload"
-              >
-                change profile photo
-              </label>
-            </>
-          )}
+        <form className="lg:w-1/4 w-full lg:shadow-lg flex flex-col gap-2 p-5">
 
           <label className="text-sm text-[#00000088]" htmlFor="name">
             Name
@@ -205,7 +182,7 @@ export default function Register() {
 
           <button
             onClick={register}
-            className="rounded-sm ring-1 ring-gray-700 bg-gray-700 text-secondary p-2"
+            className="rounded-sm ring-1 ring-gray-800 bg-gray-800 text-secondary p-1 w-full"
             type="button"
           >
             Register
@@ -215,7 +192,7 @@ export default function Register() {
             <p className="flex justify-center gap-1">
               Already have an account?{" "}
               <span
-                onClick={() => navigate("/login")}
+                onClick={openLoginModal}
                 className="text-blue-600 cursor-pointer"
               >
                 Login
@@ -224,6 +201,9 @@ export default function Register() {
           </div>
         </form>
       </div>
+      {isOpen && (
+        <LoginModal isOpen={isOpen} setIsOpen={setIsOpen} /> // Pass state and setter function to Login modal
+      )}
     </div>
   );
 }

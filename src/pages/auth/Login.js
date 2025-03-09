@@ -1,13 +1,13 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useNavigate, useLocation } from "react-router-dom";
+import google from "../../images/download-removebg-preview.png"
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import { Google } from "react-bootstrap-icons";
 import Toast from "../../components/common/toast";
 import Logo from "../../images/yntlogo.png";
 
@@ -79,13 +79,13 @@ export default function LoginModal({ isOpen, setIsOpen }) {
               <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 {error && <Toast message={error} clearMessage={() => setError("")} />}
                 <div className="sm:flex sm:items-start flex flex-col items-center">
-                  <img className="mx-auto h-16 w-16 object-cover rounded-full" src={Logo} alt="YNT" />
+                  {/* <img className="mx-auto h-16 w-16 object-cover rounded-full" src={Logo} alt="YNT" /> */}
                   <h2 className="text-center text-xl font-bold text-black mt-3">
-                    Login to your account
+                    Welcome back, Login to your account
                   </h2>
 
                   <form className="w-full flex flex-col gap-3 mt-4">
-                    <label className="text-sm text-gray-600" htmlFor="email">Email</label>
+                    <label className="text-sm text-gray-800" htmlFor="email">Email</label>
                     <input
                       className="ring-1 ring-gray-300 rounded-sm p-2"
                       type="email"
@@ -116,7 +116,7 @@ export default function LoginModal({ isOpen, setIsOpen }) {
 
                     <button
                       onClick={login}
-                      className="rounded-sm ring-1 ring-gray-700 bg-gray-700 text-white p-2"
+                      className="rounded-sm ring-1 ring-gray-800 bg-gray-800 text-white p-1 w-full"
                       type="button"
                     >
                       Login
@@ -126,23 +126,23 @@ export default function LoginModal({ isOpen, setIsOpen }) {
 
                     <button
                       onClick={handleGoogleLogin}
-                      className="ring-1 ring-gray-300 rounded-sm p-2 flex justify-center gap-2 items-center"
+                      className="ring-1 ring-gray-300 rounded-sm p-1 flex justify-center gap-1 items-center"
                       type="button"
                     >
-                      <Google />
+                      <img src={google} className="w-20 h-10" alt=""/>
                       <span>Continue with Google</span>
                     </button>
 
                     <div className="text-center text-sm text-gray-500 mt-2">
                       <p>
                         Don't have an account?{" "}
-                        <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/register")}>
+                        <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/register")& setIsOpen(false)}>
                           Register
                         </span>
                       </p>
                       <p>
                         Forgot password?{" "}
-                        <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/forgot-password")}>
+                        <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/forgot-password") & setIsOpen(false)}>
                           Reset
                         </span>
                       </p>

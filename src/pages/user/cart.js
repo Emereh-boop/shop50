@@ -195,7 +195,7 @@ export default function Cart() {
                           <button
                             // href={`/checkout/${user?.uid}`}
                             onClick={() => handleCheckout()}
-                            className="flex items-center justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
+                            className="flex items-center w-full justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
                           >
                             Checkout
                           </button>

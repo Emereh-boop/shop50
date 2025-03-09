@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
               email: firebaseUser.email,
               displayName: firebaseUser.displayName || "",
               role: "user", // Default role
-              photoURL: firebaseUser.photoURL || "", // Add profile image
             };
 
             if (userSnap.exists()) {
@@ -56,7 +55,6 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe();
       })
       .catch((error) => {
-        console.error("Error setting persistence:", error);
         setLoading(false);
       });
   }, [auth, db]);
@@ -79,7 +77,6 @@ export const AuthProvider = ({ children }) => {
         email,
         displayName,
         role,
-        photoURL: user.photoURL || "", // Store profile picture if available
       };
 
       await setDoc(doc(db, "users", user.uid), newUser);
@@ -89,7 +86,6 @@ export const AuthProvider = ({ children }) => {
 
       return user;
     } catch (error) {
-      console.error("Registration failed:", error.message);
       return null;
     }
   };
@@ -106,11 +102,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(userData)); // Store updated data in localStorage
         return userData;
       } else {
-        console.warn("User data not found in Firestore");
         return null;
       }
     } catch (error) {
-      console.error("Login failed:", error.message);
       return null;
     }
   };
@@ -128,7 +122,6 @@ export const AuthProvider = ({ children }) => {
         email: user.email,
         displayName: user.displayName || "",
         role: "user",
-        photoURL: user.photoURL || "", // Add profile image
       };
 
       if (userSnap.exists()) {
@@ -142,7 +135,6 @@ export const AuthProvider = ({ children }) => {
 
       return userData;
     } catch (error) {
-      console.error("Google sign-in failed:", error.message);
       return null;
     }
   };
@@ -153,7 +145,6 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem("user");
     } catch (error) {
-      console.error("Logout failed:", error.message);
     }
   };
 

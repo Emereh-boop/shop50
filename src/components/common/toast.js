@@ -27,7 +27,7 @@ export default function Toast({ message, type, clearMessage }) {
   return (
     show && (
       <div
-        className={`fixed top-10 left-1/2 transform -translate-x-1/2 p-3 text-white rounded-md shadow-md ${getToastStyle()}`}
+        className={`fixed top-30 left-1/2 transform z-[9999] -translate-x-1/2 p-3 text-white rounded-md shadow-md ${getToastStyle()}`}
         style={{ zIndex: 9999 }}
       >
         {message}

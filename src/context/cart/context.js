@@ -26,7 +26,6 @@ export const CartProvider = ({ children }) => {
     try {
       return JSON.parse(localStorage.getItem(key)) || defaultValue;
     } catch (error) {
-      console.error(`Error parsing ${key}:`, error);
       return defaultValue;
     }
   };

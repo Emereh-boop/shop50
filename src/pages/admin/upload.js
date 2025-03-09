@@ -10,6 +10,7 @@ import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
 import ShopContext from "../../context/cart/context";
 import { Plus, TrashFill } from "react-bootstrap-icons";
 import Navbar from "../../components/layout/navbar";
+import Toast from "../../components/common/toast";
 
 const collectionsConfig = {
   banners: ["title", "href", "brand", "subtitle", "image", "category"],
@@ -34,25 +35,14 @@ const collectionsConfig = {
     "instock",
     "onsale",
   ],
-  newArrivals: [
-    "title",
-    "category",
-    "description",
-    "onsale",
-    "colors",
-    "price",
-    "image",
-  ],
-  trending: [
+  promotions: [
     "title",
     "description",
-    "category",
-    "onsale",
-    "colors",
-    "price",
     "image",
+    "discount",
+    "visibility",
+    "promotions",
   ],
-  collections: ["title", "brand", "category", "description", "image"],
 };
 
 export default function UploadData() {
@@ -76,12 +66,13 @@ export default function UploadData() {
     colors: [],
     url: "",
     ad: [],
-    // coupon: [],
     imageUrl: "",
     additionalImage: [],
     instock: false,
     onsale: false,
-    // profile: { image: "", name: "", email: "" },
+    discount: "",
+    visibility: true,
+    promotions: [],
   });
   const [uploading, setUploading] = useState(false);
   // const [uploadTask, setUploadTask] = useState(null);
@@ -113,7 +104,7 @@ export default function UploadData() {
         setFormData((prev) => ({ ...prev, file: files[0], imageUrl: "" }));
         handleUpload(files[0]);
       }
-    } else if (id === "instock" || id === "onsale") {
+    } else if (id === "instock" || id === "onsale" || id === "visibility") {
       setFormData((prev) => ({ ...prev, [id]: checked }));
     } else {
       setFormData((prev) => ({ ...prev, [id]: value }));
@@ -133,7 +124,6 @@ export default function UploadData() {
       "state_changed",
       (snapshot) => {},
       (error) => {
-        console.error("Upload failed:", error);
         setUploading(false);
       },
       async () => {
@@ -162,10 +152,9 @@ export default function UploadData() {
     try {
       await deleteObject(fileRef);
       setFormData((prev) => ({ ...prev, imageUrl: "" }));
-      alert("File deleted successfully.");
+      <Toast type="success" message="Delete successful!" />;
     } catch (error) {
-      console.error("Error deleting file:", error);
-      alert("Error deleting file. Please try again.");
+      <Toast type="error" message="Error deleting file. Please try again." />;
     }
   };
 
@@ -175,7 +164,7 @@ export default function UploadData() {
     delete dataToSave.file;
 
     if (!selectedCollection) {
-      return alert("Please select a collection.");
+      return <Toast type="info" message="Please select a collection" />;
     }
 
     try {
@@ -194,8 +183,7 @@ export default function UploadData() {
       await batch.commit();
       window.location.reload();
     } catch (err) {
-      console.error("Error adding document: ", err);
-      alert("Error adding document. Please try again.");
+      <Toast type="error" message="Error deleting file. Please try again." />;
     }
   };
 
@@ -213,7 +201,6 @@ export default function UploadData() {
       "state_changed",
       (snapshot) => {},
       (error) => {
-        console.error("Error uploading additional image:", error);
         setUploading(false);
       },
       async () => {
@@ -242,6 +229,12 @@ export default function UploadData() {
     setFormInputs((prev) => ({ ...prev, color: "", colorCode: "" })); // Clear inputs
   };
   const handleRemoveFromArray = (arrayName, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [arrayName]: prev[arrayName].filter((_, i) => i !== index),
+    }));
+  };
+  const handleAddToPromotionArray = (arrayName, index) => {
     setFormData((prev) => ({
       ...prev,
       [arrayName]: prev[arrayName].filter((_, i) => i !== index),
@@ -278,6 +271,7 @@ export default function UploadData() {
                 field === "review" ||
                 field === "time" ||
                 field === "additionalImage" ||
+                field === "promotions" ||
                 field === "image" ||
                 field === "colors" ||
                 field === "sizes" ||
@@ -297,9 +291,12 @@ export default function UploadData() {
                     type={
                       field === "price" ||
                       field === "weight" ||
-                      field === "quantity"
+                      field === "quantity"||
+                      field === "discount"
                         ? "number"
-                        : field === "instock" || field === "onsale"
+                        : field === "instock" ||
+                          field === "onsale" ||
+                          field === "visibility"
                         ? "checkbox"
                         : field === "url"
                         ? "url"
@@ -315,7 +312,7 @@ export default function UploadData() {
                     }
                     onChange={handleChange}
                     className={`block border-gray-400 rounded-sm  focus:outline-primary/30 p-2 ${
-                      field === "instock" || field === "onsale"
+                      field === "instock" || field === "onsale"|| field === "visibility"
                         ? "w-5 ring-0"
                         : field === "price" ||
                           field === "quantity" ||
@@ -431,6 +428,54 @@ export default function UploadData() {
                         <button
                           type="button"
                           onClick={() => handleRemoveFromArray("colors", index)}
+                          className="text-red-600"
+                        >
+                          <TrashFill />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {selectedCollection === "promotions" && (
+              <>
+                <div className="mt-4">
+                  <h3 className="text-lg">Products in Promotion</h3>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Product ID"
+                      value={formInputs.productId || ""}
+                      onChange={(e) =>
+                        setFormInputs((prev) => ({
+                          ...prev,
+                          productId: e.target.value,
+                        }))
+                      }
+                      className="border-gray-400 rounded-sm focus:outline-primary/30 p-2 flex-grow"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddToPromotionArray}
+                      className="bg-blue-600 text-white px-3 py-2 rounded-sm"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    {formData.promotions.map((productId, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center border p-2 rounded-sm"
+                      >
+                        <span>{productId}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveFromArray("promotions", index)
+                          }
                           className="text-red-600"
                         >
                           <TrashFill />

@@ -19,7 +19,6 @@ export const OrdersProvider = ({ children }) => {
             const storedData = JSON.parse(localStorage.getItem("orders")) || [];
             setOrders(storedData);
         } catch (error) {
-            console.error("Error parsing localStorage data:", error);
         }
     }, []);
 
@@ -60,7 +59,6 @@ export const OrdersProvider = ({ children }) => {
             // Merge with previous data for the same collection
             setOrders(prev => (nextPage ? [...prev, ...fetchedOrders] : fetchedOrders));
         } catch (error) {
-            console.error("Error fetching orders:", error);
         } finally {
             setLoading(false);
         }
@@ -84,7 +82,6 @@ export const OrdersProvider = ({ children }) => {
         try {
             await fetchOrders({}, 20, false); // Fetch all orders initially
         } catch (error) {
-            console.error("Error fetching orders:", error);
         } finally {
             setLoading(false);
         }

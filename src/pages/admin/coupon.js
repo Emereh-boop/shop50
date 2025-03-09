@@ -3,6 +3,7 @@ import { db } from "../../firebase/firebase";
 import { doc, writeBatch } from "firebase/firestore";
 import Navbar from "../../components/layout/navbar";
 import { nanoid } from "nanoid";
+import Toast from "../../components/common/toast";
 
 const couponConfig = ["discount", "startDate", "endDate", "code", "expires"];
 const id = nanoid(6);
@@ -32,7 +33,7 @@ export default function UploadCoupon() {
     delete dataToSave.file;
 
     if (!formData.code || !formData.discount) {
-      return alert("Please fill in all required fields.");
+      return <Toast type='error' message='Please fill in all required fields.'/>
     }
 
     try {
@@ -48,8 +49,7 @@ export default function UploadCoupon() {
       await batch.commit();
       window.location.reload();
     } catch (err) {
-      console.error("Error adding coupon: ", err);
-      alert("Error adding coupon. Please try again.");
+     <Toast type='error' message='Error adding coupon. Please try again.'/>
     }
   };
 

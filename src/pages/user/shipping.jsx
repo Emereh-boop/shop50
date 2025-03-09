@@ -21,10 +21,8 @@ const ShippingPage = () => {
                     setError("Order not found");
                     return;
                 }
-                console.log(order)
                 setOrderDetails(order);
             } catch (err) {
-                console.error("Error fetching order details:", err);
                 setError("Error fetching order details.");
             } finally {
                 setLoading(false);
@@ -46,7 +44,7 @@ const ShippingPage = () => {
         <div className="p-4 bg-white shadow-md rounded-sm w-full sm:w-11/12 lg:w-96 mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Track Your Order</h2>
 
-            {/* Shipping Information */}
+            {/* Shipping Information */}v
             <div className="mb-4">
                 <p><strong>Order ID:</strong> {orderDetails?.id}</p>
                 <p><strong>Status:</strong> {orderDetails?.status}</p>

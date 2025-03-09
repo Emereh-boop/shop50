@@ -17,7 +17,6 @@ export const ProductProvider = ({ children }) => {
       const storedData = JSON.parse(localStorage.getItem("allCollections")) || {};
       setProducts(storedData);
     } catch (error) {
-      console.error("Error parsing localStorage data:", error);
     }
   }, []);
 
@@ -64,7 +63,6 @@ export const ProductProvider = ({ children }) => {
           : fetchedData
       }));
     } catch (error) {
-      console.error(`Error fetching ${collectionName}:`, error);
     } finally {
       setLoading(false);
     }
@@ -104,7 +102,6 @@ export const ProductProvider = ({ children }) => {
       const collectionNames = ["products", "banners"];
       await Promise.all(collectionNames.map(name => fetchProducts(name, {}, 20, false)));
     } catch (error) {
-      console.error("Error fetching collections:", error);
     } finally {
       setLoading(false);
     }

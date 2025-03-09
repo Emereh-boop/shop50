@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import Toast from "../../components/common/toast";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -21,7 +22,7 @@ const UserManagement = () => {
   }, );
 
   const addUser = async () => {
-    if (!newUserEmail) return alert("Please enter an email.");
+    if (!newUserEmail) return <Toast type='info' message='Please enter an Email'/>
     
     const usersRef = collection(db, "users");
     const snapshot = await getDocs(usersRef);
@@ -32,7 +33,7 @@ const UserManagement = () => {
       fetchUsers();
       setNewUserEmail("");
     } else {
-      alert("User not found.");
+      <Toast type='info' message='User not found'/>
     }
   };
 

@@ -26,13 +26,7 @@ import Profile from "./pages/user/profile";
 import LoginModal from "./pages/auth/Login";
 import OrdersPage from "./pages/user/orders";
 import OrderDetailPage from "./pages/user/order-details";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import ShippingPage from "./pages/user/shipping";
-
-const stripePromise = loadStripe(
-  `pk_test_51QyK8V4c8WUQECbxYXyZzSp0P4on8rgu9wMroRlbt6kNkQTxPrjQJa10xdjU2XOgFEEhw81xqR8PItoFIq0OHWrD00BUqoV2uc`
-);
 
 function AnimatedRoutes({ toggleLoginModal }) {
   const location = useLocation();
@@ -169,9 +163,7 @@ function AnimatedRoutes({ toggleLoginModal }) {
             path="/checkout/:userId"
             element={
               <StaggeredWrapper>
-                <Elements stripe={stripePromise}>
                   <Checkout />
-                </Elements>
               </StaggeredWrapper>
             }
           />
