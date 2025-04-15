@@ -7,7 +7,6 @@ import { XMarkIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { formatCurrency } from "../../utils/format";
 import { useAuth } from "../../context/auth/context";
 import { useNavigate } from "react-router-dom";
-import Toast from "../../components/common/toast";
 import LoginModal from "../auth/Login";
 
 export default function Cart() {
@@ -18,18 +17,21 @@ export default function Cart() {
   const { cartItems = [], removeItem, updateQuantity } = useCart();
   const { user } = useAuth();
 
-  const cart = cartItems.reduce(
-    (acc, item) => {
-      const existingItem = acc.cart.find((cartItem) => cartItem.id === item.id);
-      if (!existingItem) {
-        acc.cart.push({ ...item, qty: item.quantity });
-      } else {
-        existingItem.qty += item.quantity;
-      }
-      return acc;
-    },
-    { cart: [] }
-  ).cart;
+  // Group cart items by id, size, and color to ensure uniqueness
+  const cart = cartItems.reduce((acc, item) => {
+    const existingItem = acc.cart.find(
+      (cartItem) =>
+        cartItem.id === item.id &&
+        cartItem.selectedSize === item.selectedSize &&
+        cartItem.selectedColor === item.selectedColor
+    );
+    if (!existingItem) {
+      acc.cart.push({ ...item, qty: item.quantity });
+    } else {
+      existingItem.qty += item.quantity;
+    }
+    return acc;
+  }, { cart: [] }).cart;
 
   useEffect(() => {
     const total = cart.reduce(
@@ -44,7 +46,7 @@ export default function Cart() {
     if (!user) {
       setIsOpen(true); // Now it correctly shows the login modal
     } else {
-      setOpen(false)
+      setOpen(false);
       navigate(`/checkout/${user?.uid}`);
     }
   };
@@ -66,17 +68,17 @@ export default function Cart() {
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full md:max-w-lg">
               <Transition.Child
                 as={Fragment}
-                enter="transform transition ease-in-out duration-500 sm:duration-700"
+                enter="transition-transform ease-in-out md:duration-500 duration-700"
                 enterFrom="translate-x-full"
                 enterTo="translate-x-0"
-                leave="transform transition ease-in-out duration-500 sm:duration-700"
+                leave="transition-transform ease-in-out md:duration-500 duration-700"
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-lg">
+                <Dialog.Panel className="pointer-events-auto w-screen ">
                   {isOpen && (
                     <LoginModal
                       isOpen={isOpen}
@@ -132,7 +134,7 @@ export default function Cart() {
                                         </p>
                                       </div>
                                       <p className="mt-1 text-sm text-gray-500">
-                                        {product.color}
+                                        {product.selectedSize} / {product.selectedColor}
                                       </p>
                                     </div>
                                     <div className="flex flex-1 items-end justify-between text-sm">
@@ -142,7 +144,9 @@ export default function Cart() {
                                           onClick={() =>
                                             updateQuantity(
                                               product.id,
-                                              product.qty - 1
+                                              product.qty - 1,
+                                              product.selectedSize,
+                                              product.selectedColor
                                             )
                                           }
                                         >
@@ -156,7 +160,9 @@ export default function Cart() {
                                           onClick={() =>
                                             updateQuantity(
                                               product.id,
-                                              product.qty + 1
+                                              product.qty + 1,
+                                              product.selectedSize,
+                                              product.selectedColor
                                             )
                                           }
                                         >
@@ -167,7 +173,9 @@ export default function Cart() {
                                         <button
                                           type="button"
                                           className="font-medium text-neutral-600 hover:text-neutral-500"
-                                          onClick={() => removeItem(product.id)}
+                                          onClick={() =>
+                                            removeItem(product.id, product.selectedSize, product.selectedColor)
+                                          }
                                         >
                                           Remove
                                         </button>
@@ -193,7 +201,6 @@ export default function Cart() {
                       <div className="mt-6 w-full">
                         {cart.length > 0 ? (
                           <button
-                            // href={`/checkout/${user?.uid}`}
                             onClick={() => handleCheckout()}
                             className="flex items-center w-full justify-center rounded-md border border-transparent bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/80"
                           >

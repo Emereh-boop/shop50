@@ -15,12 +15,10 @@ import {
   CLEAR_FILTER,
   UPDATE_QUANTITY,
 } from "../types";
-import { useAuth } from "../auth/context";
 
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
-  const { user } = useAuth();
 
   const getLocalStorage = (key, defaultValue) => {
     try {
@@ -48,8 +46,12 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("filters", JSON.stringify(state.filters));
   }, [state.filters]);
 
-  const addToCart = (item, quantity = 1) => {
-    dispatch({ type: ADD_TO_CART, payload: { ...item, quantity } });
+  // Add product to the cart with the selected size, color, and quantity
+  const addToCart = (item, quantity = 1, selectedSize, selectedColor) => {
+    dispatch({
+      type: ADD_TO_CART,
+      payload: { ...item, quantity, selectedSize, selectedColor },
+    });
   };
 
   const removeItem = (id) => {
@@ -74,11 +76,15 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: CLEAR_FILTER });
   };
 
-  const updateQuantity = (id, quantity) => {
+  // Update quantity, size, and color in the cart
+  const updateQuantity = (id, quantity, selectedSize, selectedColor) => {
     if (quantity < 1) {
       removeItem(id);
     } else {
-      dispatch({ type: UPDATE_QUANTITY, payload: { id, quantity } });
+      dispatch({
+        type: UPDATE_QUANTITY,
+        payload: { id, quantity, selectedSize, selectedColor },
+      });
     }
   };
 

@@ -2,9 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useProducts } from "../../context/products/context";
 import { motion } from "framer-motion";
-import Navbar from "../../components/layout/navbar";
-import Footer from "../../components/layout/footer";
 import { Load } from "../../components/common/loading";
+import { ArrowRight } from "react-bootstrap-icons";
 
 export default function Collections() {
   const { products = {} } = useProducts();
@@ -24,40 +23,32 @@ export default function Collections() {
   });
 
   return (
-    <div className="relative flex flex-col gap-10">
-      <Navbar />
-
-      <div className="bg-white mb-6 mt-6 px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 auto-rows-auto"
+    <div className="relative flex flex-col gap-10 mx-auto max-w-7xl mt-16">
+      <h3 className="font-bold text-xl md:text-4xl self-center uppercase">Collections</h3>
+        <div className="flex grid-cols- 3 md:grid-cols- 4 lg:grid-cols- 5 gap-1 auto-rows-auto"
              style={{ gridAutoFlow: "dense" }}> 
           {collections.length > 0 ? (
             collections.map((collection, index) => (
               <motion.div
                 key={collection.id}
-                className="relative  group overflow-hidden rounded-sm shadow-sm z-auto hover:scale-x-102"
+                className="relative flex-grow group overflow-hidden rounded-sm shadow-sm z-auto hover:scale-x- first-of-type:102"
               >
                 <Link to={`/products/${collection.category}`} className="block">
                   <motion.img
-                    className="w-full h-auto object-cover"
+                    className="w-full h-[30rem] object-cover"
                     src={collection.imageUrl}
                     alt={collection.category}
                   />
-                  {/* Floating Title in the Middle */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <h2 className="text-white text-lg font-semibold px-4">
-                      {collection.category}
+                    <h2 className="text-black text-lg font-medium gap-2 px-4 items-center flex">
+                      {collection.category} <ArrowRight/>
                     </h2>
-                  </div>
                 </Link>
               </motion.div>
             ))
           ) : (
             <Load />
           )}
-        </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

@@ -17,11 +17,11 @@ export default function Product(props) {
   };
 
   return (
-    <div className="bg-white shadow-sm shadow-neutral-200 ring-1 ring-gray-300 overflow-hidden transition-transform transform">
+    <div className="bg-white shadow-sm shadow-neutral-200 ring- ring-gray-300 overflow-hidden transition-transform transform">
       <div className="relative">
-        {props.product.onsale && (
-          <div className="absolute z-50 left-4 top-4 bg-red-500 text-white text-sm px-2 py-1  shadow-lg transition-all duration-300 hover:bg-red-400">
-            On Sale
+        {!props.product.onsale && (
+          <div className="absolute z-50 left-4 top-4 bg-red-500 text-white text-xs px-2 py-1 transition-all duration-300 hover:bg-red-400">
+            Almost sold out
           </div>
         )}
         <Link to={`/product/${props.product.id}`} className="block">
@@ -37,15 +37,15 @@ export default function Product(props) {
           <span className="py-1 px-2 bg-white md:text-base text-black flex items-center truncate">
             {props.product.title}
           </span>
-          <span className="py-1 font-bold md:text-lg px-2 bg-white text-green-400 flex items-center">
+          <span className="py-1 hidden  font-bold md:text-lg px-2 bg-white text--400 md:flex items-center">
             {formatCurrency(props.product.price)}
           </span>
         </div>
         <div className="justify-between items-center flex pb-2 px-2">
-          <p className="py-1 gap-2 bg-white text-sm text-[#00000088] flex flex-col truncate">
+          {/* <p className="py-1 gap-2 bg-white text-sm text-[#00000088] flex flex-col truncate">
             <span> Available Colors: {props.product.colors?.length}</span>
-          </p>
-          {isAdded ? (
+          </p> */}
+          {/* {isAdded ? (
             <button type="button" className="py-1 px-2 text-gray-700 flex">
               <svg
                 className="w-6 h-6 bg-green-500 rounded-full text-white p-1 animate-check"
@@ -68,7 +68,7 @@ export default function Product(props) {
             >
               <Cart4 className="h-6 w-6" />
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </div>

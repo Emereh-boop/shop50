@@ -1,37 +1,33 @@
 import React from "react";
-import { Facebook, Instagram, TwitterX } from "react-bootstrap-icons";
+import { ArrowRight, Facebook, Instagram, TwitterX } from "react-bootstrap-icons";
 import { useAuth } from "../../context/auth/context";
 
 export default function Footer() {
   const { user } = useAuth();
   return (
     <footer
-      className={`py-10 px-5 static gap-5 flex flex-col bg-secondary dark:invert-0 invert text-black`}
+      className={`py-10 px-5 static gap-5 flex flex-col bg- secondary mx-auto max-w-7xl dark:invert-0 invert text-black`}
     >
-      <div className="flex text-7xl font-black justify-center lg:text-9xl">
-        YNT
-      </div>
-      <hr className="text-gray-400" />
-      <div className="flex gap-2 justify-between flex-col lg:flex-row">
-        <div className="lg:col-span-2 text-gray-400">
-          <h1 className="uppercase font-semibold mb-1 lg:mb-4 text-black">NEWSLETTER</h1>
-          <p className="lg:mb-4 text-sm lg:text-base mb-1">
+        <div className="lg:col-span- text-gray-400 flex flex-col items-center justify-center">
+          <h1 className="font- semibold mb-1 lg:mb- 4 text-black">Subscribe to our emails</h1>
+          <p className="lg:mb-4 text-sm lg:text- base mb-1">
             Stay in touch with the latest updates about our products and offers.
           </p>
-          <form method="post" href="#" className="flex items-center">
+          <form method="post" href="#" className="flex p-2 items-center rounded-sm bg-transparent text-black ring-1 ring-black">
             <input
               type="email"
-              className="flex-1 p-2 rounded-l-sm bg-transparent text-black ring-1 ring-black focus:outline-none"
+              className="flex-1 focus:outline-none"
               placeholder="Email"
             />
             <button
               type="submit"
-              className="p-2 bg-black rounded-r-md ring-black ring-1 text-secondary hover:bg-black/80"
+              className=" text-black hover:bg-black/10"
             >
-              Join
+              <ArrowRight className="w-4 h-4"/>
             </button>
           </form>
         </div>
+      {/* <div className="flex gap-2 justify-between flex-col lg:flex-row">
         <div>
           <h1 className="font-bold text-sm lg:text-lg">STORE</h1>
           <ul className="text-gray-300 text-xs lg:text-base hover:underline">
@@ -107,10 +103,10 @@ export default function Footer() {
            <a href="www.twitter.com/ynt"> <TwitterX href="www.twitter.com/ynt" className="text-black " size={20} /></a>
           </div>
         </div>
-      </div>
+      </div> */}
       <hr className="text-gray-400 hidden lg:block" />
       <p className="flex justify-center text-xs lg:text-sm text-gray-500 p-2 lg:p-4">
-        COPYRIGHT 2023 COMPANY ALL RIGHTS RESERVED
+        Copyright YoungnTrendy 2024 all right reserved
       </p>
     </footer>
   );

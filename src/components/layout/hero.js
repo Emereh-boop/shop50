@@ -18,7 +18,7 @@ function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [currentIndex, nextSlide]); // Restart interval when currentIndex changes
@@ -51,27 +51,24 @@ function Hero() {
           <div className="absolute inset-0 bg-black opacity-50"></div>
 
           {/* Text Content */}
-          <div className="relative w-full md:max-w-6xl px-1 md:px-6 text-center md:py-20 space-y-5">
-            <h2 className="text-secondary hidden md:block text-2xl font-extrabold">
-              {banners[currentIndex]?.brand}
-            </h2>
-            <h3 className="text-secondary text-md md:text-7xl font-black ">
+          <div className="relative w-full md:max-w-6xl px-1 md:px-6 text-center md:py-20 space-y-4">
+            <h4 className="text-secondary text-md md:text-6xl font-black ">
               {banners[currentIndex]?.title}
-            </h3>
-            <p className="text-secondary hidden md:block text-4xl font-thin">
+            </h4>
+            <p className="text-secondary hidden md:block text-2xl font-normal">
               {banners[currentIndex]?.description ||
                 banners[currentIndex]?.subtitle}
             </p>
             <button
               onClick={() => handleNavigation(banners[currentIndex]?.href)}
-              className="md:px-6 md:py-2 p-1 underline bg-secondary text-sm lg:text-xl text-black font-bold rounded-sm hover:bg-slate-100 transition"
+              className="md:px-6 md:py-2 p-1 bg-secondary text-sm lg:text-xl text-black font- bold rounded-sm hover:bg-slate-100 transition"
             >
               shop
             </button>
           </div>
 
           {/* Dots Indicator */}
-          <div className="absolute bottom-6 flex justify-center w-full space-x-2">
+          <div className="absolute bottom-4 flex justify-center w-full space-x-2">
             {banners.map((_, index) => (
               <div
                 key={index}

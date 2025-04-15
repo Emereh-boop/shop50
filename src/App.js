@@ -19,14 +19,16 @@ import Register from "./pages/auth/Register";
 import AdminManagement from "./pages/admin/admin";
 import UnauthorizedPage from "./pages/auth/un-auth";
 // import AdminDashboard from "./pages/admin/dashboard";
-import UploadProduct from "./pages/admin/upload";
-import CouponUpload from "./pages/admin/coupon";
+import Upload from "./pages/admin/upload";
+import Coupon from "./pages/admin/coupon";
+import Shipping from "./pages/admin/shipping";
 import { AuthProvider } from "./context/auth/context";
 import Profile from "./pages/user/profile";
 import LoginModal from "./pages/auth/Login";
 import OrdersPage from "./pages/user/orders";
 import OrderDetailPage from "./pages/user/order-details";
 import ShippingPage from "./pages/user/shipping";
+import Footer from "./components/layout/footer";
 
 function AnimatedRoutes({ toggleLoginModal }) {
   const location = useLocation();
@@ -163,7 +165,7 @@ function AnimatedRoutes({ toggleLoginModal }) {
             path="/checkout/:userId"
             element={
               <StaggeredWrapper>
-                  <Checkout />
+                <Checkout />
               </StaggeredWrapper>
             }
           />
@@ -176,12 +178,12 @@ function AnimatedRoutes({ toggleLoginModal }) {
             path="/admin/upload"
             element={
               <StaggeredWrapper>
-                <UploadProduct />
+                <Upload />
               </StaggeredWrapper>
             }
           />
           <Route
-            path="/admin"
+            path="/admin/users"
             element={
               <StaggeredWrapper>
                 <AdminManagement />
@@ -189,10 +191,18 @@ function AnimatedRoutes({ toggleLoginModal }) {
             }
           />
           <Route
-            path="/admin/couponUpload"
+            path="/admin/coupon"
             element={
               <StaggeredWrapper>
-                <CouponUpload />
+                <Coupon />
+              </StaggeredWrapper>
+            }
+          />
+          <Route
+            path="/admin/shipping"
+            element={
+              <StaggeredWrapper>
+                <Shipping />
               </StaggeredWrapper>
             }
           />
@@ -232,6 +242,7 @@ function App() {
             onClose={() => setLoginModalOpen(false)}
           />
         )}
+        <Footer />
       </BrowserRouter>
     </AuthProvider>
   );

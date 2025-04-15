@@ -6,7 +6,7 @@ export const handlePaystackPayment = async (amount, email, setPaid, setPaymentSt
 
     const reference = new Date().getTime(); // Unique reference
     const paymentHandler = paystack?.setup({
-        key: "pk_test_95d2fce259eaec967447e10a40e98cc7cc588634",
+        key: process.env.REACT_APP_PAYSTACK_KEY,
         email: email,
         amount: amount * 100, // Kobo
         ref: reference,

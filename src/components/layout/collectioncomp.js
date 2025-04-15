@@ -1,6 +1,7 @@
 import React from "react";
 import { useProducts } from "../../context/products/context";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "react-bootstrap-icons";
 
 export default function CollectionComp() {
   const navigate = useNavigate();
@@ -31,30 +32,65 @@ export default function CollectionComp() {
   });
 
   return (
-    <div className="flex flex-auto flex-wrap mt-5">
-      {collections?.slice(0,4).map((collection) => (
-        <div
-          key={collection.id}
-          onClick={() => navigate(`products/${collection.category}`)}
-          className=" lg:w-1/4 h-[40vh] lg:h-[70vh] w-full flex-grow relative flex items-center justify-center bg-gradient-to-t from-gray-400 to-slate-50 border "
+    <div className="bg-secondary ">
+      <div className=" mx-auto max-w-7xl px-4 group md:px-6 lg:px-8 flex justify-between items-center my-5">
+        <h2 className="text- xl lg:text-4xl font- extrabold text-black">
+          Collections
+        </h2>
+        <button
+          onClick={() => navigate("/trend")}
+          className="text-black hover:underline text-sm lg:text-base"
         >
-          <img
-            className="absolute object-cover object-top h-full w-full"
-            src={collection.imageUrl || collection.image}
-            alt={collection.title}
-          />
+          See More →
+        </button>
+      </div>
 
-          <div className="absolute inset-0 bg-black opacity-30"></div>
-          <div className="z-10 w-full max-w-6xl px-6 text-center ">
-            <h2 className=" text-white text-lg lg:text-xl font-extrabold">
-              {collection.brand}
-            </h2>
-            <h1 className=" text-white text-4xl lg:text-7xl lg:font-extrabold font-extrabold">
-              {collection.category}
-            </h1>
-          </div>
+      <div className="relative mx-auto max-w-7xl px-4 group md:px-6 lg:px-8">
+        <div
+          // ref={sliderRef}
+          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
+        >
+          {collections?.slice(0, 4).map((collection) => (
+            <div
+              key={collection.id}
+              onClick={() => navigate(`products/${collection.category}`)}
+              className=" flex-shrink- 0 w- 40 lg:w- 40 snap- start w- relative flex flex-col  "
+            >
+              <img
+                className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
+                src={collection.imageUrl || collection.image}
+                alt={collection.title}
+              />
+
+              <div className="absolute inset-0 bg-black opacity-30"></div>
+              <div className="z-10 w-full max-w- xl px-6 text- ">
+                <h2 className=" text-white text- lg lg:text- xl font-bold">
+                  {collection.brand}
+                </h2>
+                <h1 className=" text-white text- xl flex items-center lg:text- xl lg:font- extrabold font-bold">
+                  {collection.category} <ArrowRight/>
+                </h1>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+
+        {/* {canScrollLeft && (
+              <ChevronCompactLeft
+                onClick={slideLeft}
+                size={30}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+              />
+            )}
+    
+            {canScrollRight && (
+              <ChevronCompactRight
+                onClick={slideRight}
+                size={30}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+              />
+            )} */}
+      </div>
     </div>
   );
 }

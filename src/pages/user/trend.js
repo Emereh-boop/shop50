@@ -1,97 +1,74 @@
-import React, { useState } from "react";
-import Navbar from "../../components/layout/navbar.js";
-import Footer from "../../components/layout/footer.js";
+import React, { useState, useEffect } from "react";
 import Product from "../../components/products/product.js";
 import Pagination from "../../components/common/pagination.js";
 import { useProducts } from "../../context/products/context.js";
-import FilterSortComponent from "../../components/common/filterAndSort.js";
+import SmartFilterAndSort from "../../components/common/filterAndSort.js";
 import { Load } from "../../components/common/loading.jsx";
 import { filterTrendingProducts } from "../../utils/filtertrending.jsx";
 
 export default function Trending() {
   const { products = {} } = useProducts();
-
-    const trending = filterTrendingProducts(products?.products || []); // Default to empty array if no products are available
-  const productsPerPage = 20;
+  const trending = filterTrendingProducts(products?.products || []);
+  
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 20;
 
-  // Filter and sort states for the FilterSortComponent
-  const [filt, setFilt] = useState([]);
-  const [sortType, setSortType] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
+  useEffect(() => {
+    setFilteredProducts(trending);
+  }, [trending]);
 
-  const filteredProducts = trending.filter((product) => {
-    if (filt?.length === 0) return true; // No filter applied, show all
-    return filt.some((category) => {
-      if (category.startsWith("price_")) {
-        const range = category.split("_")[1]; // Get the price range part
-        const [min, max] = range.split("-").map(Number);
-        return product.price >= min && product.price <= max;
-      }
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-      return product.category?.toLowerCase().includes(category.toLowerCase());
-    });
-  });
+  const handlePageChange = (page) => setCurrentPage(page);
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
-  const totalPages = filteredProducts.length
-    ? Math.ceil(filteredProducts.length / productsPerPage)
-    : 1;
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (!sortType) return 0; // No sorting applied
-
-    if (sortType === "price") {
-      return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
-    } else if (sortType === "date") {
-      return sortDirection === "asc"
-        ? new Date(a.timeStamp.date) - new Date(b.timeStamp.date)
-        : new Date(b.timeStamp.date) - new Date(a.timeStamp.date);
-    } else if (sortType === "rating") {
-      return sortDirection === "asc"
-        ? a.reviewrating - b.reviewrating
-        : b.reviewrating - a.reviewrating;
-    }
-  });
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
 
   return (
     <div className="relative flex flex-col gap-10">
-      <Navbar />
-      <div className="bg-white mb-6 mt-6">
-        <h2 className="text-center text-4xl font-extrabold text-black mb-8">
+      <div className="bg mt-16 mx-auto max-w-7xl">
+        <h2 className="text-center text-xl md:text-4xl font-extrabold uppercase text-black mb-8">
           Trending Products
         </h2>
 
-        {/* Filter and Sort */}
-        <FilterSortComponent
-          filter={filt}
-          setFilter={setFilt}
-          sortType={sortType}
-          setSortType={setSortType}
-          sortDirection={sortDirection}
-          setSortDirection={setSortDirection}
+        {/* ✅ Smart Filtering & Sorting */}
+        <SmartFilterAndSort
+          data={trending}
+          onFiltered={(filtered) => {
+            setFilteredProducts(filtered);
+            setCurrentPage(1); // Reset page when filtering changes
+          }}
+          defaultSort={{ key: "timeStamp", dir: "desc" }}
+          allowedSortKeys={["price", "reviewrating", "timeStamp", "brand", "title"]}
+          customLabels={{
+            title: "Name",
+            price: "Price",
+            reviewrating: "Rating",
+            timeStamp: "Date Added",
+            brand: "Brand",
+            quantity: "In Stock",
+          }}
+          filterExclude={[
+            "id",
+            "url",
+            "imageUrl",
+            "subtitle",
+            "title",
+            "longDescription",
+            "shortDescription",
+          ]}
         />
 
-        {/* Products List */}
+        {/* ✅ Product Grid */}
         <div className="relative group mx-auto">
           <div className="grid lg:grid-cols-4 lg:gap-8 md:grid-cols-3 grid-cols-2">
-            {sortedProducts?.length > 0 ? (
-              sortedProducts.map((p) => (
+            {paginatedProducts?.length > 0 ? (
+              paginatedProducts.map((p) => (
                 <Product
                   className="w-60 lg:w-[30rem]"
                   key={p.id}
@@ -99,12 +76,12 @@ export default function Trending() {
                 />
               ))
             ) : (
-              <Load/>
+              <Load />
             )}
           </div>
         </div>
 
-        {/* Pagination */}
+        {/* ✅ Pagination */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -113,8 +90,6 @@ export default function Trending() {
           handlePreviousPage={handlePreviousPage}
         />
       </div>
-
-      <Footer />
     </div>
   );
 }

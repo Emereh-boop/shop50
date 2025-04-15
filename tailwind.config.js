@@ -18,7 +18,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "Poppins", "Helvetica", "Arial", "sans-serif"],
+        sans: ['Outfit', 'sans-serif'], // or 'Playfair Display', 'serif'
+        // sans: ["Inter", "Poppins", "Helvetica", "Arial", "sans-serif"],
         serif: ["Merriweather", "Georgia", "serif"],
         mono: ["Fira Code", "Menlo", "monospace"],
         display: ["Oswald"],

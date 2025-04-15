@@ -15,7 +15,7 @@ export default function NewArrivalsComp() {
   const navigate = useNavigate();
 
   return (
-    <div className="md:px-4 mt-16">
+    <div className="md:px-4 mt-1 mx-auto max-w-7xl">
       <div className="flex justify-between items-center px-4 lg:px-1 my-5">
         <h2 className="text-xl lg:text-4xl font-extrabold text-black">
           NEW ARRIVALS
@@ -37,11 +37,11 @@ export default function NewArrivalsComp() {
             newArrivals.map((p) => (
               <div
                 key={p.id}
-                className="flex-shrink-0 w-60 lg:w-[30rem] snap-start"
+                className="flex-shrink-0 w-60 lg:w-[20rem] snap-start"
               >
                 <div className="relative">
                   <img
-                    className="w-full h-60 object-center hover:scale-105 lg:h-[35rem] object-cover rounded-sm transition-transform duration-500 ease-in-out"
+                    className="w-full h-60 object-center hover:scale-105 lg:h-[25rem] object-cover rounded-sm transition-transform duration-500 ease-in-out"
                     src={p.imageUrl || p.image}
                     alt={p.title}
                   />

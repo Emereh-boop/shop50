@@ -12,7 +12,10 @@ const CartReducer = (state, action) => {
   switch (action.type) {
     case ADD_TO_CART: {
       const existingItemIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) =>
+          item.id === action.payload.id &&
+          item.selectedSize === action.payload.selectedSize &&
+          item.selectedColor === action.payload.selectedColor
       );
 
       if (existingItemIndex !== -1) {
@@ -29,7 +32,9 @@ const CartReducer = (state, action) => {
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
-          item.id === action.payload.id
+          item.id === action.payload.id &&
+          item.selectedSize === action.payload.selectedSize &&
+          item.selectedColor === action.payload.selectedColor
             ? { ...item, quantity: action.payload.quantity }
             : item
         ),

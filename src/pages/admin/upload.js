@@ -243,7 +243,6 @@ export default function UploadData() {
 
   return (
     <>
-      <Navbar />
       <div className="container mx-auto p-6 flex md:grid md:grid-cols-4 ">
         <div className="md:col-span-1 bg-gray-200 p-4">
           <h2 className="text-xl">Collections</h2>

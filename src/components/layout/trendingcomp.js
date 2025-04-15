@@ -50,10 +50,10 @@ export default function TrendingComp() {
   };
 
   return (
-    <div className="bg-secondary px-4">
+    <div className="bg- secondary mx-auto max-w-7xl px-4 group md:px-6 lg:px-8">
       <div className="flex justify-between items-center my-5">
-        <h2 className="text-xl lg:text-4xl font-extrabold text-black">
-          TRENDING
+        <h2 className="text- xl lg:text-xl font- extrabold text-black">
+        Featured products
         </h2>
         <button
           onClick={() => navigate("/trend")}
@@ -63,7 +63,7 @@ export default function TrendingComp() {
         </button>
       </div>
 
-      <div className="relative group mx-auto max-w-[90rem] px-6 lg:px-8">
+      <div className="relative ">
         <div
           ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"

@@ -2,16 +2,31 @@ import React, { useEffect, useState, Fragment } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cart/context";
 import { useProducts } from "../../context/products/context";
-import { Cart4, PersonCircle, Search, X } from "react-bootstrap-icons";
+import {
+  Cart2,
+  Cart4,
+  PersonCircle,
+  Search,
+  Shop,
+  X,
+} from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
 import Logo from "../../images/yntlogo.png";
 // import Logo from "../images/logo.jpg";
-import Cart from "../../pages/user/cart";
 import { useAuth } from "../../context/auth/context";
-import LoginModal from "../../pages/auth/Login";
 import { useUser } from "../../context/user/context";
+import Cart from "../../pages/user/cart";
+import LoginModal from "../../pages/auth/Login";
+import {
+  AssignmentIndOutlined,
+  AssignmentOutlined,
+  IsoTwoTone,
+  LogoutOutlined,
+  Shop2,
+  ShopTwo,
+} from "@mui/icons-material";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,20 +36,19 @@ export default function Navbar() {
   const location = useLocation();
   const { cartItems = [] } = useCart();
   const { products = {} } = useProducts();
-  const { user } = useAuth();
   const { userData, loading, setUserData } = useUser();
   const prod = products?.products;
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState([]);
   const [navigation, setNavigation] = useState([
-    { name: "Shop", href: "/", current: true },
-    { name: "Most Wanted", href: "/trend", current: false },
+    { name: "Home", href: "/", current: true },
+    { name: "Trending", href: "/trend", current: false },
     { name: "Collections", href: "/collections", current: false },
     { name: "New Arrivals", href: "/new", current: false },
   ]);
   const navigate = useNavigate();
-
+  const { user, logout } = useAuth();
   useEffect(() => {
     setNavigation((prev) =>
       prev.map((item) => ({
@@ -68,7 +82,7 @@ export default function Navbar() {
     <Disclosure as="nav" className=" shadow-md ">
       {({ open }) => (
         <div className="fixed bg-secondary right-0 left-0 top-0 z-10">
-          <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px- 4 static md:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-200 focus:outline-none">
@@ -76,12 +90,16 @@ export default function Navbar() {
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                    <img
+                    className=" object-cover block w-10 h-10 rounded-full"
+                    src={Logo}
+                    alt="nahtty"
+                  />
                   )}
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 gap-3 lg:items-center lg:justify-start">
-                <div className="mx-10">
+                <div className="hidden md:block">
                   <img
                     className=" object-cover w-10 h-10 rounded-full"
                     src={Logo}
@@ -205,7 +223,7 @@ export default function Navbar() {
                   onClick={() => setCart((p) => !p)}
                   className="relative rounded-sm p-1.5 text-gray-700 focus:outline-none"
                 >
-                  <Cart4 className="h-7 w-7" aria-hidden="true" />
+                  <Cart2 className="h-7 w-7" aria-hidden="true" />
                   {cartItems?.length > 0 && (
                     <span className="absolute top-0 right-0 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
                       {cartItems?.length}
@@ -226,16 +244,17 @@ export default function Navbar() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-sm bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Items className="absolute right-0 lg:left-0 z-10 mt-2 w-48 origin-top-right rounded-sm bg-white py-1 shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none">
                       {!user ? (
                         <>
+                          {" "}
                           <Menu.Item>
                             {({ active }) => (
                               <a
                                 href="/register"
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-gray-600"
                                 )}
                               >
                                 Sign Up
@@ -248,7 +267,7 @@ export default function Navbar() {
                                 onClick={() => setShowLoginModal(true)}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700 w-full text-left"
+                                  "block px-4 py-2 text-sm text-gray-600 w-full text-left"
                                 )}
                               >
                                 Login
@@ -258,28 +277,57 @@ export default function Navbar() {
                         </>
                       ) : (
                         <>
+                          {/* Greeting with User Name and Email */}
+                          <div>
+                            <h1 className="px-3 py- text-lg font-semibold text-gray-600">
+                              Hello,{" "}
+                              {userData?.displayName
+                                ? userData.displayName
+                                : "User"}
+                            </h1>
+                            <p className="px-3 py- text-sm text-gray-600">
+                              {user?.email
+                                  ? user.email
+                                  //   .replace(
+                                  //   /(^.{3})(.*)(?=@)/,
+                                  //   "$1***"
+                                  // )
+                                : ""}
+                            </p>
+                          </div>
                           <Menu.Item>
                             {({ active }) => (
-                              <div
-                                onClick={() => navigate("/profile")}
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                                )}
+                              <a
+                                href={`/${userData?.uid}/orders`}
+                                className={`block px-3 py-1 mt-2 text- text-gray-600 cursor-pointer ${
+                                  active ? "bg-gray-100" : ""
+                                }`}
                               >
-                                Profile
-                              </div>
+                                 orders
+                              </a>
+                            )}
+                            </Menu.Item>
+                            <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href={`/${userData?.uid}/orders`}
+                                className={`block px-3 py-1 text- text-gray-600 cursor-pointer ${
+                                  active ? "bg-gray-100" : ""
+                                }`}
+                              >
+                                 shipping
+                              </a>
                             )}
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
                               <div
                                 onClick={() => setIsLogoutOpen(true)}
-                                className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer ${
+                                className={`block px-3 py-1 mt-3 text- text-red-400 gap-1 cursor-pointer ${
                                   active ? "bg-gray-100" : ""
                                 }`}
                               >
-                                Log out
+                                <LogoutOutlined className="w-3" /> Log out
                               </div>
                             )}
                           </Menu.Item>

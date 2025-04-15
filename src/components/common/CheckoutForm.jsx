@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "../../context/user/context"; // Importing context to access user data
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useShipping } from "../../context/shipping/context";
 
 const countries = [
     { name: "United States", cities: ["New York", "Los Angeles", "Chicago"] },
@@ -9,7 +10,6 @@ const countries = [
     { name: "United Kingdom", cities: ["London", "Manchester", "Birmingham"] },
     { name: "Nigeria", cities: ["Abuja", "Lagos", "Port-Harcourt"] },
 ];
-
 const CheckoutForm = ({
     cart,
     remove,
@@ -24,6 +24,7 @@ const CheckoutForm = ({
     setDeliveryMethod,
     lastName,
     setLastName,
+    shippingData,
     email,
     address,
     zipCode,
@@ -134,10 +135,10 @@ const CheckoutForm = ({
                 <div className="text-red-500 text-sm">
                     {name === "" ? "* indicates required field" : ""}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">
-                            First Name <span className="text-red-500">*</span>
+                            Full Name <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -145,10 +146,10 @@ const CheckoutForm = ({
                             placeholder="Type here"
                             onChange={(e) => setName(e.target.value)}
                             required
-                            className="mt-1 block w-full p-3 border-gray-900 rounded-sm shadow-sm focus:ring-black focus:border-black"
+                            className="mt-1 block w-full p-3 border-gray-700 rounded-sm shadow-sm focus:ring-black focus:border-black"
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <label className="block text-sm font-medium text-gray-700">
                             Last Name <span className="text-red-500">*</span>
                         </label>
@@ -160,7 +161,7 @@ const CheckoutForm = ({
                             required
                             className="mt-1 block w-full p-3 border-gray-900 rounded-sm shadow-sm focus:ring-black focus:border-black"
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -234,8 +235,8 @@ const CheckoutForm = ({
                             onChange={(e) => setSelectedCountry(e.target.value)}
                         >
                             <option value="">Select Country</option>
-                            {countries.map((country) => (
-                                <option key={country.name} value={country.name}>
+                            {shippingData?.map((country) => (
+                                <option key={country.id} value={country.name}>
                                     {country.name}
                                 </option>
                             ))}
@@ -254,11 +255,11 @@ const CheckoutForm = ({
                         >
                             <option value="">Select City</option>
                             {selectedCountry &&
-                                countries
+                                shippingData
                                     .find((c) => c.name === selectedCountry)
                                     ?.cities.map((city) => (
-                                        <option key={city} value={city}>
-                                            {city}
+                                        <option key={city.name} value={city.name}>
+                                            {city.name}
                                         </option>
                                     ))}
                         </select>

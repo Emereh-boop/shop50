@@ -10,6 +10,8 @@ const OrderSummary = ({
     email,
     paymentMethod,
     processPayment,
+    selectedCountry,
+    selectedCity,
     coupon,
     setCoupon,
     discount,
@@ -29,7 +31,7 @@ const OrderSummary = ({
     };
 
     return (
-        <div className="bg-gray-50 p-8 shadow-lg rounded-lg lg:h-1/2">
+        <div className="bg-gray- 50 p-8 shadow-sm rounded-sm lg:h-1/2">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
             <div className="space-y-4">
                 <div className="flex justify-between">
@@ -56,10 +58,11 @@ const OrderSummary = ({
                         </div>
                     </span>
                 </div>
-                <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span className="font-medium">{formatCurrency(shipping)}</span>
-                </div>
+                <p className="mt-4 text-sm">
+                    {shipping
+                        ? `Shipping cost for ${selectedCity}, ${selectedCountry} is ${formatCurrency(shipping)}`
+                        : "Select a country and city to see shipping cost."}
+                </p>
                 <div className="flex justify-between">
                     <span>Total</span>
                     <span className="font-medium">{formatCurrency(total)}</span>

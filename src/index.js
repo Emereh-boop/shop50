@@ -11,6 +11,9 @@ import { AuthProvider } from "./context/auth/context"; // Import AuthProvider
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "react-query";
 import { OrdersProvider } from "./context/orders/context.jsx";
+import { ShippingProvider } from "./context/shipping/context.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
@@ -22,11 +25,14 @@ root.render(
         <CartProvider>
           <ProductProvider>
             <OrdersProvider>
-              <React.StrictMode>
-                <ErrorBoundary>
-                  <App />
-                </ErrorBoundary>
-              </React.StrictMode>
+              <ShippingProvider>
+                <React.StrictMode>
+                  <ErrorBoundary>
+                    <App />
+                    <ToastContainer />
+                  </ErrorBoundary>
+                </React.StrictMode>
+              </ShippingProvider>
             </OrdersProvider>
           </ProductProvider>
         </CartProvider>

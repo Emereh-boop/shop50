@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useCart } from "../../context/cart/context";
-import Navbar from "../../components/layout/navbar";
-import Footer from "../../components/layout/footer";
 import { useUser } from "../../context/user/context";
 import OrderSummary from "../../components/common/orderSummary";
 import CheckoutForm from "../../components/common/CheckoutForm";
@@ -9,6 +7,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { handlePaystackPayment } from "../../utils/handle-paystack";
 import Toast from "../../components/common/toast";
+import { useShipping } from "../../context/shipping/context";
 
 const CheckoutPage = () => {
   const [name, setName] = useState("");
@@ -28,6 +27,7 @@ const CheckoutPage = () => {
 
   const { removeItem, clearCart, cartItems = [] } = useCart();
   const { userData } = useUser(); // Get user data from context
+  const { shippingData } = useShipping();
 
   const cart = cartItems.reduce(
     (acc, item) => {
@@ -43,8 +43,18 @@ const CheckoutPage = () => {
   ).cart;
 
   const subt = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
-  const shipping = 1000;
-  const tot = (subt + shipping) - ((discount / 100) * (subt + shipping));
+
+  const shipping = useMemo(() => {
+    if (!selectedCountry || !selectedCity) return "";
+
+    const country = shippingData.find((c) => c.name === selectedCountry);
+    if (!country) return "";
+
+    const city = country.cities.find((c) => c.name === selectedCity);
+    return city?.price_range || "";
+  }, [selectedCountry, selectedCity, shippingData]);
+
+  const tot = subt + Number(shipping) - (discount / 100) * (subt + shipping);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -84,20 +94,23 @@ const CheckoutPage = () => {
       setSelectedCountry("");
       setDeliveryMethod("");
       setPaymentMethod("credit-card");
-      setCoupon('')
-      setDiscount(0)
-      setPaid(false)
-      window.location.href = `/${userData?.uid}/orders`
+      setCoupon("");
+      setDiscount(0);
+      setPaid(false);
+      window.location.href = `/${userData?.uid}/orders`;
     } catch (error) {
       <Toast type="error" message="Error placing order" />;
     }
   };
 
+  if (cart < 0) {
+    return null 
+  }
+
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
+    <div className="min-h-screen bg- white mt-16">
       <div className="max-w-7xl mx-auto py-10 px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 bg-gray-50 p-8 shadow-lg rounded-lg">
+        <div className="lg:col-span-2 bg-gray-50 p-8 shadow-sm rounded-sm ">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Checkout</h2>
 
           <CheckoutForm
@@ -121,6 +134,7 @@ const CheckoutPage = () => {
             selectedCity={selectedCity}
             setSelectedCity={setSelectedCity}
             selectedCountry={selectedCountry}
+            shippingData={shippingData}
             setSelectedCountry={setSelectedCountry}
             paid={paid}
           />
@@ -133,15 +147,18 @@ const CheckoutPage = () => {
           email={email}
           handleCouponChange={setCoupon}
           paymentMethod={paymentMethod}
-          processPayment={() => handlePaystackPayment(tot, email, setPaid, setPaymentStatus)}
+          processPayment={() =>
+            handlePaystackPayment(tot, email, setPaid, setPaymentStatus)
+          }
           coupon={coupon}
+          selectedCity={selectedCity}
+          selectedCountry={selectedCountry}
           setCoupon={setCoupon}
           discount={discount}
           setDiscount={setDiscount}
           paymentStatus={paymentStatus} // Pass paymentStatus to OrderSummary
         />
       </div>
-      <Footer />
     </div>
   );
 };
