@@ -1,13 +1,51 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useProducts } from "../../context/products/context";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight } from "react-bootstrap-icons";
+import {
+  ArrowRight,
+  ChevronCompactLeft,
+  ChevronCompactRight,
+} from "react-bootstrap-icons";
 
 export default function CollectionComp() {
   const navigate = useNavigate();
   const { products = {} } = useProducts();
   // Assuming products have a 'category' field and other necessary fields like 'onsale', 'instock', etc.
   const allProducts = products?.products || [];
+  const sliderRef = useRef(null);
+  const prods = products?.products || [];
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (sliderRef.current) {
+        setCanScrollLeft(sliderRef.current.scrollLeft > 0);
+        setCanScrollRight(
+          sliderRef.current.scrollLeft + sliderRef.current.clientWidth <
+            sliderRef.current.scrollWidth
+        );
+      }
+    };
+
+    checkScroll();
+    sliderRef.current?.addEventListener("scroll", checkScroll);
+    return () => sliderRef.current?.removeEventListener("scroll", checkScroll);
+  }, []);
+
+  const slideLeft = () => {
+    sliderRef.current.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
+  };
+
+  const slideRight = () => {
+    sliderRef.current.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
 
   // Step 1: Filter products (if needed)
   const filteredProducts = allProducts.filter((product) => {
@@ -60,6 +98,7 @@ export default function CollectionComp() {
                 className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
                 src={collection.imageUrl || collection.image}
                 alt={collection.title}
+                loading="lazy"
               />
 
               <div className="absolute inset-0 bg-black opacity-30"></div>
@@ -68,28 +107,28 @@ export default function CollectionComp() {
                   {collection.brand}
                 </h2>
                 <h1 className=" text-white text- xl flex items-center lg:text- xl lg:font- extrabold font-bold">
-                  {collection.category} <ArrowRight/>
+                  {collection.category} <ArrowRight />
                 </h1>
               </div>
             </div>
           ))}
         </div>
 
-        {/* {canScrollLeft && (
-              <ChevronCompactLeft
-                onClick={slideLeft}
-                size={30}
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
-              />
-            )}
-    
-            {canScrollRight && (
-              <ChevronCompactRight
-                onClick={slideRight}
-                size={30}
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
-              />
-            )} */}
+        {canScrollLeft && (
+          <ChevronCompactLeft
+            onClick={slideLeft}
+            size={30}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+          />
+        )}
+
+        {canScrollRight && (
+          <ChevronCompactRight
+            onClick={slideRight}
+            size={30}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-100 text-gray-700 cursor-pointer rounded-sm z-10 hover:bg-gray-100/50 transition"
+          />
+        )}
       </div>
     </div>
   );

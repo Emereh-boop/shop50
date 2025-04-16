@@ -4,7 +4,7 @@ import { useCart } from "../../context/cart/context";
 import { Dash, Plus } from "react-bootstrap-icons";
 import { formatCurrency } from "../../utils/format";
 import { useProducts } from "../../context/products/context";
-import { Load } from "../../components/common/loading";
+import { Load } from "../../components/skeletons/loading";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -34,10 +34,7 @@ const ProductDetails = () => {
   // Function to toggle sections (description, features, specifications)
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
-      ...Object.keys(prev).reduce(
-        (acc, key) => ({ ...acc, [key]: false }),
-        {}
-      ),
+      ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
       [section]: !prev[section],
     }));
   };
@@ -71,6 +68,7 @@ const ProductDetails = () => {
             className="w-full max-h-auto lg:h-dvh object-cover"
             src={product?.imageUrl || product?.image}
             alt={product?.title}
+            loading="lazy"
           />
           <div className="absolute top-0 left-5 w-full h-full flex flex-col gap-1">
             {product?.additionalImage?.map((i) => (
@@ -79,6 +77,7 @@ const ProductDetails = () => {
                 className="w-20 lg:w-32 shadow-sm rounded-sm h-20 lg:h-32 object-contain"
                 src={i}
                 alt={i}
+                loading="lazy"
               />
             ))}
           </div>

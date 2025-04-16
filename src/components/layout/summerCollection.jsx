@@ -43,6 +43,7 @@ export default function Promotions() {
               {filteredTrendingProducts.map((product) => (
                 <div key={product.id} className="bg-white shadow-lg rounded-lg p-4 w-full lg:w-1/3">
                   <img
+                  loading="lazy"
                     src={product.image}
                     alt={product.name}
                     className="w-full h-64 object-cover rounded-md"
@@ -70,6 +71,7 @@ export default function Promotions() {
                     src={product.imageUrl}
                     alt={product.title}
                     className="w-full h-52 md:h-64 object-cover rounded-sm"
+                    loading="lazy"
                   />
                   <h3 className="mt- font-bold text-gray-800">{product.title}</h3>
                   <p className="mt- text-gray-600">{product.shortDescription}</p>

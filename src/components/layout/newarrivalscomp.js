@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import { useProducts } from "../../context/products/context";
 import { useNavigate } from "react-router-dom";
-import { Load } from "../common/loading";
+import { Load } from "../skeletons/loading";
+import { ProductCardSkeleton } from "../skeletons/ProductCardSkeleton";
 
 export default function NewArrivalsComp() {
   const { products = {} } = useProducts();
@@ -44,12 +45,13 @@ export default function NewArrivalsComp() {
                     className="w-full h-60 object-center hover:scale-105 lg:h-[25rem] object-cover rounded-sm transition-transform duration-500 ease-in-out"
                     src={p.imageUrl || p.image}
                     alt={p.title}
+                    loading="lazy"
                   />
                 </div>
               </div>
             ))
           ) : (
-            <Load />
+            <ProductCardSkeleton/>
           )}
         </div>
       </div>

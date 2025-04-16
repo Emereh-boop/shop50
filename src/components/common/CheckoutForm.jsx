@@ -104,6 +104,7 @@ const CheckoutForm = ({
                                         src={product.imageUrl}
                                         alt={product.title}
                                         className="h-full w-full object-cover object-center"
+                                        loading="lazy"
                                     />
                                 </div>
 

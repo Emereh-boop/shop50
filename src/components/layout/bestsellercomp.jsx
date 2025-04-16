@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useProducts } from '../../context/products/context'; // Assuming your context exists
 import { filterMostPurchasedProducts } from '../../utils/filtermostpurchased';
-import Product from '../products/product'; // Assuming you have a product component
+import Product from '../products/ProductCard'; // Assuming you have a product component
 import { useOrders } from '../../context/orders/context';
 import { useAuth } from '../../context/auth/context';
 

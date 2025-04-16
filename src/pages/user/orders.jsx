@@ -4,6 +4,8 @@ import { useAuth } from "../../context/auth/context";
 import { collection, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase/firebase"; // Assuming you already initialized Firebase
 import { formatCurrency } from "../../utils/format";
+import { CategorySkeleton } from "../../components/skeletons/CategorySkeleton";
+import { CartSkeleton } from "../../components/skeletons/CartSkeleton";
 
 // Function to format the date to "Month Day, Year" format (e.g. Jul 6, 2021)
 const formatDate = (dateString) => {
@@ -20,7 +22,9 @@ const OrdersPage = () => {
 
     useEffect(() => {
         const fetchOrders = async () => {
-            if (loading) return; // Don't proceed until loading is done
+            if (loading) {
+                <CategorySkeleton/>
+            }; // Don't proceed until loading is done
 
             try {
                 const ordersRef = collection(db, "orders");
@@ -99,7 +103,7 @@ const OrdersPage = () => {
                                     <ul className="space-y-4">
                                         {order.itemsInCart?.map((item, index) => (
                                             <li key={index} className="flex items-start space-x-4">
-                                                <img src={item.imageUrl} alt={item.title} className="w-16 h-16 object-cover" />
+                                                <img loading="lazy" src={item.imageUrl} alt={item.title} className="w-16 h-16 object-cover" />
                                                 <div className="flex-1">
                                                     <h5 className="text-sm font-medium text-gray-800">{item.name}</h5>
                                                     <p className="text-sm text-gray-500">{item.shortDescription}</p>
@@ -152,7 +156,7 @@ const OrdersPage = () => {
                             </div>
                         ))
                     ) : (
-                        <p>No orders found</p>
+                        <CartSkeleton/>
                     )}
                 </div>
             </div>

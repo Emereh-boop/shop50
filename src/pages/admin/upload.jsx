@@ -494,6 +494,7 @@ export default function UploadData() {
                     src={formData.imageUrl}
                     alt="Selected File"
                     className="w-1/4 h-64 object-contain rounded-sm border border-gray-200"
+                    loading="lazy"
                   />
                   <button
                     onClick={handleDeleteFile}
@@ -548,6 +549,7 @@ export default function UploadData() {
                           src={formData.additionalImage[idx]}
                           alt={`additional ${idx + 1}`}
                           className="w-16 h-16 object-cover mt-2"
+                          loading="lazy"
                         />
                       )}
                     </div>

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../firebase/firebase"; // Import your firebase configuration
 import { doc, getDoc } from "firebase/firestore"; // Firestore functions to fetch a document
 import { formatCurrency } from "../../utils/format"; // Assuming you have a format function for currency
-import { Load } from "../../components/common/loading";
+import { Load } from "../../components/skeletons/loading";
 import Toast from "../../components/common/toast";
 import { useAuth } from "../../context/auth/context";
 
@@ -76,7 +76,7 @@ const OrderDetailPage = () => {
                     <div className="space-y-4">
                         {orderDetails?.itemsInCart?.map((item, index) => (
                             <div key={index} className="flex items-center space-x-4">
-                                <img src={item.imageUrl} alt={item.title} className="w-16 h-16 object-cover rounded-sm" />
+                                <img loading="lazy" src={item.imageUrl} alt={item.title} className="w-16 h-16 object-cover rounded-sm" />
                                 <div className="flex-1">
                                     <h3 className="text-sm font-medium text-gray-900">{item.title}</h3>
                                     <p className="text-sm text-gray-500">{formatCurrency(item.price)}</p>

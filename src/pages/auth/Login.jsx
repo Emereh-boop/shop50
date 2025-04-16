@@ -42,7 +42,7 @@ export default function LoginModal({ isOpen, setIsOpen }) {
     try {
       await signInWithPopup(auth, provider);
       setIsOpen(false);
-      navigate(from, { replace: true });
+      // navigate(from, { replace: true });
     } catch (error) {
       setError(error.message);
     }
@@ -129,7 +129,7 @@ export default function LoginModal({ isOpen, setIsOpen }) {
                       className="ring-1 ring-gray-300 rounded-sm p-1 flex justify-center gap-1 items-center"
                       type="button"
                     >
-                      <img src={google} className="w-20 h-10" alt=""/>
+                      <img loading="lazy" src={google} className="w-20 h-10" alt=""/>
                       <span>Continue with Google</span>
                     </button>
 

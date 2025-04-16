@@ -29,6 +29,7 @@ export default function Product(props) {
             className="relative rounded lg:h-[28rem] h-72 w-full object-cover"
             src={props.product.imageUrl || props.product.image}
             alt={props.product.title}
+            loading="lazy"
           />
         </Link>
       </div>
@@ -42,33 +43,6 @@ export default function Product(props) {
           </span>
         </div>
         <div className="justify-between items-center flex pb-2 px-2">
-          {/* <p className="py-1 gap-2 bg-white text-sm text-[#00000088] flex flex-col truncate">
-            <span> Available Colors: {props.product.colors?.length}</span>
-          </p> */}
-          {/* {isAdded ? (
-            <button type="button" className="py-1 px-2 text-gray-700 flex">
-              <svg
-                className="w-6 h-6 bg-green-500 rounded-full text-white p-1 animate-check"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                
-              >
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </button>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className="py-1 px-2 text-gray-700 flex"
-            >
-              <Cart4 className="h-6 w-6" />
-            </button>
-          )} */}
         </div>
       </div>
     </div>

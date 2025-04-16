@@ -163,17 +163,17 @@ const SmartFilterAndSort = ({
   }, [filteredAndSortedData, onFiltered]);
 
   return (
-    <div className="flex justify-between mb-4 px-2 lg:px-4">
+    <div className="flex justify-between mx-auto max-w-7xl w- full md:w- 56rem lg:w- [80rem] mb-2 px- lg:px- 4">
       {/* Filter */}
       <div className="relative">
         <button
           onClick={() => setFilterToggle(!filterToggle)}
-          className="flex items-center gap-2 bg-zinc-600 text-white px-4 py-2 rounded-sm"
+          className="flex items-center gap-2 bg-zinc-600 text-white px-2 py-1 rounded-sm"
         >
           <FilterCircle className="w-4 h-4" /> Filters
         </button>
         {filterToggle && (
-          <div className="absolute z-10 mt-2 py-2 px-4 bg-white shadow-md rounded-sm max-h-[500px] overflow-y-auto w-[320px]">
+          <div className="absolute z-10 mt-2 py-1 px-2 bg-white shadow-md rounded-sm max-h-[500px] overflow-y-auto w-[320px]">
             {Object.entries(uniqueFilterOptions).map(([key, values]) => {
               const showAll = expandedFilters[key];
               const displayValues = showAll ? values : values.slice(0, 5);
@@ -210,7 +210,7 @@ const SmartFilterAndSort = ({
 
             {/* Range Filters */}
             {Object.entries(rangeOptions).map(([key, { min, max }]) => (
-              <div key={key} className="mt-4">
+              <div key={key} className="mt-2">
                 <p className="font-semibold capitalize">
                   {customLabels[key] || key}
                 </p>
@@ -260,12 +260,12 @@ const SmartFilterAndSort = ({
       <div className="relative">
         <button
           onClick={() => setSortToggle(!sortToggle)}
-          className="flex items-center gap-2 bg-zinc-800 text-white px-4 py-2 rounded-sm"
+          className="flex items-center gap-2 bg-zinc-800 text-white px-2 py-1 rounded-sm"
         >
           <SortAlphaDown className="w-4 h-4" /> Sort by
         </button>
         {sortToggle && (
-          <div className="absolute z-10 mt-2 py-2 px-4 bg-white shadow-md rounded-sm">
+          <div className="absolute z-10 mt-2 py-1 px-2 bg-white shadow-md rounded-sm">
             {sortableKeys.map((key) => (
               <div
                 key={key}
@@ -277,7 +277,7 @@ const SmartFilterAndSort = ({
                 {customLabels[key] || key}
               </div>
             ))}
-            <div className="flex flex-col mt-4">
+            <div className="flex flex-col mt-2">
               <div
                 onClick={() => setSortDirection("asc")}
                 className="flex items-center gap-2"

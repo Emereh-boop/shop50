@@ -20,6 +20,7 @@ import AdminManagement from "./pages/admin/admin";
 import UnauthorizedPage from "./pages/auth/un-auth";
 // import AdminDashboard from "./pages/admin/dashboard";
 import Upload from "./pages/admin/upload";
+import ProductsControl from "./pages/admin/products";
 import Coupon from "./pages/admin/coupon";
 import Shipping from "./pages/admin/shipping";
 import { AuthProvider } from "./context/auth/context";
@@ -179,6 +180,14 @@ function AnimatedRoutes({ toggleLoginModal }) {
             element={
               <StaggeredWrapper>
                 <Upload />
+              </StaggeredWrapper>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <StaggeredWrapper>
+                <ProductsControl />
               </StaggeredWrapper>
             }
           />

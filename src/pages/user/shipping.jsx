@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useOrders } from "../../context/orders/context";
 import { db } from "../../firebase/firebase"; // Assuming Firebase is set up
 import { doc, getDoc } from "firebase/firestore";
-import { Load } from "../../components/common/loading";
+import { Load } from "../../components/skeletons/loading";
 import { formatCurrency } from "../../utils/format";
 
 const ShippingPage = () => {

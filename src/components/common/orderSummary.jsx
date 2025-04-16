@@ -90,7 +90,7 @@ const OrderSummary = ({
                             htmlFor="paystack"
                             className={`flex items-center justify-start w-full p-2 rounded-sm cursor-pointer hover:bg-gray-100 ${paymentStatus === "Paid" && "bg-green-100"}`}
                         >
-                            <img src={paystack} alt="paystack" className="w-1/2" />
+                            <img loading="lazy" src={paystack} alt="paystack" className="w-1/2" />
                         </label>
                     </div>
                 </div>

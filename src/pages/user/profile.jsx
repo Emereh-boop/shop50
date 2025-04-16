@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth/context";
 import { useUser } from "../../context/user/context";
 import { Facebook, Instagram, Tiktok, Heart, CreditCard } from "react-bootstrap-icons";
-import { Load } from "../../components/common/loading";
+import { Load } from "../../components/skeletons/loading";
 import LoginModal from "../auth/Login";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/firebase";

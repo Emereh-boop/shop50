@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from "react";
-import Product from "../../components/products/product.js";
-import Pagination from "../../components/common/pagination.js";
-import SmartFilterAndSort from "../../components/common/filterAndSort.js"; // Updated Smart Component
+import Product from "../../components/products/ProductCard.jsx";
+import Pagination from "../../components/common/pagination.jsx";
+import SmartFilterAndSort from "../../components/common/filterAndSort.jsx"; // Updated Smart Component
 import { useProducts } from "../../context/products/context.js";
-import { Load } from "../../components/common/loading.jsx";
+import { Load } from "../../components/skeletons/loading.jsx";
+import { ProductCardSkeleton } from "../../components/skeletons/ProductCardSkeleton.jsx";
 
 export default function NewArrivals() {
   const { products = {} } = useProducts();
@@ -75,16 +76,20 @@ export default function NewArrivals() {
         />
 
         {/* Products List */}
-        <div className="relative group mx-auto">
-          <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
-            {paginatedProducts?.length > 0 ? (
-              paginatedProducts.map((p) => (
+        <div className="w-full min-w-96 md:w-[48rem] lg:w-[80rem]">
+          {paginatedProducts?.length > 0 ? (
+            <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
+              {paginatedProducts.map((p) => (
                 <Product className="w-60 lg:w-[30rem]" key={p.id} product={p} />
-              ))
-            ) : (
-              <Load />
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
+              {[...Array(8)].map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Pagination */}

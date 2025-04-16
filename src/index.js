@@ -14,6 +14,7 @@ import { OrdersProvider } from "./context/orders/context.jsx";
 import { ShippingProvider } from "./context/shipping/context.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ root.render(
                 <React.StrictMode>
                   <ErrorBoundary>
                     <App />
+                    <Toaster position="top-center" />
                     <ToastContainer />
                   </ErrorBoundary>
                 </React.StrictMode>

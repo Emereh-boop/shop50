@@ -1,22 +1,22 @@
 import React from "react";
-import { ArrowRight, Facebook, Instagram, TwitterX } from "react-bootstrap-icons";
+import { ArrowRight, Facebook, Instagram } from "react-bootstrap-icons";
 import { useAuth } from "../../context/auth/context";
 
 export default function Footer() {
   const { user } = useAuth();
   return (
     <footer
-      className={`py-10 px-5 static gap-5 flex flex-col bg- secondary mx-auto max-w-7xl dark:invert-0 invert text-black`}
+      className={`py-10 px-5 static gap-5 flex flex-col bg-secondary mx-auto max-w-7xl dark:invert-0 invert text-black`}
     >
-        <div className="lg:col-span- text-gray-400 flex flex-col items-center justify-center">
-          <h1 className="font- semibold mb-1 lg:mb- 4 text-black">Subscribe to our emails</h1>
-          <p className="lg:mb-4 text-sm lg:text- base mb-1">
+        <div className="lg:col-span- text-gray- 400 flex flex-col items-center justify-center">
+          <h1 className="font-semibold mb-1 lg:mb- 4 text-black">Subscribe to our emails</h1>
+          <p className="lg:mb-4 text-sm text-center lg:text- base mb-1">
             Stay in touch with the latest updates about our products and offers.
           </p>
           <form method="post" href="#" className="flex p-2 items-center rounded-sm bg-transparent text-black ring-1 ring-black">
             <input
               type="email"
-              className="flex-1 focus:outline-none"
+              className="flex-1 bg-inherit focus:outline-none"
               placeholder="Email"
             />
             <button

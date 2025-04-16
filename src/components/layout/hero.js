@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "../../context/products/context";
-import { Load } from "../common/loading";
+import { Load } from "../skeletons/loading";
 
 function Hero() {
   const { products = {} } = useProducts();
@@ -47,6 +47,7 @@ function Hero() {
             src={banners[currentIndex]?.imageUrl}
             alt={banners[currentIndex]?.title}
             className="absolute inset-0 object-cover object-center w-full h-full"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>
 

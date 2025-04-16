@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import Product from "../../components/products/product";
+import Product from "../../components/products/ProductCard";
 import Pagination from "../../components/common/pagination";
 import { useProducts } from "../../context/products/context";
-import { Load } from "../../components/common/loading";
+import { Load } from "../../components/skeletons/loading";
 import SmartFilterAndSort from "../../components/common/filterAndSort";
+import { ProductCardSkeleton } from "../../components/skeletons/ProductCardSkeleton";
 
 const Products = () => {
   const { category } = useParams();
@@ -29,8 +30,10 @@ const Products = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const handlePageChange = (page) => setCurrentPage(page);
-  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  const handlePreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePreviousPage = () =>
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -75,16 +78,24 @@ const Products = () => {
           />
 
           {/* ✅ Products */}
-          <div className="relative">
-            <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
-              {paginatedProducts?.length > 0 ? (
-                paginatedProducts.map((p) => (
-                  <Product className="w-60 lg:w-[30rem]" key={p.id} product={p} />
-                ))
-              ) : (
-                <Load />
-              )}
-            </div>
+          <div className="w-full min-w-96 md:w-[48rem] lg:w-[80rem]">
+            {paginatedProducts?.length > 0 ? (
+              <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
+                {paginatedProducts.map((p) => (
+                  <Product
+                    className="w-60 lg:w-[30rem]"
+                    key={p.id}
+                    product={p}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid lg:grid-cols-4 lg:gap-1 md:grid-cols-3 grid-cols-2">
+                {[...Array(8)].map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

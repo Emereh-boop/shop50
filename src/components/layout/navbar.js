@@ -91,10 +91,11 @@ export default function Navbar() {
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
                     <img
-                    className=" object-cover block w-10 h-10 rounded-full"
-                    src={Logo}
-                    alt="nahtty"
-                  />
+                      className=" object-cover block w-10 h-10 rounded-full"
+                      src={Logo}
+                      alt="nahtty"
+                      loading="lazy"
+                    />
                   )}
                 </Disclosure.Button>
               </div>
@@ -104,6 +105,7 @@ export default function Navbar() {
                     className=" object-cover w-10 h-10 rounded-full"
                     src={Logo}
                     alt="nahtty"
+                    loading="lazy"
                   />
                 </div>
                 <div className="hidden ml-6 sm:block">
@@ -279,20 +281,19 @@ export default function Navbar() {
                         <>
                           {/* Greeting with User Name and Email */}
                           <div>
-                            <h1 className="px-3 py- text-lg font-semibold text-gray-600">
-                              Hello,{" "}
+                            <h1 className="px- mx-2 py- text-lg font-semibold text-gray-600">
                               {userData?.displayName
                                 ? userData.displayName
                                 : "User"}
                             </h1>
-                            <p className="px-3 py- text-sm text-gray-600">
+                            <p className="px- mx-2 py- text-sm text-gray-600">
                               {user?.email
-                                  ? user.email
-                                  //   .replace(
+                                ? user.email
+                                : //   .replace(
                                   //   /(^.{3})(.*)(?=@)/,
                                   //   "$1***"
                                   // )
-                                : ""}
+                                  ""}
                             </p>
                           </div>
                           <Menu.Item>
@@ -303,11 +304,11 @@ export default function Navbar() {
                                   active ? "bg-gray-100" : ""
                                 }`}
                               >
-                                 orders
+                                orders
                               </a>
                             )}
-                            </Menu.Item>
-                            <Menu.Item>
+                          </Menu.Item>
+                          <Menu.Item>
                             {({ active }) => (
                               <a
                                 href={`/${userData?.uid}/orders`}
@@ -315,7 +316,7 @@ export default function Navbar() {
                                   active ? "bg-gray-100" : ""
                                 }`}
                               >
-                                 shipping
+                                shipping
                               </a>
                             )}
                           </Menu.Item>

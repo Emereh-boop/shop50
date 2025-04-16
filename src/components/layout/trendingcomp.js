@@ -6,8 +6,9 @@ import {
   ChevronCompactRight,
 } from "react-bootstrap-icons";
 import { useProducts } from "../../context/products/context";
-import { Load } from "../common/loading";
+import { Load } from "../skeletons/loading";
 import { useNavigate } from "react-router-dom";
+import { ProductCardSkeleton } from "../skeletons/ProductCardSkeleton";
 
 export default function TrendingComp() {
   const sliderRef = useRef(null);
@@ -80,6 +81,7 @@ export default function TrendingComp() {
                     className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
                     src={product.imageUrl}
                     alt={product.title}
+                    loading="lazy"
                   />
                   <div className="absolute bg-white p-2 bottom-4 left-1 text-sm font-medium text-gray-400">
                     {formatCurrency(product.price)}
@@ -88,7 +90,7 @@ export default function TrendingComp() {
               </div>
             ))
           ) : (
-            <Load />
+            <ProductCardSkeleton />
           )}
         </div>
 
