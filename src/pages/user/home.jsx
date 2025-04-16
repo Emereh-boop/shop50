@@ -21,21 +21,21 @@ const Collections = lazy(() =>
 
 export default function Home() {
   const LazyLoadSection = ({ children }) => {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
-  return (
-    <div ref={ref}>
-      {inView && (
-        <Suspense fallback={<div className="h-40">Loading section...</div>}>
-          {children}
-        </Suspense>
-      )}
-    </div>
-  );
-};
+    return (
+      <div ref={ref}>
+        {inView && (
+          <Suspense fallback={<div className="h-40">Loading section...</div>}>
+            {children}
+          </Suspense>
+        )}
+      </div>
+    );
+  };
 
   const { products = {} } = useProducts();
-  const isLoading = !products?.products || products.products.length === 0;
+  const isLoading = products?.banners?.length <0 || products?.products?.length <0 || products?.promotions?.length < 0;
 
   return (
     <>

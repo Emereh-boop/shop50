@@ -53,7 +53,7 @@ function Hero() {
 
           {/* Text Content */}
           <div className="relative w-full md:max-w-6xl px-1 md:px-6 text-center md:py-20 space-y-4">
-            <h4 className="text-secondary text-md md:text-6xl font-black ">
+            <h4 className="text-secondary text-3xl md:text-6xl font-black ">
               {banners[currentIndex]?.title}
             </h4>
             <p className="text-secondary hidden md:block text-2xl font-normal">
@@ -61,7 +61,7 @@ function Hero() {
                 banners[currentIndex]?.subtitle}
             </p>
             <button
-              onClick={() => handleNavigation(banners[currentIndex]?.href)}
+              onClick={() => navigate(`products/${banners[currentIndex]?.category}`)}
               className="md:px-6 md:py-2 p-1 bg-secondary text-sm lg:text-xl text-black font- bold rounded-sm hover:bg-slate-100 transition"
             >
               shop
@@ -73,9 +73,9 @@ function Hero() {
             {banners.map((_, index) => (
               <div
                 key={index}
-                className={`h-3 w-3 rounded-full cursor-pointer transition-all ${
+                className={`h-2 w-2 md:h-3 md:w-3 rounded-full cursor-pointer transition-all ${
                   index === currentIndex
-                    ? "bg-secondary scale-125"
+                    ? "bg-secondary scale-110 md:scale-125"
                     : "bg-gray-400"
                 }`}
                 onClick={() => goToSlide(index)}

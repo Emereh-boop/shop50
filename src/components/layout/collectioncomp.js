@@ -72,11 +72,11 @@ export default function CollectionComp() {
   return (
     <div className="bg-secondary ">
       <div className=" mx-auto max-w-7xl px-4 group md:px-6 lg:px-8 flex justify-between items-center my-5">
-        <h2 className="text- xl lg:text-4xl font- extrabold text-black">
+        <h2 className="text- xl lg:text-xl font- extrabold text-black">
           Collections
         </h2>
         <button
-          onClick={() => navigate("/trend")}
+          onClick={() => navigate("/collection")}
           className="text-black hover:underline text-sm lg:text-base"
         >
           See More →
@@ -88,30 +88,42 @@ export default function CollectionComp() {
           // ref={sliderRef}
           className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
         >
-          {collections?.slice(0, 4).map((collection) => (
-            <div
-              key={collection.id}
-              onClick={() => navigate(`products/${collection.category}`)}
-              className=" flex-shrink- 0 w- 40 lg:w- 40 snap- start w- relative flex flex-col  "
-            >
-              <img
-                className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
-                src={collection.imageUrl || collection.image}
-                alt={collection.title}
-                loading="lazy"
-              />
+          {collections?.length
+            ? collections?.slice(0, 4).map((collection) => (
+                <div
+                  key={collection.id}
+                  onClick={() => navigate(`products/${collection.category}`)}
+                  className=" flex-shrink- 0 w- 40 lg:w- 40 snap- start w- relative flex flex-col  "
+                >
+                  <img
+                    className="w-full h-60 lg:h-[25rem] object-cover transition-transform duration-300 hover:scale-105"
+                    src={collection.imageUrl || collection.image}
+                    alt={collection.title}
+                    loading="lazy"
+                  />
 
-              <div className="absolute inset-0 bg-black opacity-30"></div>
-              <div className="z-10 w-full max-w- xl px-6 text- ">
-                <h2 className=" text-white text- lg lg:text- xl font-bold">
-                  {collection.brand}
-                </h2>
-                <h1 className=" text-white text- xl flex items-center lg:text- xl lg:font- extrabold font-bold">
-                  {collection.category} <ArrowRight />
-                </h1>
-              </div>
-            </div>
-          ))}
+                  <div className="absolute inset-0 bg-black opacity-30"></div>
+                  <div className="z-10 w-full max-w- xl px-6 text- ">
+                    <h2 className=" text-white text- lg lg:text- xl font-bold">
+                      {collection.brand}
+                    </h2>
+                    <h1 className=" text-white text- xl flex items-center lg:text- xl lg:font- extrabold font-bold">
+                      {collection.category} <ArrowRight />
+                    </h1>
+                  </div>
+                </div>
+              ))
+            : [...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`animate-pulse border border-gray-200 shadow-sm rounded-sm p- w-full   ${
+                    i > 1 ? "hidden sm:block" : ""
+                  }`}
+                >
+                  <div className="bg-gray-300 h-[24rem] w-full rounded mb-2" />
+                  <div className="h-4 bg-gray-300 rounded w-1/3" />
+                </div>
+              ))}
         </div>
 
         {canScrollLeft && (

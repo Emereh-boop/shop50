@@ -23,7 +23,7 @@ const OrdersPage = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             if (loading) {
-                <CategorySkeleton/>
+                <CategorySkeleton />
             }; // Don't proceed until loading is done
 
             try {
@@ -68,7 +68,7 @@ const OrdersPage = () => {
     // Function to handle view order details
     const handleViewDetails = (orderId) => {
         navigate(`/orders/${orderId}`);
-    };    const handleViewProducts = (pid) => {
+    }; const handleViewProducts = (pid) => {
         navigate(`/product/${pid}`);
     };
 
@@ -156,7 +156,17 @@ const OrdersPage = () => {
                             </div>
                         ))
                     ) : (
-                        <CartSkeleton/>
+                        <p className="text-gray-600 text-sm">
+                            You haven’t placed any orders yet.{" "}
+                            <a
+                                href="/products/new"
+                                className="text-blue-600 underline hover:text-blue-800"
+                            >
+                                Browse the latest arrivals
+                            </a>{" "}
+                            to get started.
+                        </p>
+
                     )}
                 </div>
             </div>

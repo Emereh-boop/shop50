@@ -1,17 +1,15 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useCart } from "../../context/cart/context";
 import { useProducts } from "../../context/products/context";
 import {
   Cart2,
-  Cart4,
   PersonCircle,
   Search,
-  Shop,
   X,
 } from "react-bootstrap-icons";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "../../pages/auth/Logout";
 import Logo from "../../images/yntlogo.png";
 // import Logo from "../images/logo.jpg";
@@ -19,14 +17,7 @@ import { useAuth } from "../../context/auth/context";
 import { useUser } from "../../context/user/context";
 import Cart from "../../pages/user/cart";
 import LoginModal from "../../pages/auth/Login";
-import {
-  AssignmentIndOutlined,
-  AssignmentOutlined,
-  IsoTwoTone,
-  LogoutOutlined,
-  Shop2,
-  ShopTwo,
-} from "@mui/icons-material";
+import { LogoutOutlined } from "@mui/icons-material";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -36,7 +27,7 @@ export default function Navbar() {
   const location = useLocation();
   const { cartItems = [] } = useCart();
   const { products = {} } = useProducts();
-  const { userData, loading, setUserData } = useUser();
+  const { userData } = useUser();
   const prod = products?.products;
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,8 +38,8 @@ export default function Navbar() {
     { name: "Collections", href: "/collections", current: false },
     { name: "New Arrivals", href: "/new", current: false },
   ]);
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  // const navigate = useNavigate();
+  const { user } = useAuth();
   useEffect(() => {
     setNavigation((prev) =>
       prev.map((item) => ({

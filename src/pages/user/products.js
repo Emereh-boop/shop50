@@ -18,14 +18,22 @@ const Products = () => {
   const [categoryProducts, setCategoryProducts] = useState([]);
 
   useEffect(() => {
-    if (products?.products?.length > 0) {
-      const selectedProducts = products.products.filter(
-        (product) => product.category?.toLowerCase() === category?.toLowerCase()
-      );
-      setCategoryProducts(selectedProducts);
-      setFilteredProducts(selectedProducts); // Set initial state for filtered
+    const allItems = [
+      ...(products?.products || []),
+      ...(products?.banners || []),
+    ];
+  
+    if (allItems.length > 0) {
+      const selectedItems = allItems.filter((item) => {
+        const categoryMatch = item.category?.toLowerCase() === category?.toLowerCase();
+        return categoryMatch 
+      });
+  
+      setCategoryProducts(selectedItems);
+      setFilteredProducts(selectedItems);
     }
   }, [category, products]);
+  
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 

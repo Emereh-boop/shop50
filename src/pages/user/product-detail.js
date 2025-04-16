@@ -10,7 +10,6 @@ const ProductDetails = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { products = {} } = useProducts();
-  const prod = products?.products;
   const [product, setProduct] = useState(null);
   const [productParam, setProductParam] = useState("");
 
@@ -26,10 +25,22 @@ const ProductDetails = () => {
 
   // Fetch product details based on product ID
   useEffect(() => {
-    const selectedProduct = prod?.find((product) => product.id === id);
+    const allItems = [
+      ...(products?.products || []),
+      ...(products?.banners || []),
+    ];
+  
+    const normalizedId = id?.trim().toLowerCase();
+  
+    const selectedProduct = allItems.find((product) =>
+      product?.id?.trim().toLowerCase() === normalizedId
+    );
+  
     setProduct(selectedProduct);
     setProductParam(selectedProduct?.brand);
-  }, [id, products, prod]);
+  }, [id, products]);
+  
+  
 
   // Function to toggle sections (description, features, specifications)
   const toggleSection = (section) => {

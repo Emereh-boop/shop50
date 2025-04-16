@@ -1,8 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useProducts } from "../../context/products/context";
 import { useNavigate } from "react-router-dom";
-import { Load } from "../skeletons/loading";
-import { ProductCardSkeleton } from "../skeletons/ProductCardSkeleton";
 
 export default function NewArrivalsComp() {
   const { products = {} } = useProducts();
@@ -18,8 +16,8 @@ export default function NewArrivalsComp() {
   return (
     <div className="md:px-4 mt-1 mx-auto max-w-7xl">
       <div className="flex justify-between items-center px-4 lg:px-1 my-5">
-        <h2 className="text-xl lg:text-4xl font-extrabold text-black">
-          NEW ARRIVALS
+        <h2 className="text-xl lg:text-xl font- extrabold text-black">
+          New Arrivals
         </h2>
         <button
           onClick={() => navigate("/new")}
@@ -51,7 +49,15 @@ export default function NewArrivalsComp() {
               </div>
             ))
           ) : (
-            <ProductCardSkeleton/>
+            [...Array(16)].map((_, i) => (
+              <div
+                key={i}
+                className={`flex-shrink-0 w-60 lg:w-[20rem] snap-start animate-pulse border border-gray-200 shadow-sm rounded-sm p- ${i > 1 ? "hidden sm:block" : ""
+                  }`}
+              >
+                <div className="bg-gray-300 h-[24rem] w-full rounded mb-2" />
+              </div>
+            ))
           )}
         </div>
       </div>

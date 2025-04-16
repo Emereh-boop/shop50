@@ -8,10 +8,15 @@ import { CategorySkeleton } from "../../components/skeletons/CategorySkeleton";
 
 export default function Collections() {
   const { products = {} } = useProducts();
-  const allProducts = products?.products || [];
+  const allProducts = [
+    ...(products?.products || []),
+    ...(products?.banners || []),
+  ];
 
-  // Filter products and structure collections
-  const filteredProducts = allProducts.filter((p) => p.onsale && p.instock);
+  const filteredProducts = allProducts.filter(
+    (p) => p.onsale && p.instock && p.category
+  );
+
   const collections = Array.from(
     new Set(filteredProducts.map((p) => p.category))
   ).map((category) => {
@@ -21,7 +26,10 @@ export default function Collections() {
     return {
       id: category,
       category,
-      imageUrl: collectionProduct?.imageUrl || collectionProduct?.image,
+      imageUrl:
+        collectionProduct?.imageUrl ||
+        collectionProduct?.image ||
+        "/fallback.jpg",
     };
   });
 
@@ -44,8 +52,8 @@ export default function Collections() {
                   <motion.img
                     className="w-full h-[30rem] object-cover"
                     src={collection.imageUrl}
-                  alt={collection.category}
-                  loading="lazy"
+                    alt={collection.category}
+                    loading="lazy"
                   />
                   <h2 className="text-black text-lg font-medium gap-2 px-4 items-center flex">
                     {collection.category} <ArrowRight />
@@ -54,7 +62,14 @@ export default function Collections() {
               </motion.div>
             ))
           : [...Array(4)].map((_, i) => (
-              <div key={i} className={`${i > 1 ? "hidden sm:block relative flex-grow group overflow-hidden" : " relative flex-grow group overflow-hidden"}`}>
+              <div
+                key={i}
+                className={`${
+                  i > 1
+                    ? "hidden sm:block relative flex-grow group overflow-hidden"
+                    : " relative flex-grow group overflow-hidden"
+                }`}
+              >
                 <CategorySkeleton />
               </div>
             ))}
