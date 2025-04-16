@@ -49,8 +49,8 @@ const Products = () => {
   );
 
   return (
-    <div className="relative flex flex-col gap-10 group mx-auto max-w-7xl">
-      <div className="bg-white mb-6 mt-6">
+    <div className="relative flex flex-col gap-10 group mt-16 mx-auto max-w-7xl">
+      <div className="bg-white mb- mt-">
         <h2 className="text-center text-4xl font-extrabold text-black mb-8">
           {category?.toUpperCase()}
         </h2>

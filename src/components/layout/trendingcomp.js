@@ -64,13 +64,13 @@ export default function TrendingComp() {
       <div className="relative ">
         <div
           ref={sliderRef}
-          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
+          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-1 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
         >
           {trending?.length
             ? trending.slice(0, 16).map((product) => (
                 <div
                   key={product.id}
-                  className="flex-shrink-0 w-72 lg:w-80 snap-start"
+                  className="flex-shrink-0 w-44 lg:w-80 snap-start"
                   onClick={() => navigate(`/product/${product.id}`)}
                 >
                   <div className="relative cursor-pointer">
@@ -89,7 +89,7 @@ export default function TrendingComp() {
             : [...Array(16)].map((_, i) => (
                 <div
                   key={i}
-                  className={`flex-shrink-0 w-72 lg:w-80 snap-start relative animate-pulse border border-gray-200 shadow-sm rounded-sm p-   ${
+                  className={`flex-shrink-0 w-48  lg:w-80 snap-start relative animate-pulse border border-gray-200 shadow-sm rounded-sm p-   ${
                     i > 1 ? "hidden sm:block" : ""
                   }`}
                 >

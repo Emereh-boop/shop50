@@ -70,7 +70,7 @@ export default function CollectionComp() {
   });
 
   return (
-    <div className="bg-secondary ">
+    <div className="bg-secondary mb-5">
       <div className=" mx-auto max-w-7xl px-4 group md:px-6 lg:px-8 flex justify-between items-center my-5">
         <h2 className="text- xl lg:text-xl font- extrabold text-black">
           Collections
@@ -86,7 +86,7 @@ export default function CollectionComp() {
       <div className="relative mx-auto max-w-7xl px-4 group md:px-6 lg:px-8">
         <div
           // ref={sliderRef}
-          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
+          className="flex overflow-x-auto scroll-smooth scrollbar-hide gap-2 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
         >
           {collections?.length
             ? collections?.slice(0, 4).map((collection) => (

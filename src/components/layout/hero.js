@@ -40,7 +40,7 @@ function Hero() {
   const goToSlide = (index) => setCurrentIndex(index); // Jump to a specific slide
 
   return (
-    <div className="relative flex items-center justify-center min-h-[40vh] lg:min-h-[70vh] bg-black">
+    <div className="relative flex items-center justify-center min-h-[30vh] lg:min-h-[70vh] bg-black">
       {banners?.length > 0 ? (
         <>
           <img

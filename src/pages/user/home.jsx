@@ -42,7 +42,7 @@ export default function Home() {
       {isLoading ? (
         <LandingPageSkeleton />
       ) : (
-        <div className="mt-16 mx-auto max-w-[100rem] px-4 md:px-6 lg:px-8">
+        <div className="mt-16 mx-auto max-w-[100rem] px- 4 md:px-6 lg:px-8">
           <Suspense fallback={<div className="h-40">Loading hero...</div>}>
             <HeroPage />
           </Suspense>
