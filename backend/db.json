@@ -1,0 +1,67 @@
+{
+    "users": [
+        {
+            "id": "1750014104992",
+            "email": "abuashiaemereh@gmail.com",
+            "password": "$2b$10$lbUsMhpObVq7rA1NdiEIH.9WM83jKmchiGSksF5QemGzZ33fyH0Ny",
+            "name": "Ariel Beard",
+            "role": "user",
+            "createdAt": "2025-06-15T19:01:44.992Z"
+        }
+    ],
+    "products": [
+        {
+            "id": "1749979747798",
+            "name": "Enim magna beatae qu",
+            "description": "Voluptatem eveniet",
+            "shortDescription": "In dicta expedita es",
+            "price": 2,
+            "category": "Non in do ad dolores",
+            "stock": 43,
+            "brand": "Dolor explicabo Aut",
+            "sizes": [
+                "Deleniti tempora nih"
+            ],
+            "colors": [
+                "Et ut aliqua Minim"
+            ],
+            "tags": [
+                "Irure rerum qui dolo"
+            ],
+            "trending": true,
+            "onSale": true,
+            "discount": 0,
+            "relatedProducts": [],
+            "mainImage": null,
+            "additionalImages": [],
+            "createdAt": "2025-06-15T09:29:07.804Z"
+        },
+        {
+            "id": "1749981711915",
+            "name": "Consectetur rerum q",
+            "description": "Amet dolorem enim e",
+            "shortDescription": "Veniam iste sapient",
+            "price": 12,
+            "category": "Dolores eum et beata",
+            "stock": 52,
+            "brand": "Fugit et duis velit",
+            "sizes": [
+                "Quia laboriosam eni"
+            ],
+            "colors": [
+                "Ipsam eum impedit s"
+            ],
+            "tags": [
+                "Voluptates rem qui l"
+            ],
+            "trending": true,
+            "onSale": true,
+            "discount": 30,
+            "relatedProducts": [],
+            "mainImage": null,
+            "additionalImages": [],
+            "createdAt": "2025-06-15T10:01:51.915Z"
+        }
+    ],
+    "orders": []
+}
