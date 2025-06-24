@@ -6,61 +6,132 @@
             "password": "$2b$10$lbUsMhpObVq7rA1NdiEIH.9WM83jKmchiGSksF5QemGzZ33fyH0Ny",
             "name": "Ariel Beard",
             "role": "user",
-            "createdAt": "2025-06-15T19:01:44.992Z"
+            "createdAt": "2025-06-15T19:01:44.992Z",
+            "lastActive": 1750765308827
         }
     ],
     "products": [
         {
-            "id": "1749979747798",
-            "name": "Enim magna beatae qu",
-            "description": "Voluptatem eveniet",
-            "shortDescription": "In dicta expedita es",
+            "id": "1750692556460",
+            "name": "Urban Drift Tee",
+            "description": "Stay ahead of the style curve with the Urban Drift Tee — your new go-to for laid-back days or nights out. Crafted from 100% combed cotton for a soft, breathable feel, this tee features a relaxed fit with a minimalist design, making it perfect for layering or wearing solo. Designed with durability in mind, the double-stitched hems and pre-shrunk fabric ensure it keeps its shape wear after wear. Whether you're hitting the city or chilling at home, the Urban Drift Tee has your back.\r\n\r\n",
+            "shortDescription": "Effortlessly cool and ultra-comfy, the Urban Drift Tee blends everyday style with premium comfort.",
             "price": 2,
-            "category": "Non in do ad dolores",
-            "stock": 43,
-            "brand": "Dolor explicabo Aut",
+            "category": "T-Shirts",
+            "stock": 1,
+            "brand": "skew",
             "sizes": [
-                "Deleniti tempora nih"
+                "s",
+                "m",
+                "xs"
             ],
             "colors": [
-                "Et ut aliqua Minim"
+                "Black",
+                "green",
+                "gray",
+                "white",
+                "navy",
+                "beige"
             ],
             "tags": [
-                "Irure rerum qui dolo"
+                "#Streetwear",
+                "#CasualWear",
+                "#Minimalist",
+                "#EverydayStyle",
+                "#UnisexFashion",
+                "#CottonTee",
+                "#UrbanWear",
+                "#ComfortFirst",
+                "#BasicTee"
             ],
             "trending": true,
             "onSale": true,
-            "discount": 0,
+            "discount": 6,
             "relatedProducts": [],
-            "mainImage": null,
+            "mainImage": "/uploads/1750692556421-447493822.jpg",
             "additionalImages": [],
-            "createdAt": "2025-06-15T09:29:07.804Z"
+            "type": "product",
+            "createdAt": "2025-06-23T15:29:16.460Z"
         },
         {
-            "id": "1749981711915",
-            "name": "Consectetur rerum q",
-            "description": "Amet dolorem enim e",
-            "shortDescription": "Veniam iste sapient",
-            "price": 12,
-            "category": "Dolores eum et beata",
-            "stock": 52,
-            "brand": "Fugit et duis velit",
+            "id": "1750694601662",
+            "name": "Sunset Glow Bikini Set",
+            "description": "Soak up golden hour in the Sunset Glow Bikini Set — a radiant swimwear essential inspired by fiery coastal skies. Designed with a flattering triangle top and cheeky-cut bottoms, this set is made from buttery-soft, stretch fabric that hugs in all the right places. Fully adjustable straps and removable padding give you a custom fit, while the ombré blend of sunset tones makes every angle Instagram-worthy. Whether you're lounging poolside or diving into salty waves, this bikini brings summer heat.\r\n\r\n",
+            "shortDescription": "Turn heads from beach to boardwalk in the Sunset Glow Bikini — a bold blend of color, comfort, and confidence.",
+            "price": 5,
+            "category": "Bikinis & Two-Pieces",
+            "stock": 3,
+            "brand": "YNT",
             "sizes": [
-                "Quia laboriosam eni"
+                "xs",
+                "s",
+                "m",
+                "l",
+                "xl"
             ],
             "colors": [
-                "Ipsam eum impedit s"
+                "orange",
+                "pink",
+                "coral-fade"
             ],
             "tags": [
-                "Voluptates rem qui l"
+                "#BikiniSeason",
+                "#SunsetVibes",
+                "#SwimwearGoals",
+                "#BeachBabe",
+                "#SummerGlow",
+                "#TropicalMood",
+                "#BoldSwimwear",
+                "#TriangleBikini",
+                "#SunKissedStyle"
             ],
             "trending": true,
             "onSale": true,
-            "discount": 30,
+            "discount": 1,
             "relatedProducts": [],
-            "mainImage": null,
+            "mainImage": "/uploads/1750694601478-475673354.jpeg",
             "additionalImages": [],
-            "createdAt": "2025-06-15T10:01:51.915Z"
+            "type": "product",
+            "createdAt": "2025-06-23T16:03:21.663Z"
+        },
+        {
+            "id": "1750762050218",
+            "name": "Ultraboost 21",
+            "description": "The Adidas Ultraboost 21 is designed for runners seeking energy return, comfort, and bold style. Featuring a Primeknit upper and Boost midsole, it adapts to your stride for an unbeatable ride.",
+            "shortDescription": "High-performance running shoes with responsive cushioning.",
+            "price": 61,
+            "category": "Running Shoes",
+            "stock": 14,
+            "brand": "Adidas",
+            "sizes": [
+                "US 7",
+                "US 8",
+                "US 9",
+                "US 10",
+                "US 11"
+            ],
+            "colors": [
+                "Core Black",
+                "Cloud White",
+                "Solar Red"
+            ],
+            "tags": [
+                "performance",
+                "boost",
+                "running",
+                "lightweight"
+            ],
+            "trending": false,
+            "onSale": true,
+            "discount": 20,
+            "relatedProducts": "",
+            "mainImage": "/uploads/1750762050170-6163734.avif",
+            "additionalImages": [
+                "/uploads/1750762050173-474374723.avif",
+                "/uploads/1750762050177-851811723.avif"
+            ],
+            "type": "banner",
+            "createdAt": "2025-06-24T10:47:30.219Z"
         }
     ],
     "orders": []

@@ -42,8 +42,8 @@ if (typeof window !== 'undefined') {
 export const toggleTheme = () => {
   theme.update(current => {
     if (current === THEMES.DARK) return THEMES.LIGHT;
-    if (current === THEMES.LIGHT) return THEMES.DARK;
-    return THEMES.SYSTEM;
+    if (current === THEMES.LIGHT) return THEMES.SYSTEM;
+    return THEMES.DARK;
   });
 };
 

@@ -1,12 +1,18 @@
 <script>
   import { onMount } from 'svelte';
   import { user, auth } from '../../stores/auth';
-  import { PersonCircle, Bag, Star } from 'svelte-bootstrap-icons';
+  import { PersonCircle, Bag, Star, Truck } from 'svelte-bootstrap-icons';
+  import Button from '../../components/common/Button.svelte';
+  import { BRAND } from '../../lib/branding.js';
+  import { toast } from '../../components/common/sonner.js';
 
   let orders = [];
   let recommendations = [];
   let isLoading = true;
   let error = null;
+  let loyaltyPoints = 0;
+  let loyaltyTier = BRAND.loyaltyTiers[0];
+  let nextTier = BRAND.loyaltyTiers[1];
 
   onMount(async () => {
     try {
@@ -16,29 +22,23 @@
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
-      if (ordersResponse.status === 404) {
-        orders = [];
-      } else if (!ordersResponse.ok) {
-        throw new Error('Failed to fetch orders');
-      } else {
-        orders = await ordersResponse.json();
+      orders = ordersResponse.ok ? await ordersResponse.json() : [];
+      loyaltyPoints = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+      // Determine loyalty tier
+      for (let i = BRAND.loyaltyTiers.length - 1; i >= 0; i--) {
+        if (loyaltyPoints >= BRAND.loyaltyTiers[i].threshold) {
+          loyaltyTier = BRAND.loyaltyTiers[i];
+          nextTier = BRAND.loyaltyTiers[i + 1] || BRAND.loyaltyTiers[i];
+          break;
+        }
       }
-
       // Fetch recommendations
       const recommendationsResponse = await fetch('/api/recommendations', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
-      if (recommendationsResponse.status === 404) {
-        recommendations = [];
-      } else if (!recommendationsResponse.ok) {
-        throw new Error('Failed to fetch recommendations');
-      } else {
-        recommendations = await recommendationsResponse.json();
-      }
+      recommendations = recommendationsResponse.ok ? await recommendationsResponse.json() : [];
     } catch (e) {
       error = e.message;
     } finally {
@@ -50,83 +50,117 @@
     auth.logout();
     window.location.href = '/';
   }
+
+  function getLoyaltyProgress() {
+    if (!nextTier || loyaltyTier === nextTier) return 100;
+    const range = nextTier.threshold - loyaltyTier.threshold;
+    const progress = loyaltyPoints - loyaltyTier.threshold;
+    return Math.min(100, Math.round((progress / range) * 100));
+  }
+
+  function handleEditProfile() {
+    toast.info('Edit Profile is coming soon!');
+  }
+
+  function handleManageAddresses() {
+    toast.info('Manage Addresses is coming soon!');
+  }
+
+  function handleChangePassword() {
+    toast.info('Change Password is coming soon!');
+  }
+
+  function handleViewOrder(order) {
+    toast.info('Order details for #' + order.id + ' coming soon!');
+  }
+
+  function handleSeeAllOrders() {
+    toast.info('Order history coming soon!');
+  }
+
+  function handleDeleteAccount() {
+    toast.warning('This action is irreversible. Please contact support to delete your account.');
+  }
 </script>
 
-<div class="max-w-4xl mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">User Dashboard</h1>
-  
-  {#if isLoading}
-    <div class="flex justify-center items-center h-64">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
-    </div>
-  {:else if error}
-    <div class="bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-200 px-4 py-3 rounded relative" role="alert">
-      <strong class="font-bold">Error: </strong>
-      <span class="block sm:inline">{error}</span>
-    </div>
-  {:else}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-2 flex items-center text-gray-900 dark:text-white">
-          <PersonCircle class="h-6 w-6 mr-2" />
-          User Information
-        </h2>
-        {#if $user}
-          <p class="text-gray-700 dark:text-gray-300"><strong>Name:</strong> {$user.name}</p>
-          <p class="text-gray-700 dark:text-gray-300"><strong>Email:</strong> {$user.email}</p>
-        {:else}
-          <p class="text-gray-700 dark:text-gray-300">Please log in to view your information.</p>
-        {/if}
-      </div>
-
-      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-2 flex items-center text-gray-900 dark:text-white">
-          <Bag class="h-6 w-6 mr-2" />
-          Orders
-        </h2>
-        {#if orders.length === 0}
-          <p class="text-gray-700 dark:text-gray-300">No orders found.</p>
-        {:else}
-          <ul>
-            {#each orders as order}
-              <li class="border-b border-gray-200 dark:border-gray-700 py-2">
-                <p class="text-gray-700 dark:text-gray-300"><strong>Order ID:</strong> {order.id}</p>
-                <p class="text-gray-700 dark:text-gray-300"><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
-                <p class="text-gray-700 dark:text-gray-300"><strong>Total:</strong> ${order.total}</p>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-
-      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-2 flex items-center text-gray-900 dark:text-white">
-          <Star class="h-6 w-6 mr-2" />
-          Recommendations
-        </h2>
-        {#if recommendations.length === 0}
-          <p class="text-gray-700 dark:text-gray-300">No recommendations available.</p>
-        {:else}
-          <ul>
-            {#each recommendations as rec}
-              <li class="border-b border-gray-200 dark:border-gray-700 py-2">
-                <p class="text-gray-700 dark:text-gray-300"><strong>Product:</strong> {rec.name}</p>
-                <p class="text-gray-700 dark:text-gray-300"><strong>Price:</strong> ${rec.price}</p>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-
-      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Account Actions</h2>
-        <button
-          class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-          on:click={handleLogout}
-        >
-          Logout
-        </button>
+<div class="max-w-7xl mx-auto p-0 md:p-8">
+  <!-- Dashboard Header -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-4xl font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-1">{$user?.name || 'User'}</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300 font-bold">{$user?.email || 'user@email.com'}</p>
+      <div class="flex items-center gap-2 mt-2">
+        <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${loyaltyTier.color}`}>{loyaltyTier.name} Member</span>
       </div>
     </div>
-  {/if}
+    <Button variation="stroke" color="primary" class="px-6 py-2 font-extrabold rounded-full uppercase tracking-widest" on:click={handleEditProfile}>Edit Profile</Button>
+  </div>
+
+  <!-- Smaller Loyalty Circular Analytics, now in grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+    <!-- Loyalty Analytics -->
+    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center">
+      <div class="relative w-48 h-48 flex items-center justify-center mb-4">
+        <svg class="absolute top-0 left-0" width="192" height="192">
+          <circle cx="96" cy="96" r="80" fill="none" stroke="#e5e7eb" stroke-width="18" />
+          <circle
+            cx="96"
+            cy="96"
+            r="80"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="18"
+            stroke-dasharray="502"
+            stroke-dashoffset={502 - (getLoyaltyProgress() / 100) * 502}
+            class={loyaltyTier.color}
+            style="transition: stroke-dashoffset 0.5s;"
+          />
+        </svg>
+        <div class="flex flex-col items-center">
+          <span class="text-4xl font-extrabold text-gray-900 dark:text-white">{loyaltyPoints}</span>
+          <span class="text-sm uppercase font-bold text-gray-500 dark:text-gray-400">Points</span>
+          <span class="mt-2 text-base font-bold text-gray-700 dark:text-gray-300">{loyaltyTier.name} Member</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500">Next: {nextTier.name} ({nextTier.threshold} pts)</span>
+        </div>
+      </div>
+    </div>
+    <!-- Orders Overview -->
+    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg flex flex-col">
+      <div class="flex items-center mb-4">
+        <Bag class="h-6 w-6 mr-2 text-black dark:text-white" />
+        <h2 class="text-lg font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">Recent Orders</h2>
+      </div>
+      {#if orders.length === 0}
+        <p class="text-gray-700 dark:text-gray-300">No orders found.</p>
+      {:else}
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700 mb-4">
+          {#each orders.slice(0,3) as order}
+            <li class="py-4 flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-900 dark:text-white">Order #{order.id}</span>
+                <span class="ml-2 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-widest {order.status === 'delivered' ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white'}">{order.status || 'pending'}</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Truck class="h-4 w-4" />
+                <span>Tracking: {order.tracking || 'N/A'}</span>
+              </div>
+              <div class="text-sm text-gray-700 dark:text-gray-300">{new Date(order.date).toLocaleDateString()} &bull; <span class="font-bold">${order.total}</span></div>
+              <Button variation="stroke" color="primary" class="w-full mt-2" on:click={() => handleViewOrder(order)}>View Details</Button>
+            </li>
+          {/each}
+        </ul>
+        <Button variation="stroke" color="primary" class="w-full mt-2" on:click={handleSeeAllOrders}>See All Orders</Button>
+      {/if}
+    </div>
+    <!-- Account Actions -->
+    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center">
+      <h2 class="text-lg font-extrabold uppercase tracking-widest mb-4 text-gray-900 dark:text-white">Account Actions</h2>
+      <div class="flex flex-col gap-4 w-full">
+        <Button variation="stroke" color="primary" class="w-full py-3 text-lg font-extrabold rounded-full uppercase tracking-widest" on:click={handleLogout}>Logout</Button>
+        <Button variation="ghost" color="primary" class="w-full py-3 text-lg font-extrabold rounded-full uppercase tracking-widest" on:click={handleManageAddresses}>Manage Addresses</Button>
+        <Button variation="ghost" color="primary" class="w-full py-3 text-lg font-extrabold rounded-full uppercase tracking-widest" on:click={handleChangePassword}>Change Password</Button>
+        <Button variation="stroke" color="danger" class="w-full py-3 text-lg font-extrabold rounded-full uppercase tracking-widest" on:click={handleDeleteAccount}>Delete Account</Button>
+      </div>
+    </div>
+  </div>
 </div> 

@@ -3,6 +3,7 @@
   import { fade, fly } from 'svelte/transition';
   import { showAuthModal, authMode } from '../../stores/ui';
   import { auth } from '../../stores/auth';
+  import Button from '../common/Button.svelte';
 
   const dispatch = createEventDispatcher();
   
@@ -52,9 +53,10 @@
       on:click|stopPropagation
     >
       <!-- Close button -->
-      <button
+      <Button
         class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         on:click={handleClose}
+        variation="stroke"
       >
         <svg
           class="h-6 w-6"
@@ -69,7 +71,7 @@
             d="M6 18L18 6M6 6l12 12"
           />
         </svg>
-      </button>
+      </Button>
 
       <h2 class="text-2xl font-bold mb-6 tracking-wider">
         {$authMode === 'login' ? 'LOGIN' : 'SIGN UP'}
@@ -127,10 +129,11 @@
           <p class="text-red-500 dark:text-red-400 text-sm">{error}</p>
         {/if}
         
-        <button
+        <Button
           type="submit"
           class="w-full px-6 py-3 bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
+          variation="stroke"
         >
           {#if isLoading}
             <div class="flex items-center justify-center">
@@ -140,18 +143,19 @@
           {:else}
             {$authMode === 'login' ? 'LOGIN' : 'SIGN UP'}
           {/if}
-        </button>
+        </Button>
       </form>
       
       <div class="mt-4 text-center">
-        <button
+        <Button
           class="text-primary-light dark:text-primary-dark hover:underline"
           on:click={switchMode}
+          variation="text"
         >
           {$authMode === 'login'
             ? "Don't have an account? Sign up"
             : 'Already have an account? Login'}
-        </button>
+        </Button>
       </div>
     </div>
   </div>

@@ -15,6 +15,8 @@
   let canScrollRight = false;
   let prods = $products?.products || [];
   let displayedProducts = [];
+  let isLoading = $products.loading;
+  let error = $products.error;
 
   function checkScroll() {
     if (sliderRef) {
@@ -41,7 +43,19 @@
     push(path);
   }
 
-  onMount(() => {
+  onMount(async () => {
+    if (!$products.products || !$products.products.length) {
+      products.update(store => ({ ...store, loading: true, error: null }));
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        products.update(store => ({ ...store, products: data, loading: false }));
+      } catch (e) {
+        products.update(store => ({ ...store, error: e.message, loading: false }));
+      }
+    }
+
     // Filter products based on type
     switch (type) {
       case 'trending':
@@ -64,6 +78,27 @@
     sliderRef?.addEventListener('scroll', checkScroll);
     return () => sliderRef?.removeEventListener('scroll', checkScroll);
   });
+
+  $: prods = $products?.products || [];
+  $: isLoading = $products.loading;
+  $: error = $products.error;
+  $: {
+    switch (type) {
+      case 'trending':
+        displayedProducts = prods.filter(p => p.trending).slice(0, limit);
+        break;
+      case 'new-arrivals':
+        displayedProducts = prods
+          .sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp))
+          .slice(0, limit);
+        break;
+      case 'most-purchased':
+        displayedProducts = prods.slice(0, limit);
+        break;
+      default:
+        displayedProducts = prods.slice(0, limit);
+    }
+  }
 </script>
 
 <section class="py-16 bg-white dark:bg-gray-800">
@@ -85,13 +120,7 @@
         bind:this={sliderRef}
         class="flex overflow-x-auto scroll-smooth scrollbar-hide gap-8 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
       >
-        {#if displayedProducts?.length}
-          {#each displayedProducts as product}
-            <div class="flex-shrink-0 w-64 lg:w-80 snap-start">
-              <ProductCard {product} />
-            </div>
-          {/each}
-        {:else}
+        {#if isLoading}
           {#each Array(limit) as _}
             <div class="flex-shrink-0 w-64 lg:w-80 snap-start animate-pulse">
               <div class="bg-gray-200 dark:bg-gray-700 rounded-lg">
@@ -102,6 +131,16 @@
                   <div class="h-8 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
                 </div>
               </div>
+            </div>
+          {/each}
+        {:else if error}
+          <div class="text-center py-12">
+            <p class="text-red-500 dark:text-red-400">{error}</p>
+          </div>
+        {:else}
+          {#each displayedProducts as product}
+            <div class="flex-shrink-0 w-64 lg:w-80 snap-start">
+              <ProductCard {product} />
             </div>
           {/each}
         {/if}

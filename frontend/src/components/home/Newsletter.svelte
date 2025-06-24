@@ -1,32 +1,35 @@
 <script>
+  import { onMount } from 'svelte';
   let email = '';
-  let isSubmitting = false;
-  let success = false;
+  let status = '';
   let error = '';
+  const brandEmail = 'abuashiaemereh@gmail.com';
 
-  async function handleSubmit() {
-    isSubmitting = true;
+  function validateEmail(email) {
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  }
+
+  async function subscribe() {
     error = '';
-
+    status = '';
+    if (!validateEmail(email)) {
+      error = 'Please enter a valid email address.';
+      return;
+    }
     try {
-      const response = await fetch('/api/newsletter/subscribe', {
+      const res = await fetch('/api/newsletter', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to subscribe');
+      if (res.ok) {
+        status = 'Thank you for subscribing!';
+        email = '';
+      } else {
+        error = 'Subscription failed. Please try again.';
       }
-
-      success = true;
-      email = '';
     } catch (e) {
-      error = 'Failed to subscribe. Please try again.';
-    } finally {
-      isSubmitting = false;
+      error = 'Subscription failed. Please try again.';
     }
   }
 </script>
@@ -39,7 +42,7 @@
         Subscribe to our newsletter and be the first to know about new collections,
         special offers, and exclusive events.
       </p>
-      <form on:submit|preventDefault={handleSubmit} class="max-w-md mx-auto">
+      <form on:submit|preventDefault={subscribe} class="max-w-md mx-auto">
         <div class="flex gap-4">
           <input
             type="email"
@@ -51,27 +54,18 @@
           <button
             type="submit"
             class="px-6 py-3 bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isSubmitting}
           >
-            {#if isSubmitting}
-              <div class="flex items-center">
-                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                <span class="ml-2">Processing...</span>
-              </div>
-            {:else}
-              SUBSCRIBE
-            {/if}
+            SUBSCRIBE
           </button>
         </div>
-        {#if error}
-          <p class="text-red-500 dark:text-red-400 text-sm mt-2">{error}</p>
+        {#if status}
+          <div class="text-green-600 mt-2">{status}</div>
         {/if}
-        {#if success}
-          <p class="text-green-500 dark:text-green-400 text-sm mt-2">
-            Thank you for subscribing!
-          </p>
+        {#if error}
+          <div class="text-red-600 mt-2">{error}</div>
         {/if}
       </form>
+      <p class="mt-4 text-xs text-gray-500">For questions, contact <a href="mailto:{brandEmail}" class="underline">{brandEmail}</a></p>
     </div>
   </div>
 </section> 

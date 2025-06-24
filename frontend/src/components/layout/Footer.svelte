@@ -1,5 +1,6 @@
 <script>
   import { Facebook, Twitter, Instagram, Youtube } from 'lucide-svelte';
+  import branding from '../../lib/branding.js';
 </script>
 
 <footer class="bg-white dark:bg-gray-900">
@@ -67,6 +68,14 @@
 
     <!-- Bottom Bar -->
     <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div class="font-bold text-lg">{branding.companyName}</div>
+      <div class="text-sm">{branding.address}</div>
+      <div class="text-sm">Email: <a href={`mailto:${branding.email}`} class="underline">{branding.email}</a></div>
+      <div class="flex gap-4 mt-2">
+        {#each branding.socialLinks as link}
+          <a href={link.url} target="_blank" rel="noopener" class="hover:underline">{link.name}</a>
+        {/each}
+      </div>
       <p class="text-center text-sm text-gray-600 dark:text-gray-400">
         © {new Date().getFullYear()} Adidas. All rights reserved.
       </p>

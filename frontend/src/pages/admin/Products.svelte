@@ -1,6 +1,8 @@
 <script>
   import { onMount } from 'svelte';
   import axios from '../../lib/axios';
+  import Button from '../../components/common/Button.svelte';
+  import { toast } from '../../components/common/sonner.js';
   
   let products = [];
   let loading = true;
@@ -20,10 +22,15 @@
     trending: false,
     onSale: false,
     discount: 0,
-    relatedProducts: []
+    relatedProducts: [],
+    type: 'product',
+    ctaText: '',
+    link: '',
+    author: ''
   };
   let mainImage = null;
   let additionalImages = [];
+  let mainPreviewUrl = '';
 
   onMount(async () => {
     await loadProducts();
@@ -42,7 +49,14 @@
   }
 
   async function handleAddProduct() {
-    console.log('1. Frontend: Starting handleAddProduct');
+    // Validate required fields
+    const requiredFields = ['name', 'description', 'price', 'category', 'stock', 'brand'];
+    for (const field of requiredFields) {
+      if (!newProduct[field]) {
+        error = `Please fill in the required field: ${field}`;
+        return;
+      }
+    }
     if (!mainImage) {
       error = 'Please select a main image for the product.';
       return;
@@ -68,6 +82,16 @@
     formData.append('onSale', newProduct.onSale);
     formData.append('discount', newProduct.discount);
     formData.append('relatedProducts', JSON.stringify(newProduct.relatedProducts));
+    formData.append('type', newProduct.type);
+    if (newProduct.type === 'banner' || newProduct.type === 'ad') {
+      formData.append('link', newProduct.link);
+    }
+    if (newProduct.type === 'banner') {
+      formData.append('ctaText', newProduct.ctaText);
+    }
+    if (newProduct.type === 'blog') {
+      formData.append('author', newProduct.author);
+    }
 
     console.log('3. Frontend: Sending request to backend');
     try {
@@ -94,7 +118,11 @@
         trending: false,
         onSale: false,
         discount: 0,
-        relatedProducts: []
+        relatedProducts: [],
+        type: 'product',
+        ctaText: '',
+        link: '',
+        author: ''
       };
       mainImage = null;
       additionalImages = [];
@@ -108,80 +136,88 @@
     if (!confirm('Are you sure you want to delete this product?')) return;
     
     try {
-      await axios.delete(`/api/admin/products/${id}`);
+      await axios.delete(`/api/products/${id}`);
       await loadProducts();
     } catch (e) {
       error = 'Failed to delete product';
       console.error(e);
     }
   }
+
+  function handleMainImageChange(e) {
+    const file = e.target.files[0];
+    mainImage = file;
+    if (file) {
+      mainPreviewUrl = URL.createObjectURL(file);
+    } else {
+      mainPreviewUrl = '';
+    }
+  }
+
+  function getResolvedImageUrl(product) {
+    if (!product) return '';
+    let url = product.mainImage || product.image || product.imageUrl;
+    if (url && !url.startsWith('http')) {
+      url = `http://localhost:3001${url}`;
+    }
+    return url;
+  }
+
+  function handleEditProduct(product) {
+    toast.info('Edit product modal coming soon!');
+    // Optionally: set up edit modal state here
+  }
 </script>
 
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold">Products Management</h1>
-    <button 
-      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+<div class="max-w-7xl mx-auto px-2 sm:px-8 py-10">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-12 gap-4">
+    <h1 class="text-4xl font-extrabold uppercase tracking-widest text-black dark:text-white">Products Management</h1>
+    <Button 
+      variation="stroke"
+      class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
       on:click={() => showAddModal = true}
     >
       Add New Product
-    </button>
+    </Button>
   </div>
-  
   {#if loading}
     <div class="flex justify-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
     </div>
   {:else if error}
-    <div class="text-red-500 text-center">{error}</div>
+    <div class="text-red-500 text-center mb-2">{error}</div>
   {:else}
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-x-auto">
+      <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
+        <thead class="bg-white dark:bg-black">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Product</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Price</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Category</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Stock</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Actions</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-black divide-y divide-black dark:divide-white">
           {#each products as product}
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="h-10 w-10 flex-shrink-0">
-                    <img class="h-10 w-10 rounded-full object-cover" src={product.imageUrl} alt={product.name} />
+                <div class="flex items-center gap-4">
+                  <div class="h-14 w-14 flex-shrink-0 border-2 border-black dark:border-white rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <img class="h-full w-full object-cover" src={getResolvedImageUrl(product)} alt={product.name} />
                   </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{product.name}</div>
-                    <div class="text-sm text-gray-500">{product.description}</div>
+                  <div class="min-w-0">
+                    <div class="text-base font-extrabold uppercase tracking-widest text-black dark:text-white truncate max-w-[120px]">{product.name}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 max-w-[160px]">{product.description}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${product.price}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {product.category}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {product.stock}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button 
-                  class="text-indigo-600 hover:text-indigo-900 mr-4"
-                  on:click={() => {/* TODO: Implement edit */}}
-                >
-                  Edit
-                </button>
-                <button 
-                  class="text-red-600 hover:text-red-900"
-                  on:click={() => handleDeleteProduct(product.id)}
-                >
-                  Delete
-                </button>
+              <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-black dark:text-white">${product.price}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">{product.category}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-black dark:text-white">{product.stock}</td>
+              <td class="px-6 py-4 whitespace-nowrap flex gap-2">
+                <Button variation="stroke" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-4 py-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors" on:click={() => handleEditProduct(product)}>Edit</Button>
+                <Button variation="stroke" class="font-extrabold uppercase tracking-widest border-2 border-red-500 text-red-500 rounded-full px-4 py-2 hover:bg-red-500 hover:text-white transition-colors" on:click={() => handleDeleteProduct(product.id)}>Delete</Button>
               </td>
             </tr>
           {/each}
@@ -192,173 +228,104 @@
 </div>
 
 {#if showAddModal}
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <h2 class="text-2xl font-bold mb-4">Add New Product</h2>
-      <form on:submit|preventDefault={handleAddProduct}>
-        <div class="space-y-4">
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+    <div class="bg-white dark:bg-black rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
+      <button class="absolute top-4 right-4 text-2xl font-bold text-gray-500 hover:text-black dark:hover:text-white" on:click={() => showAddModal = false}>&times;</button>
+      <h2 class="text-2xl font-extrabold uppercase tracking-widest mb-8 text-black dark:text-white text-center">Add New Product</h2>
+      <form on:submit|preventDefault={handleAddProduct} class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Name</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.name}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Name</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.name} required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea 
-              bind:value={newProduct.description}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              rows="3"
-              required
-            ></textarea>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Short Description</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.shortDescription} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Short Description</label>
-            <textarea 
-              bind:value={newProduct.shortDescription}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              rows="2"
-              required
-            ></textarea>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Price</label>
+            <input type="number" class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.price} required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Price</label>
-            <input 
-              type="number" 
-              bind:value={newProduct.price}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Category</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.category} required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Category</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.category}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Stock</label>
+            <input type="number" class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.stock} required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Stock</label>
-            <input 
-              type="number" 
-              bind:value={newProduct.stock}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Brand</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.brand} required />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Brand</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.brand}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Sizes</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.sizes} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Sizes (comma-separated)</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.sizes}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Colors</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.colors} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Colors (comma-separated)</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.colors}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Tags</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.tags} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
-            <input 
-              type="text" 
-              bind:value={newProduct.tags}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Trending</label>
+            <input type="checkbox" class="mr-2" bind:checked={newProduct.trending} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Main Image</label>
-            <input 
-              type="file" 
-              bind:files={mainImage}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">On Sale</label>
+            <input type="checkbox" class="mr-2" bind:checked={newProduct.onSale} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Additional Images</label>
-            <input 
-              type="file" 
-              bind:files={additionalImages}
-              multiple
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Discount (%)</label>
+            <input type="number" class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.discount} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Trending</label>
-            <input 
-              type="checkbox" 
-              bind:checked={newProduct.trending}
-              class="mt-1"
-            />
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Related Products (IDs, comma separated)</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.relatedProducts} />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">On Sale</label>
-            <input 
-              type="checkbox" 
-              bind:checked={newProduct.onSale}
-              class="mt-1"
-            />
-          </div>
-          {#if newProduct.onSale}
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Discount (%)</label>
-              <input 
-                type="number" 
-                bind:value={newProduct.discount}
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-          {/if}
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Related Products</label>
-            <select 
-              bind:value={newProduct.relatedProducts}
-              multiple
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              {#each products as product}
-                <option value={product.id}>{product.name}</option>
-              {/each}
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Type</label>
+            <select class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.type}>
+              <option value="product">Product</option>
+              <option value="banner">Banner</option>
+              <option value="ad">Ad</option>
+              <option value="blog">Blog</option>
             </select>
           </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">CTA Text (for banners)</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.ctaText} />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Link (for banners/ads)</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.link} />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Author (for blogs)</label>
+            <input class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.author} />
+          </div>
         </div>
-        <div class="mt-6 flex justify-end space-x-3">
-          <button 
-            type="button"
-            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            on:click={() => showAddModal = false}
-          >
-            Cancel
-          </button>
-          <button 
-            type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Add Product
-          </button>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Description</label>
+          <textarea class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" bind:value={newProduct.description} rows="2" required></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Main Image</label>
+          <input type="file" accept="image/*" class="w-full" on:change={handleMainImageChange} />
+          {#if mainPreviewUrl}
+            <img src={mainPreviewUrl} alt="Preview" class="mt-2 h-24 w-24 object-cover rounded-lg border-2 border-black dark:border-white" />
+          {/if}
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Additional Images</label>
+          <input type="file" accept="image/*" class="w-full" multiple on:change={e => additionalImages = Array.from(e.target.files)} />
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <Button variation="ghost" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3" type="button" on:click={() => showAddModal = false}>Cancel</Button>
+          <Button variation="stroke" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3" type="submit">Add Product</Button>
         </div>
       </form>
     </div>

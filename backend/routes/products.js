@@ -32,11 +32,17 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage,
     fileFilter: (req, file, cb) => {
-        // Accept images only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            return cb(new Error('Only image files are allowed!'), false);
+        // Accept images for all, and videos for ad/blog
+        const allowedImage = /\.(jpg|jpeg|png|gif|avif)$/i;
+        const allowedVideo = /\.(mp4|webm|mov)$/i;
+        const type = req.body?.type || 'product';
+        if (allowedImage.test(file.originalname)) {
+            return cb(null, true);
         }
-        cb(null, true);
+        if ((type === 'ad' || type === 'blog') && allowedVideo.test(file.originalname)) {
+            return cb(null, true);
+        }
+        return cb(new Error('Only image files are allowed for products/banners. For ads/blogs, images and videos are allowed.'), false);
     }
 });
 
@@ -94,6 +100,27 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Get related products
+router.get('/:id/related', async (req, res) => {
+    try {
+        const products = await db.getData('/products');
+        const product = products.find(p => p.id === req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        let related = [];
+        if (product.relatedProducts && product.relatedProducts.length > 0) {
+            related = products.filter(p => product.relatedProducts.includes(p.id) && p.id !== product.id);
+        } else {
+            // Fallback: find products in the same category, excluding itself
+            related = products.filter(p => p.category === product.category && p.id !== product.id);
+        }
+        res.json(related.slice(0, 8)); // Limit to 8 related products
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching related products', error: error.message });
+    }
+});
+
 // Create product
 router.post('/', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'additionalImages', maxCount: 5 }]), async (req, res) => {
     console.log('1. Backend: Received POST request to /api/products');
@@ -101,7 +128,7 @@ router.post('/', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'add
     console.log('3. Backend: Request files:', req.files);
     
     try {
-        const { name, description, shortDescription, price, category, stock, brand, sizes, colors, tags, trending, onSale, discount, relatedProducts } = req.body;
+        const { name, description, shortDescription, price, category, stock, brand, sizes, colors, tags, trending, onSale, discount, relatedProducts, type } = req.body;
         console.log('4. Backend: Destructured request body');
         
         // Validate required fields
@@ -160,6 +187,7 @@ router.post('/', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'add
             relatedProducts: relatedProducts ? JSON.parse(relatedProducts) : [],
             mainImage: mainImagePath,
             additionalImages: additionalImagePaths,
+            type: type || 'product',
             createdAt: new Date().toISOString()
         };
         console.log('10. Backend: New product object created:', newProduct);
@@ -235,6 +263,38 @@ router.delete('/:id', async (req, res) => {
             message: 'Error deleting product',
             error: error.message 
         });
+    }
+});
+
+// Checkout endpoint
+router.post('/checkout', async (req, res) => {
+    try {
+        const { cart, user, shipping } = req.body;
+        if (!cart || !Array.isArray(cart) || cart.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty or invalid' });
+        }
+        // Create order object
+        const order = {
+            id: Date.now().toString(),
+            user: user || null,
+            cart,
+            shipping: shipping || null,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+        // Save to database
+        let orders = [];
+        try {
+            orders = await db.getData('/orders');
+            if (!Array.isArray(orders)) orders = [];
+        } catch (e) {
+            orders = [];
+        }
+        orders.push(order);
+        await db.push('/orders', orders);
+        res.status(201).json(order);
+    } catch (error) {
+        res.status(500).json({ message: 'Checkout failed', error: error.message });
     }
 });
 

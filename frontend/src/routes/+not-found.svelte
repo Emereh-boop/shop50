@@ -1,4 +1,5 @@
 <script>
+  import Button from '../components/common/Button.svelte';
   import { push } from 'svelte-spa-router';
 </script>
 
@@ -12,11 +13,6 @@
       The page you are looking for might have been removed, had its name changed,
       or is temporarily unavailable.
     </p>
-    <button
-      class="px-6 py-3 bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider"
-      on:click={() => push('/')}
-    >
-      GO TO HOME
-    </button>
+    <Button variation="stroke" color="primary" on:click={() => push('/')}>GO TO HOME</Button>
   </div>
 </div> 

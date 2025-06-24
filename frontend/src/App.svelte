@@ -1,7 +1,7 @@
 <script>
   import "./app.css";
   import Router from "svelte-spa-router";
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { theme } from './stores/theme';
   import Navbar from './components/layout/Navbar.svelte';
   import Footer from './components/layout/Footer.svelte';
@@ -10,21 +10,59 @@
   import { cart } from './stores/cart';
   import { showCart, showAuthModal, authMode } from './stores/ui';
   import routes from './routes';
+  import { products } from './stores/products';
+  import Sonner from './components/common/Sonner.svelte';
 
   function handleAuthSuccess() {
     showAuthModal.set(false);
   }
 
   let isAdminRoute = false;
+  let heartbeatInterval;
+
+  async function sendHeartbeat() {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (user && user.id) {
+      await fetch('/api/users/heartbeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      });
+    }
+  }
 
   onMount(() => {
     // Initialize theme
-    const storedTheme = localStorage.getItem('theme') || 'system';
-    $theme = storedTheme;
-
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      theme.set(storedTheme);
+    }
     // Check if current route is admin
     isAdminRoute = window.location.pathname.includes('/admin');
+
+    // Global fetch for products
+    fetchProducts();
+
+    // Heartbeat for online status
+    sendHeartbeat();
+    heartbeatInterval = setInterval(sendHeartbeat, 30000);
   });
+
+  onDestroy(() => {
+    clearInterval(heartbeatInterval);
+  });
+
+  async function fetchProducts() {
+    products.update(store => ({ ...store, loading: true, error: null }));
+    try {
+      const response = await fetch('/api/products');
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      products.update(store => ({ ...store, products: data, loading: false }));
+    } catch (e) {
+      products.update(store => ({ ...store, error: e.message, loading: false }));
+    }
+  }
 </script>
 
 <svelte:head>
@@ -55,6 +93,8 @@
       on:success={handleAuthSuccess}
     />
   {/if}
+
+  <Sonner />
 </div>
 
 <style>

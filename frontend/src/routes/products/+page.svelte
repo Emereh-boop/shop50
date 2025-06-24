@@ -3,36 +3,62 @@
     import { products } from '../../stores/products';
     import { push } from 'svelte-spa-router';
     import { cart } from '../../stores/cart.js';
-    import ProductDetail from '../../components/product/ProductDetail.svelte';
     import Skeleton from '../../components/common/Skeleton.svelte';
+    import Button from '../../components/common/Button.svelte';
+    import ProductCard from '../../components/product/ProductCard.svelte';
   
     let filteredProducts = [];
     let selectedCategory = 'all';
     let searchQuery = '';
-    let isLoading = true;
-    let error = null;
     let user = null;
     let selectedProduct = null;
-    let isProductModalOpen = false;
+    let showSidebar = false;
+    let sortOption = 'default';
+    let categories = [];
   
-    $: {
-      if ($products?.products) {
-        filteredProducts = $products.products.filter(product => {
-          const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-          const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              product.description.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchesCategory && matchesSearch;
-        });
-      } else {
-        filteredProducts = [];
-      }
+    let isLoading = $products.loading;
+    let error = $products.error;
+    $: isLoading = $products.loading;
+    $: error = $products.error;
+  
+    // Helper to get query param
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
     }
+  
+    // Update selectedCategory from URL on mount and when URL changes
+    function updateCategoryFromUrl() {
+      const cat = getQueryParam('category');
+      selectedCategory = cat ? cat : 'all';
+    }
+  
+    $: updateCategoryFromUrl(); // reactively update if URL changes
+  
+    // Derive categories from products
+    $: categories = Array.from(new Set($products.products.map(p => p.category))).filter(Boolean);
+  
+    $: filteredProducts = $products.products
+      .filter(p => selectedCategory === 'all' || p.category === selectedCategory)
+      .filter(p =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+  
+    $: filteredProducts =
+      sortOption === 'price-asc'
+        ? [...filteredProducts].sort((a, b) => a.price - b.price)
+        : sortOption === 'price-desc'
+        ? [...filteredProducts].sort((a, b) => b.price - a.price)
+        : filteredProducts;
   
     onMount(() => {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         user = JSON.parse(storedUser);
       }
+      updateCategoryFromUrl();
+      window.addEventListener('popstate', updateCategoryFromUrl);
       loadProducts();
     });
   
@@ -60,8 +86,7 @@
     }
   
     function handleProductClick(product) {
-      selectedProduct = product;
-      isProductModalOpen = true;
+      push(`/products/${product.id}`);
     }
   
     async function handleDelete(id) {
@@ -105,125 +130,51 @@
         cart.update(items => [...items, { ...product, quantity: 1 }]);
       }
     }
+  
+    function getResolvedImageUrl(product) {
+      let url = product.mainImage || product.image || product.imageUrl;
+      if (url && !url.startsWith('http')) {
+        url = `http://localhost:3001${url}`;
+      }
+      return url;
+    }
   </script>
   
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col md:flex-row gap-8">
-      <!-- Filters -->
-      <div class="w-full md:w-64 space-y-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl md:text-4xl font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-10 text-center">Shop All Products</h1>
+    <div class="flex flex-col md:flex-row md:items-end gap-6 mb-10">
+      <div class="flex-1 flex flex-col md:flex-row gap-4">
         <div>
-          <h3 class="text-lg font-semibold mb-4 tracking-wider">CATEGORIES</h3>
-          <div class="space-y-2">
-            <button
-              class="block w-full text-left px-4 py-2 rounded-lg {selectedCategory === 'all'
-                ? 'bg-primary-light dark:bg-primary-dark text-white'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
-              on:click={() => (selectedCategory = 'all')}
-            >
-              All Products
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 rounded-lg {selectedCategory === 'summer'
-                ? 'bg-primary-light dark:bg-primary-dark text-white'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
-              on:click={() => (selectedCategory = 'summer')}
-            >
-              Summer Collection
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 rounded-lg {selectedCategory === 'new'
-                ? 'bg-primary-light dark:bg-primary-dark text-white'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
-              on:click={() => (selectedCategory = 'new')}
-            >
-              New Arrivals
-            </button>
-          </div>
+          <label class="block text-xs font-bold uppercase tracking-widest mb-1">Category</label>
+          <select bind:value={selectedCategory} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <option value="all">All</option>
+            {#each categories as cat}
+              <option value={cat}>{cat}</option>
+            {/each}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest mb-1">Sort</label>
+          <select bind:value={sortOption} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
         </div>
       </div>
-  
-      <!-- Products Grid -->
       <div class="flex-1">
-        <div class="mb-6">
-          <input
-            type="text"
-            bind:value={searchQuery}
-            placeholder="Search products..."
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
-          />
-        </div>
-  
-        {#if isLoading}
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {#each Array(9) as _}
-              <Skeleton type="card" />
-            {/each}
-          </div>
-        {:else if error}
-          <div class="text-center py-12">
-            <p class="text-red-500 dark:text-red-400">{error}</p>
-          </div>
-        {:else if filteredProducts.length === 0}
-          <div class="text-center py-12">
-            <p class="text-gray-500 dark:text-gray-400">No products found</p>
-          </div>
-        {:else}
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {#each filteredProducts as product}
-              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                <div 
-                  class="cursor-pointer"
-                  on:click={() => handleProductClick(product)}
-                >
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    class="w-full h-64 object-cover"
-                  />
-                  <div class="p-4">
-                    <p class="text-sm font-medium text-primary-light dark:text-primary-dark mb-2">
-                      {product.category}
-                    </p>
-                    <h3 class="text-lg font-semibold mb-2 tracking-wider">{product.name}</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div class="flex justify-between items-center">
-                      <span class="text-xl font-bold text-primary-light dark:text-primary-dark"
-                        >${product.price}</span
-                      >
-                      <button
-                        class="px-4 py-2 bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider"
-                        on:click|stopPropagation={() => addToCart(product)}
-                      >
-                        ADD TO CART
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {#if user}
-                  <div class="px-4 pb-4">
-                    <button
-                      on:click={() => handleDelete(product.id)}
-                      class="w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      Delete Product
-                    </button>
-                  </div>
-                {/if}
-              </div>
-            {/each}
-          </div>
-        {/if}
+        <label class="block text-xs font-bold uppercase tracking-widest mb-1">Search</label>
+        <input
+          type="text"
+          bind:value={searchQuery}
+          placeholder="Search products..."
+          class="w-full border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        />
       </div>
     </div>
-  </div>
-
-  <ProductDetail
-    bind:isOpen={isProductModalOpen}
-    product={selectedProduct}
-    on:close={() => {
-      isProductModalOpen = false;
-      selectedProduct = null;
-    }}
-  /> 
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+      {#each filteredProducts as product}
+        <ProductCard {product} />
+      {/each}
+    </div>
+  </div> 

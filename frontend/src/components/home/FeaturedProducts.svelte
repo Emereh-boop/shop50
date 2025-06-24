@@ -1,28 +1,12 @@
 <script>
-  import { onMount } from 'svelte';
   import { products } from '../../stores/products';
   import ProductCard from '../product/ProductCard.svelte';
 
   let featuredProducts = [];
-  let isLoading = true;
-  let error = null;
+  let isLoading = $products.loading;
+  let error = $products.error;
 
-  onMount(async () => {
-    try {
-      const response = await fetch('/api/products');
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      products.set({ products: data });
-      featuredProducts = data.slice(0, 4); // Show first 4 products as featured
-    } catch (e) {
-      error = 'Failed to load products';
-      console.error(e);
-    } finally {
-      isLoading = false;
-    }
-  });
+  $: featuredProducts = $products.products.slice(0, 4);
 </script>
 
 <section class="py-16 bg-pink-50 dark:bg-gray-800">

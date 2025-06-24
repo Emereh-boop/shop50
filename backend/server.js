@@ -5,6 +5,7 @@ const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 require('dotenv').config();
 
 // Validate environment variables
@@ -85,6 +86,7 @@ const adminRoutes = require('./routes/admin');
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/uploads', express.static(join(__dirname, 'routes', 'uploads')));
 
 // Admin routes
 app.post('/api/admin/login', async (req, res) => {
@@ -162,6 +164,112 @@ app.get('/api/test', (req, res) => {
 app.get('/api/health', (req, res) => {
   console.log('10. Server: Health check');
   res.json({ status: 'ok' });
+});
+
+// Online Users Endpoints
+app.post('/api/users/heartbeat', async (req, res) => {
+  const { userId } = req.body;
+  console.log('[HEARTBEAT] Received heartbeat for userId:', userId);
+  if (!userId) return res.status(400).json({ message: 'Missing userId' });
+  try {
+    const users = await db.getData('/users');
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx !== -1) {
+      users[idx].lastActive = Date.now();
+      await db.push('/users', users);
+      console.log(`[HEARTBEAT] Updated lastActive for userId: ${userId}`);
+    } else {
+      console.log('[HEARTBEAT] User not found for userId:', userId);
+      console.log('[HEARTBEAT] All user ids in db:', users.map(u => u.id));
+    }
+    res.json({ success: true });
+  } catch (e) {
+    console.error('[HEARTBEAT] Error updating lastActive:', e);
+    res.status(500).json({ message: 'Error updating lastActive' });
+  }
+});
+
+app.get('/api/users/online', async (req, res) => {
+  try {
+    const users = await db.getData('/users');
+    const now = Date.now();
+    const online = users.filter(u => u.lastActive && now - u.lastActive < 2 * 60 * 1000);
+    res.json(online);
+  } catch (e) {
+    res.status(500).json({ message: 'Error fetching online users' });
+  }
+});
+
+app.post('/api/checkout', async (req, res) => {
+  try {
+    const { cart, email, shippingInfo } = req.body;
+    if (!cart || !Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({ message: 'Cart is empty or invalid' });
+    }
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    // Calculate total amount in kobo
+    const amount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 100;
+    // Initialize Paystack transaction
+    const paystackRes = await axios.post('https://api.paystack.co/transaction/initialize', {
+      email,
+      amount: Math.round(amount),
+      callback_url: `${process.env.PAYSTACK_CALLBACK_URL || 'http://localhost:5173/api/paystack/callback'}`
+    }, {
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY || 'pk_live_ad421434f5eb300d0018953e620f9327120af0e2'}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    const { authorization_url, reference } = paystackRes.data.data;
+    // Optionally, store the reference and cart in a temp store/db for later verification
+    res.status(200).json({ data: { authorization_url, reference } });
+  } catch (error) {
+    console.error('Paystack init error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to initialize payment', error: error.response?.data || error.message });
+  }
+});
+
+// Paystack callback endpoint
+app.get('/api/paystack/callback', async (req, res) => {
+  const { reference } = req.query;
+  if (!reference) {
+    return res.redirect('/checkout/error');
+  }
+  try {
+    // Verify transaction
+    const verifyRes = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+      }
+    });
+    const data = verifyRes.data.data;
+    if (data.status === 'success') {
+      // Create order in DB (simplified, you may want to store more info)
+      let orders = [];
+      try {
+        orders = await db.getData('/orders');
+        if (!Array.isArray(orders)) orders = [];
+      } catch (e) { orders = []; }
+      const order = {
+        id: Date.now().toString(),
+        reference,
+        email: data.customer.email,
+        amount: data.amount / 100,
+        status: 'paid',
+        createdAt: new Date().toISOString()
+      };
+      orders.push(order);
+      await db.push('/orders', orders);
+      return res.redirect('/checkout/success');
+    } else {
+      return res.redirect('/checkout/error');
+    }
+  } catch (error) {
+    console.error('Paystack verify error:', error.response?.data || error.message);
+    return res.redirect('/checkout/error');
+  }
 });
 
 // Error handling middleware

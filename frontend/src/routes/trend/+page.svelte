@@ -84,9 +84,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div class="relative">
                 <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                  src={product.mainImage || product.image || product.imageUrl}
+                  alt={product.name}
+                  class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
                 />
                 {#if product.trendingRank <= 3}
                   <span class="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">

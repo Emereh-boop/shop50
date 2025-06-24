@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import axios from 'axios';
+  import Button from '../../components/common/Button.svelte';
   
   let users = [];
   let loading = true;
@@ -70,72 +71,67 @@
   }
 </script>
 
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold">Users Management</h1>
-    <button 
-      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+<div class="max-w-7xl mx-auto px-2 sm:px-8 py-10">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-12 gap-4">
+    <h1 class="text-4xl font-extrabold uppercase tracking-widest text-black dark:text-white">Users Management</h1>
+    <Button 
+      variation="stroke"
+      class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
       on:click={() => showAddModal = true}
     >
       Add New User
-    </button>
+    </Button>
   </div>
-
   {#if loading}
     <div class="flex justify-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
     </div>
   {:else if error}
     <div class="text-red-500 text-center">{error}</div>
   {:else}
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-x-auto">
+      <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
+        <thead class="bg-white dark:bg-black">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">User</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Email</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Role</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Joined</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-widest text-black dark:text-white">Actions</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-black divide-y divide-black dark:divide-white">
           {#each users as user}
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <img class="h-10 w-10 rounded-full" src={user.avatar || 'https://via.placeholder.com/40'} alt="" />
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{user.name}</div>
+                <div class="flex items-center gap-4">
+                  
+                  <div>
+                    <div class="text-base font-extrabold uppercase tracking-widest text-black dark:text-white">{user.name}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {user.email}
-              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-base text-black dark:text-white">{user.email}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <select
                   value={user.role}
                   on:change={(e) => updateUserRole(user.id, e.target.value)}
-                  class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-4 py-2 bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                 >
                   <option value="customer">Customer</option>
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
                 </select>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  class="text-red-600 hover:text-red-900"
+              <td class="px-6 py-4 whitespace-nowrap text-base text-black dark:text-white">{new Date(user.createdAt).toLocaleDateString()}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <Button 
+                  variation="stroke"
+                  class="font-extrabold uppercase tracking-widest border-2 border-red-500 text-red-500 rounded-full px-4 py-2 hover:bg-red-500 hover:text-white transition-colors"
                   on:click={() => deleteUser(user.id)}
                 >
                   Delete
-                </button>
+                </Button>
               </td>
             </tr>
           {/each}
@@ -146,64 +142,64 @@
 </div>
 
 {#if showAddModal}
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-8 max-w-md w-full">
-      <h2 class="text-2xl font-bold mb-4">Add New User</h2>
-      <form on:submit|preventDefault={handleAddUser}>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Name</label>
-            <input 
-              type="text" 
-              bind:value={newUser.name}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input 
-              type="email" 
-              bind:value={newUser.email}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Password</label>
-            <input 
-              type="password" 
-              bind:value={newUser.password}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Role</label>
-            <select 
-              bind:value={newUser.role}
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
-              <option value="editor">Editor</option>
-            </select>
-          </div>
+  <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+      <h2 class="text-2xl font-extrabold uppercase tracking-widest mb-8 text-black dark:text-white text-center">Add New User</h2>
+      <form on:submit|preventDefault={handleAddUser} class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Name</label>
+          <input 
+            type="text" 
+            bind:value={newUser.name}
+            class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+            required
+          />
         </div>
-        <div class="mt-6 flex justify-end space-x-3">
-          <button 
-            type="button"
-            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Email</label>
+          <input 
+            type="email" 
+            bind:value={newUser.email}
+            class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Password</label>
+          <input 
+            type="password" 
+            bind:value={newUser.password}
+            class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Role</label>
+          <select 
+            bind:value={newUser.role}
+            class="w-full border-2 border-black dark:border-white rounded-lg px-4 py-2 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+          >
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+          </select>
+        </div>
+        <div class="mt-8 flex justify-end gap-4">
+          <Button 
+            variation="ghost"
+            class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3"
             on:click={() => showAddModal = false}
+            type="button"
           >
             Cancel
-          </button>
-          <button 
+          </Button>
+          <Button 
+            variation="stroke"
+            class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3"
             type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Add User
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -34,7 +34,7 @@
         <div class="bg-white rounded-lg shadow-md overflow-hidden group">
           <div class="relative">
             <img 
-              src={product.image} 
+              src={product.mainImage || product.image || product.imageUrl} 
               alt={product.name} 
               class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
             />

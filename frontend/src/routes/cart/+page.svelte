@@ -26,7 +26,7 @@
       <p class="text-gray-600 dark:text-gray-400">Your cart is empty</p>
       <a
         href="/products"
-        class="mt-4 inline-block bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-md text-base font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-300"
+        class="mt-4 inline-block text-black dark:text-white px-6 py-3 rounded-md text-base font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-300"
       >
         Continue Shopping
       </a>
