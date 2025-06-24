@@ -3,7 +3,7 @@
   import { user, auth } from '../../stores/auth';
   import { PersonCircle, Bag, Star, Truck } from 'svelte-bootstrap-icons';
   import Button from '../../components/common/Button.svelte';
-  import { BRAND } from '../../lib/branding.js';
+  import branding from '../../lib/branding.js';
   import { toast } from '../../components/common/sonner.js';
 
   let orders = [];
@@ -11,8 +11,8 @@
   let isLoading = true;
   let error = null;
   let loyaltyPoints = 0;
-  let loyaltyTier = BRAND.loyaltyTiers[0];
-  let nextTier = BRAND.loyaltyTiers[1];
+  let loyaltyTier = branding.loyaltyTiers[0];
+  let nextTier = branding.loyaltyTiers[1];
 
   onMount(async () => {
     try {
@@ -25,10 +25,10 @@
       orders = ordersResponse.ok ? await ordersResponse.json() : [];
       loyaltyPoints = orders.reduce((sum, o) => sum + (o.total || 0), 0);
       // Determine loyalty tier
-      for (let i = BRAND.loyaltyTiers.length - 1; i >= 0; i--) {
-        if (loyaltyPoints >= BRAND.loyaltyTiers[i].threshold) {
-          loyaltyTier = BRAND.loyaltyTiers[i];
-          nextTier = BRAND.loyaltyTiers[i + 1] || BRAND.loyaltyTiers[i];
+      for (let i = branding.loyaltyTiers.length - 1; i >= 0; i--) {
+        if (loyaltyPoints >= branding.loyaltyTiers[i].threshold) {
+          loyaltyTier = branding.loyaltyTiers[i];
+          nextTier = branding.loyaltyTiers[i + 1] || branding.loyaltyTiers[i];
           break;
         }
       }
@@ -87,8 +87,13 @@
   <!-- Dashboard Header -->
   <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
     <div class="flex flex-col gap-2">
-      <h1 class="text-3xl md:text-4xl font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-1">{$user?.name || 'User'}</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-300 font-bold">{$user?.email || 'user@email.com'}</p>
+      <div class="flex items-center gap-4">
+        <img src={branding.logo} alt="YNT Logo" class="h-16 w-16 rounded-full border-2 border-black dark:border-white">
+        <div>
+          <h1 class="text-3xl font-extrabold uppercase tracking-widest text-black dark:text-white">{$user.name || $user.email}</h1>
+          <p class="text-gray-600 dark:text-gray-400">Welcome to your {branding.name} profile</p>
+        </div>
+      </div>
       <div class="flex items-center gap-2 mt-2">
         <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${loyaltyTier.color}`}>{loyaltyTier.name} Member</span>
       </div>

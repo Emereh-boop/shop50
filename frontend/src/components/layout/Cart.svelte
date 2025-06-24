@@ -28,32 +28,8 @@
   }
 
   async function handleCheckout() {
-    if (!$user) {
-      modalStore.open('login');
-      return;
-    }
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cart: $cart,
-          email: $user?.email || 'customer@example.com'
-        }),
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        window.location.href = data.authorization_url;
-      } else {
-        throw new Error('Checkout failed');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error('Failed to process checkout. Please try again')
-    }
+    push('/checkout');
+    showCart.set(false);
   }
 
   function getResolvedImageUrl(product) {

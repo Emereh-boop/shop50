@@ -1,9 +1,10 @@
 <script>
-  import { cart } from '../../stores/cart';
+  import { cart, calculateTotal } from '../../stores/cart';
   import { user } from '../../stores/auth';
   import { onMount } from 'svelte';
   import CheckoutSuccess from '../../components/checkout/CheckoutSuccess.svelte';
   import { push } from 'svelte-spa-router';
+  import { modalStore } from '../../stores/modalStore';
 
   let shippingInfo = {
     fullName: '',
@@ -21,6 +22,8 @@
   let lastOrder = null;
 
   onMount(() => {
+    // We no longer block guests.
+    // The form will pre-fill if the user is logged in.
     if ($user) {
       shippingInfo.fullName = $user.name;
       shippingInfo.email = $user.email;
@@ -39,10 +42,6 @@
       shippingInfo.location = 'Location not available';
     }
   });
-
-  function calculateTotal() {
-    return $cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  }
 
   function openInvoiceModal() {
     error = null;
