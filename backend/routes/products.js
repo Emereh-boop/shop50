@@ -344,7 +344,6 @@ router.get('/collections/:id', async (req, res) => {
   }
 });
 
-// --- Admin: Create Collection ---
 router.post('/collections', async (req, res) => {
   try {
     const { id, name, description, image, products = [] } = req.body;
@@ -371,7 +370,6 @@ router.post('/collections', async (req, res) => {
   }
 });
 
-// --- Admin: Update Collection ---
 router.put('/collections/:id', async (req, res) => {
   try {
     const { name, description, image, products = [] } = req.body;
@@ -397,7 +395,6 @@ router.put('/collections/:id', async (req, res) => {
   }
 });
 
-// --- Admin: Delete Collection ---
 router.delete('/collections/:id', async (req, res) => {
   try {
     let collections = await db.getData('/collections');
