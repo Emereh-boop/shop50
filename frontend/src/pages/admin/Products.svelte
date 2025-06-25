@@ -95,7 +95,7 @@
 
     console.log('3. Frontend: Sending request to backend');
     try {
-      const response = await axios.post('http://localhost:3001/api/products', formData, {
+      const response = await axios.post('https://shop50.onrender.com/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -158,7 +158,7 @@
     if (!product) return '';
     let url = product.mainImage || product.image || product.imageUrl;
     if (url && !url.startsWith('http')) {
-      url = `http://localhost:3001${url}`;
+      url = `https://shop50.onrender.com${url}`;
     }
     return url;
   }

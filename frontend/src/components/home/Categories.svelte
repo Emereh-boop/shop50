@@ -43,7 +43,7 @@
   function getResolvedImageUrl(category) {
     let url = category.image || category.mainImage || category.imageUrl;
     if (url && !url.startsWith('http')) {
-      url = `http://localhost:3001${url}`;
+      url = `https://shop50.onrender.com${url}`;
     }
     return url;
   }

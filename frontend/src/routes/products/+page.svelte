@@ -65,7 +65,7 @@
     async function loadProducts() {
       try {
         products.update(store => ({ ...store, loading: true, error: null }));
-        const response = await fetch('http://localhost:3001/api/products');
+        const response = await fetch('https://shop50.onrender.com/api/products');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -93,7 +93,7 @@
       if (!confirm('Are you sure you want to delete this product?')) return;
   
       try {
-        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
+        const response = await fetch(`https://shop50.onrender.com/api/products/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -134,7 +134,7 @@
     function getResolvedImageUrl(product) {
       let url = product.mainImage || product.image || product.imageUrl;
       if (url && !url.startsWith('http')) {
-        url = `http://localhost:3001${url}`;
+        url = `https://shop50.onrender.com${url}`;
       }
       return url;
     }

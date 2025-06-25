@@ -97,7 +97,7 @@
     if (!productOrUrl) return '';
     let url = typeof productOrUrl === 'string' ? productOrUrl : (productOrUrl.mainImage || productOrUrl.image || productOrUrl.imageUrl);
     if (url && !url.startsWith('http')) {
-      url = `http://localhost:3001${url}`;
+      url = `https://shop50.onrender.com${url}`;
     }
     return url;
   }
