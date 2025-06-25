@@ -72,7 +72,23 @@
   {#if isDetail}
     <!-- Collection Detail Page -->
     {#if loading}
-      <div class="text-center text-lg">Loading collection...</div>
+      <div class="max-w-7xl container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          {#each Array(4) as _, i}
+            <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
+              <div class="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-t-2xl"></div>
+              <div class="p-6 flex-1 flex flex-col">
+                <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
+                <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2 w-full"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded mb-4 w-1/2"></div>
+                <div class="flex gap-2 mt-auto">
+                  <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
     {:else if error}
       <div class="text-center text-red-500">{error}</div>
     {:else if collection}
@@ -105,15 +121,14 @@
             </select>
           </div>
           {/if}
-        <div class="max-w-7xl container mx-auto px-4 py-16">
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {#each collection.products as product}
             <ProductCard {product} variant="image-like" />
           {/each}
         </div>
       </div>
-      </div>
-    </div>
+      {/if}
   {:else}
     <!-- All Collections Grid -->
     <div class="bg-black text-white py-24">
@@ -124,7 +139,19 @@
     </div>
     <div class="max-w-7xl container mx-auto px-4 py-16">
       {#if loading}
-        <div class="text-center text-lg">Loading collections...</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          {#each Array(4) as _, i}
+            <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
+              <div class="w-full h-64 bg-gray-200 dark:bg-gray-800"></div>
+              <div class="p-6 flex-1 flex flex-col">
+                <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
+                <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2 w-full"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded mb-4 w-1/2"></div>
+                <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full mt-2"></div>
+              </div>
+            </div>
+          {/each}
+        </div>
       {:else if error}
         <div class="text-center text-red-500">{error}</div>
       {:else}
@@ -146,5 +173,4 @@
       {/if}
     </div>
   {/if}
-{/if}
 </div>
