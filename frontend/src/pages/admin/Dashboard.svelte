@@ -26,7 +26,7 @@
 
   async function fetchOnlineUsers() {
     try {
-      const res = await fetch("/api/users/online");
+      const res = await fetch("https://shop50.onrender.com/api/users/online");
       if (res.ok) {
         onlineUsers = await res.json();
       }
@@ -38,9 +38,9 @@
   onMount(async () => {
     try {
       const [ordersRes, productsRes, usersRes] = await Promise.all([
-        fetch("/api/admin/orders?limit=5"),
-        fetch("/api/admin/products?limit=5"),
-        fetch("/api/admin/users?limit=5"),
+        fetch("https://shop50.onrender.com/api/admin/orders?limit=5"),
+        fetch("https://shop50.onrender.com/api/admin/products?limit=5"),
+        fetch("https://shop50.onrender.com/api/admin/users?limit=5"),
       ]);
 
       const [ordersData, productsData, usersData] = await Promise.all([

@@ -13,7 +13,7 @@
     error = null;
     try {
       // Adjust the endpoint to match your backend API for uploaded files
-      const response = await fetch('/api/admin/uploads');
+      const response = await fetch('https://shop50.onrender.com/api/admin/uploads');
       if (!response.ok) throw new Error('Failed to fetch uploads');
       files = await response.json();
     } catch (e) {

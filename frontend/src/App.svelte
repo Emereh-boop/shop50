@@ -23,7 +23,7 @@
   async function sendHeartbeat() {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (user && user.id) {
-      await fetch('/api/users/heartbeat', {
+      await fetch('https://shop50.onrender.com/api/users/heartbeat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id })
@@ -55,7 +55,7 @@
   async function fetchProducts() {
     products.update(store => ({ ...store, loading: true, error: null }));
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch('https://shop50.onrender.com/api/products');
       if (!response.ok) throw new Error('Failed to fetch products');
       const data = await response.json();
       products.update(store => ({ ...store, products: data, loading: false }));

@@ -29,7 +29,7 @@
   async function fetchProduct(id) {
     product = null;
     try {
-      const res = await fetch(`/api/products/${id}`);
+      const res = await fetch(`https://shop50.onrender.com/api/products/${id}`);
       if (res.ok) {
         product = await res.json();
         fetchRelatedProducts();
@@ -45,7 +45,7 @@
     if (!product?.id) return;
     isLoadingRelated = true;
     try {
-      const response = await fetch(`/api/products/${product.id}/related`);
+      const response = await fetch(`https://shop50.onrender.com/api/products/${product.id}/related`);
       if (response.ok) {
         relatedProducts = await response.json();
       } else {

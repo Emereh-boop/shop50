@@ -17,7 +17,7 @@
   onMount(async () => {
     try {
       // Fetch user orders
-      const ordersResponse = await fetch('/api/orders', {
+      const ordersResponse = await fetch('https://shop50.onrender.com/api/orders', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -33,7 +33,7 @@
         }
       }
       // Fetch recommendations
-      const recommendationsResponse = await fetch('/api/recommendations', {
+      const recommendationsResponse = await fetch('https://shop50.onrender.com/api/recommendations', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

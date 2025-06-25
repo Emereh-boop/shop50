@@ -17,7 +17,7 @@
 
   async function loadOrders() {
     try {
-      const response = await axios.get('/api/admin/orders', {
+      const response = await axios.get('https://shop50.onrender.com/api/admin/orders', {
         params: { status: statusFilter, date: dateFilter }
       });
       orders = response.data;
@@ -31,7 +31,7 @@
 
   async function updateOrderStatus(orderId, newStatus) {
     try {
-      await axios.put(`/api/admin/orders/${orderId}`, { status: newStatus });
+      await axios.put(`https://shop50.onrender.com/api/admin/orders/${orderId}`, { status: newStatus });
       await loadOrders();
     } catch (e) {
       error = 'Failed to update order status';

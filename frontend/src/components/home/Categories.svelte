@@ -8,7 +8,7 @@
 
   onMount(async () => {
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch('https://shop50.onrender.com/api/products');
       if (!response.ok) throw new Error('Failed to fetch products');
       const products = await response.json();
       // Count products per category

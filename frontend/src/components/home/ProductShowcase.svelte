@@ -47,7 +47,7 @@
     if (!$products.products || !$products.products.length) {
       products.update(store => ({ ...store, loading: true, error: null }));
       try {
-        const response = await fetch('/api/products');
+        const response = await fetch('https://shop50.onrender.com/api/products');
         if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         products.update(store => ({ ...store, products: data, loading: false }));

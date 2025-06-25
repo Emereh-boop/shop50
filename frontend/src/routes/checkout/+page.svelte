@@ -60,7 +60,7 @@
     }
     showInvoiceModal = false;
     try {
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('https://shop50.onrender.com/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

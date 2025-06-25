@@ -9,7 +9,7 @@
 
   onMount(async () => {
     try {
-      const response = await axios.get('/api/products/new-arrivals');
+      const response = await axios.get('https://shop50.onrender.com/api/products/new-arrivals');
       newArrivals = response.data;
     } catch (e) {
       error = 'Failed to load new arrivals';

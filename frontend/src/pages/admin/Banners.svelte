@@ -20,7 +20,7 @@
 
   async function loadBanners() {
     try {
-      const response = await fetch('/api/admin/banners');
+      const response = await fetch('https://shop50.onrender.com/api/admin/banners');
       if (!response.ok) throw new Error('Failed to load banners');
       banners = await response.json();
     } catch (e) {
@@ -33,7 +33,7 @@
 
   async function handleAddBanner() {
     try {
-      const response = await fetch('/api/admin/banners', {
+      const response = await fetch('https://shop50.onrender.com/api/admin/banners', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -61,7 +61,7 @@
 
   async function updateBannerStatus(bannerId, active) {
     try {
-      const response = await fetch(`/api/admin/banners/${bannerId}`, {
+      const response = await fetch(`https://shop50.onrender.com/api/admin/banners/${bannerId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@
     if (!confirm('Are you sure you want to delete this banner?')) return;
     
     try {
-      const response = await fetch(`/api/admin/banners/${bannerId}`, {
+      const response = await fetch(`https://shop50.onrender.com/api/admin/banners/${bannerId}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete banner');

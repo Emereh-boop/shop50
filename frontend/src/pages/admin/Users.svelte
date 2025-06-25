@@ -20,7 +20,7 @@
 
   async function loadUsers() {
     try {
-      const response = await axios.get('/api/admin/users');
+      const response = await axios.get('https://shop50.onrender.com/api/admin/users');
       users = response.data;
     } catch (e) {
       error = 'Failed to load users';
@@ -32,7 +32,7 @@
 
   async function handleAddUser() {
     try {
-      await axios.post('/api/admin/users', newUser);
+      await axios.post('https://shop50.onrender.com/api/admin/users', newUser);
       showAddModal = false;
       await loadUsers();
       // Reset form
@@ -50,7 +50,7 @@
 
   async function updateUserRole(userId, newRole) {
     try {
-      await axios.put(`/api/admin/users/${userId}`, { role: newRole });
+      await axios.put(`https://shop50.onrender.com/api/admin/users/${userId}`, { role: newRole });
       await loadUsers();
     } catch (e) {
       error = 'Failed to update user role';
@@ -62,7 +62,7 @@
     if (!confirm('Are you sure you want to delete this user?')) return;
     
     try {
-      await axios.delete(`/api/admin/users/${userId}`);
+      await axios.delete(`https://shop50.onrender.com/api/admin/users/${userId}`);
       await loadUsers();
     } catch (e) {
       error = 'Failed to delete user';

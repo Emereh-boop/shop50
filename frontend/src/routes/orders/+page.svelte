@@ -7,7 +7,7 @@
 
   onMount(async () => {
     try {
-      const response = await fetch('/api/orders');
+      const response = await fetch('https://shop50.onrender.com/api/orders');
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }

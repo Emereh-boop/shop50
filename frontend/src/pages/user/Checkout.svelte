@@ -32,7 +32,7 @@
 
   onMount(async () => {
     try {
-      const response = await axios.get('/api/cart');
+      const response = await axios.get('https://shop50.onrender.com/api/cart');
       cartItems = response.data;
       calculateTotals();
     } catch (e) {
@@ -64,7 +64,7 @@
         }
       };
 
-      const response = await axios.post('/api/orders', orderData);
+      const response = await axios.post('https://shop50.onrender.com/api/orders', orderData);
       // Redirect to order confirmation page
       window.location.href = `/order-confirmation/${response.data.orderId}`;
     } catch (e) {

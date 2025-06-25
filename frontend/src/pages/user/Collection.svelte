@@ -19,7 +19,7 @@
 
   onMount(async () => {
     try {
-      const response = await axios.get('/api/products');
+      const response = await axios.get('https://shop50.onrender.com/api/products');
       // Ensure products have a valid createdAt date for sorting
       allProducts = response.data.map(p => ({ ...p, createdAt: p.createdAt || new Date(0) }));
       filterProducts();

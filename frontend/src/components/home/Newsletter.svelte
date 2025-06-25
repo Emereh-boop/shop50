@@ -17,7 +17,7 @@
       return;
     }
     try {
-      const res = await fetch('/api/newsletter', {
+      const res = await fetch('https://shop50.onrender.com/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

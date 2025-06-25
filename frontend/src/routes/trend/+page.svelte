@@ -17,7 +17,7 @@
   
     onMount(async () => {
       try {
-        const response = await axios.get('/api/products/trending');
+        const response = await axios.get('https://shop50.onrender.com/api/products/trending');
         trendingProducts = response.data;
       } catch (e) {
         error = 'Failed to load trending products';
