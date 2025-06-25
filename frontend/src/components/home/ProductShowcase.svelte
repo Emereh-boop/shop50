@@ -68,6 +68,9 @@
     await fetchProducts(); // Will only fetch if not already loaded
     // Filter products based on type
     switch (type) {
+      case 'featured':
+        displayedProducts = prods.filter(p => p.featured).slice(0, limit);
+        break;
       case 'trending':
         displayedProducts = prods.filter(p => p.trending).slice(0, limit);
         break;
