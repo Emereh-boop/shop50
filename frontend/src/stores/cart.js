@@ -12,5 +12,5 @@ cart.subscribe(value => {
 });
 
 export function calculateTotal(cartArr) {
-  return cartArr.reduce((total, item) => total + item.price * item.quantity, 0);
+  return cartArr?.reduce((total, item) => total + item?.price * item?.quantity, 0);
 } 

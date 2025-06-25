@@ -211,27 +211,49 @@ router.post('/', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'add
 });
 
 // Update product
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'additionalImages', maxCount: 5 }]), async (req, res) => {
     try {
-        const { name, description, price, image, category } = req.body;
-        
+        // Destructure all fields from req.body
+        const { name, description, shortDescription, price, category, stock, brand, sizes, colors, tags, trending, featured, onSale, discount, relatedProducts, type } = req.body;
         const products = await db.getData('/products');
         const productIndex = products.findIndex(p => p.id === req.params.id);
-        
         if (productIndex === -1) {
             return res.status(404).json({ message: 'Product not found' });
         }
-
+        // Handle file uploads
+        let mainImagePath = products[productIndex].mainImage;
+        let additionalImagePaths = products[productIndex].additionalImages || [];
+        if (req.files) {
+            if (req.files.mainImage && req.files.mainImage[0]) {
+                mainImagePath = `/uploads/${req.files.mainImage[0].filename}`;
+            }
+            if (req.files.additionalImages) {
+                additionalImagePaths = req.files.additionalImages.map(file => `/uploads/${file.filename}`);
+            }
+        }
+        // Update product fields
         products[productIndex] = {
             ...products[productIndex],
             name,
             description,
-            price,
-            image,
+            shortDescription,
+            price: parseFloat(price),
             category,
+            stock: parseInt(stock),
+            brand,
+            sizes: sizes ? sizes.split(',').map(size => size.trim()) : [],
+            colors: colors ? colors.split(',').map(color => color.trim()) : [],
+            tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+            trending: trending === 'true' || trending === true,
+            featured: featured === 'true' || featured === true,
+            onSale: onSale === 'true' || onSale === true,
+            discount: onSale === 'true' || onSale === true ? parseInt(discount) : 0,
+            relatedProducts: relatedProducts ? JSON.parse(relatedProducts) : [],
+            mainImage: mainImagePath,
+            additionalImages: additionalImagePaths,
+            type: type || 'product',
             updatedAt: new Date().toISOString()
         };
-
         await db.push('/products', products);
         res.json(products[productIndex]);
     } catch (error) {
@@ -296,6 +318,101 @@ router.post('/checkout', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Checkout failed', error: error.message });
     }
+});
+
+// --- Collections Endpoints ---
+router.get('/collections', async (req, res) => {
+  try {
+    const collections = await db.getData('/collections');
+    res.json(collections);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching collections' });
+  }
+});
+
+router.get('/collections/:id', async (req, res) => {
+  try {
+    const collections = await db.getData('/collections');
+    const products = await db.getData('/products');
+    const collection = collections.find(c => c.id === req.params.id);
+    if (!collection) return res.status(404).json({ message: 'Collection not found' });
+    // Populate products
+    const collectionProducts = products.filter(p => (collection.products || []).includes(p.id));
+    res.json({ ...collection, products: collectionProducts });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching collection' });
+  }
+});
+
+// --- Admin: Create Collection ---
+router.post('/collections', async (req, res) => {
+  try {
+    const { id, name, description, image, products = [] } = req.body;
+    if (!id || !name) return res.status(400).json({ message: 'id and name are required' });
+    const collections = await db.getData('/collections');
+    if (collections.find(c => c.id === id)) return res.status(400).json({ message: 'Collection ID already exists' });
+    const newCollection = { id, name, description, image, products };
+    collections.push(newCollection);
+    await db.push('/collections', collections);
+    // Update products' collections arrays
+    const allProducts = await db.getData('/products');
+    for (const product of allProducts) {
+      if (products.includes(product.id)) {
+        if (!product.collections) product.collections = [];
+        if (!product.collections.includes(id)) product.collections.push(id);
+      } else {
+        if (product.collections) product.collections = product.collections.filter(cid => cid !== id);
+      }
+    }
+    await db.push('/products', allProducts);
+    res.status(201).json(newCollection);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating collection' });
+  }
+});
+
+// --- Admin: Update Collection ---
+router.put('/collections/:id', async (req, res) => {
+  try {
+    const { name, description, image, products = [] } = req.body;
+    const collections = await db.getData('/collections');
+    const idx = collections.findIndex(c => c.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: 'Collection not found' });
+    collections[idx] = { ...collections[idx], name, description, image, products };
+    await db.push('/collections', collections);
+    // Update products' collections arrays
+    const allProducts = await db.getData('/products');
+    for (const product of allProducts) {
+      if (products.includes(product.id)) {
+        if (!product.collections) product.collections = [];
+        if (!product.collections.includes(req.params.id)) product.collections.push(req.params.id);
+      } else {
+        if (product.collections) product.collections = product.collections.filter(cid => cid !== req.params.id);
+      }
+    }
+    await db.push('/products', allProducts);
+    res.json(collections[idx]);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating collection' });
+  }
+});
+
+// --- Admin: Delete Collection ---
+router.delete('/collections/:id', async (req, res) => {
+  try {
+    let collections = await db.getData('/collections');
+    collections = collections.filter(c => c.id !== req.params.id);
+    await db.push('/collections', collections);
+    // Remove collection from all products
+    const allProducts = await db.getData('/products');
+    for (const product of allProducts) {
+      if (product.collections) product.collections = product.collections.filter(cid => cid !== req.params.id);
+    }
+    await db.push('/products', allProducts);
+    res.json({ message: 'Collection deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting collection' });
+  }
 });
 
 module.exports = router; 

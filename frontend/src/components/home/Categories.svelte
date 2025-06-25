@@ -1,43 +1,40 @@
 <script>
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
+  import { products, fetchProducts } from '../../stores/products';
+  import { get } from 'svelte/store';
 
   let categories = [];
   let isLoading = true;
   let error = null;
 
   onMount(async () => {
-    try {
-      const response = await fetch('https://shop50.onrender.com/api/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const products = await response.json();
-      // Count products per category
-      const categoryMap = {};
-      for (const product of products) {
-        if (!product.category) continue;
-        if (!categoryMap[product.category]) {
-          categoryMap[product.category] = { count: 0, image: product.mainImage || product.imageUrl, name: product.category, description: product.description };
-        }
-        categoryMap[product.category].count++;
-        // Prefer a product with an image for the category
-        if (!categoryMap[product.category].image && (product.mainImage || product.imageUrl)) {
-          categoryMap[product.category].image = product.mainImage || product.imageUrl;
-        }
+    await fetchProducts();
+    const prods = get(products).products;
+    // Count products per category
+    const categoryMap = {};
+    for (const product of prods) {
+      if (!product.category) continue;
+      if (!categoryMap[product.category]) {
+        categoryMap[product.category] = { count: 0, image: product.mainImage || product.imageUrl, name: product.category, description: product.description };
       }
-      // Get top 3 categories by count
-      categories = Object.entries(categoryMap)
-        .sort((a, b) => b[1].count - a[1].count)
-        .slice(0, 3)
-        .map(([id, data]) => ({ id, ...data }));
-    } catch (e) {
-      error = e.message;
-    } finally {
-      isLoading = false;
+      categoryMap[product.category].count++;
+      // Prefer a product with an image for the category
+      if (!categoryMap[product.category].image && (product.mainImage || product.imageUrl)) {
+        categoryMap[product.category].image = product.mainImage || product.imageUrl;
+      }
     }
+    // Get top 3 categories by count
+    categories = Object.entries(categoryMap)
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 3)
+      .map(([id, data]) => ({ id, ...data }));
+    isLoading = false;
   });
 
   function handleCategoryClick(categoryId) {
-    push(`/products?category=${encodeURIComponent(categoryId)}`);
+    const url = `/products?category=${encodeURIComponent(categoryId)}`;
+    push(url);
   }
 
   function getResolvedImageUrl(category) {

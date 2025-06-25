@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import axios from 'axios';
   import Button from '../../components/common/Button.svelte';
+  import { adminUsers, fetchAdminUsers } from '../../stores/adminUsers';
+  import { get } from 'svelte/store';
   
   let users = [];
   let loading = true;
@@ -15,26 +17,23 @@
   };
 
   onMount(async () => {
-    await loadUsers();
+    loading = true;
+    await fetchAdminUsers();
+    const store = get(adminUsers);
+    users = store.users;
+    loading = store.loading;
+    error = store.error;
   });
-
-  async function loadUsers() {
-    try {
-      const response = await axios.get('https://shop50.onrender.com/api/admin/users');
-      users = response.data;
-    } catch (e) {
-      error = 'Failed to load users';
-      console.error(e);
-    } finally {
-      loading = false;
-    }
-  }
 
   async function handleAddUser() {
     try {
       await axios.post('https://shop50.onrender.com/api/admin/users', newUser);
       showAddModal = false;
-      await loadUsers();
+      await fetchAdminUsers(true);
+      const store = get(adminUsers);
+      users = store.users;
+      loading = store.loading;
+      error = store.error;
       // Reset form
       newUser = {
         name: '',
@@ -51,7 +50,11 @@
   async function updateUserRole(userId, newRole) {
     try {
       await axios.put(`https://shop50.onrender.com/api/admin/users/${userId}`, { role: newRole });
-      await loadUsers();
+      await fetchAdminUsers(true);
+      const store = get(adminUsers);
+      users = store.users;
+      loading = store.loading;
+      error = store.error;
     } catch (e) {
       error = 'Failed to update user role';
       console.error(e);
@@ -63,7 +66,11 @@
     
     try {
       await axios.delete(`https://shop50.onrender.com/api/admin/users/${userId}`);
-      await loadUsers();
+      await fetchAdminUsers(true);
+      const store = get(adminUsers);
+      users = store.users;
+      loading = store.loading;
+      error = store.error;
     } catch (e) {
       error = 'Failed to delete user';
       console.error(e);
@@ -82,12 +89,12 @@
       Add New User
     </Button>
   </div>
-  {#if loading}
+  {#if $adminUsers.loading}
     <div class="flex justify-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
     </div>
-  {:else if error}
-    <div class="text-red-500 text-center">{error}</div>
+  {:else if $adminUsers.error}
+    <div class="text-red-500 text-center">{$adminUsers.error}</div>
   {:else}
     <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-x-auto">
       <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
@@ -101,7 +108,7 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-black divide-y divide-black dark:divide-white">
-          {#each users as user}
+          {#each $adminUsers.users as user}
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-4">

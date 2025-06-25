@@ -61,7 +61,6 @@ export default function Profile() {
                 });
                 setPaymentMethods(fetchedPaymentMethods);
             } catch (error) {
-                console.log("Error fetching data:", error);
             } finally {
                 setLoadingOrders(false);
             }

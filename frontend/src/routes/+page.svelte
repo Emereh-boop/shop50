@@ -12,7 +12,7 @@
   <ProductShowcase 
     type="featured"
     title="Featured Products"
-    seeMoreLink="/products?tag=featured"
+    seeMoreLink="/products?featured=true"
     limit={4}
   />
   
@@ -28,7 +28,7 @@
   <ProductShowcase 
     type="new-arrivals"
     title="New Arrivals"
-    seeMoreLink="/products?tag=new"
+    seeMoreLink="/products?new=true"
     limit={4}
   />
   

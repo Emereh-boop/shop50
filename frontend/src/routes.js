@@ -5,8 +5,6 @@ import Checkout from './routes/checkout/+page.svelte';
 import Orders from './routes/orders/+page.svelte';
 import Profile from './routes/profile/+page.svelte';
 import Collection from './pages/user/Collection.svelte';
-import NewArrival from './pages/user/NewArrival.svelte';
-import Trend from './routes/trend/+page.svelte';
 import ProductDetail from './routes/products/[id]/+page.svelte';
 
 // Admin pages
@@ -31,8 +29,6 @@ const routes = {
   '/orders': Orders,
   '/profile': Profile,
   '/collection': Collection,
-  '/new-arrivals': NewArrival,
-  '/trend': Trend,
 
   // Admin routes
   '/admin': AdminDashboard,

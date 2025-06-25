@@ -1,136 +1,150 @@
 <script>
   import { onMount } from 'svelte';
-  import axios from 'axios';
-  import Skeleton from '../../components/common/Skeleton.svelte';
   import Button from '../../components/common/Button.svelte';
-  
-  let allProducts = [];
-  let filteredProducts = [];
+  import ProductCard from '../../components/product/ProductCard.svelte';
+
+  let collections = [];
+  let collection = null;
   let loading = true;
   let error = null;
-  let selectedCategory = 'all';
+  let isDetail = false;
+  let sortOption = 'default';
+  let filterCategory = 'all';
 
-  const categories = [
-    { id: 'all', name: 'All Products' },
-    { id: 'new', name: 'New Arrivals' },
-    { id: 'trending', name: 'Trending' },
-    { id: 'sale', name: 'On Sale' }
-  ];
+  function getCollectionIdFromHash() {
+    const hash = window.location.hash || '';
+    const match = hash.match(/#\/collections\/([^?&#]+)/);
+    return match ? match[1] : null;
+  }
 
-  onMount(async () => {
+  async function fetchCollections() {
+    const res = await fetch('/api/collections');
+    if (!res.ok) throw new Error('Failed to fetch collections');
+    collections = await res.json();
+  }
+
+  async function fetchCollectionDetail(id) {
+    const res = await fetch(`/api/collections/${id}`);
+    if (!res.ok) throw new Error('Failed to fetch collection');
+    collection = await res.json();
+  }
+
+  async function loadPage() {
+    loading = true;
+    error = null;
+    collection = null;
+    collections = [];
+    const collectionId = getCollectionIdFromHash();
+    isDetail = !!collectionId;
     try {
-      const response = await axios.get('https://shop50.onrender.com/api/products');
-      // Ensure products have a valid createdAt date for sorting
-      allProducts = response.data.map(p => ({ ...p, createdAt: p.createdAt || new Date(0) }));
-      filterProducts();
+      if (isDetail) {
+        await fetchCollectionDetail(collectionId);
+      } else {
+        await fetchCollections();
+      }
     } catch (e) {
-      error = 'Failed to load products';
-      console.error(e);
+      error = e.message;
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    loadPage();
+    window.addEventListener('hashchange', loadPage);
   });
 
-  function handleCategorySelect(categoryId) {
-    selectedCategory = categoryId;
-    filterProducts();
-  }
-
-  function filterProducts() {
-    if (selectedCategory === 'all') {
-      filteredProducts = allProducts;
-    } else if (selectedCategory === 'new') {
-      // Sort by creation date to get the newest arrivals
-      filteredProducts = [...allProducts]
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 8); // Show the 8 newest products
-    } else if (selectedCategory === 'trending') {
-      filteredProducts = allProducts.filter(p => p.trending);
-    } else if (selectedCategory === 'sale') {
-      filteredProducts = allProducts.filter(p => p.onSale);
-    } else {
-      filteredProducts = allProducts;
-    }
-  }
-
-  function getResolvedImageUrl(product) {
-    if (!product) return '';
-    let url = product.mainImage || product.image || product.imageUrl;
-    if (url && !url.startsWith('http')) {
-      url = `https://shop50.onrender.com${url}`;
-    }
-    return url;
-  }
+  $: categories = collection && collection.products ? Array.from(new Set(collection.products.map(p => p.category))).filter(Boolean) : [];
+  $: filteredProducts = collection && collection.products
+    ? collection.products
+        .filter(p => filterCategory === 'all' || (p.category && p.category.toLowerCase() === filterCategory.toLowerCase()))
+        .sort((a, b) => {
+          if (sortOption === 'price-asc') return a.price - b.price;
+          if (sortOption === 'price-desc') return b.price - a.price;
+          if (sortOption === 'newest') return new Date(b.createdAt || b.timeStamp) - new Date(a.createdAt || a.timeStamp);
+          if (sortOption === 'name') return a.name.localeCompare(b.name);
+          return 0;
+        })
+    : [];
 </script>
 
 <div class="min-h-screen bg-white dark:bg-black">
-  <!-- Hero Section -->
-  <div class="bg-black text-white py-24">
-    <div class="max-w-7xl container mx-auto px-4 text-center">
-      <h1 class="text-5xl md:text-6xl font-extrabold uppercase tracking-widest mb-4">Discover Our Collections</h1>
-      <p class="text-xl opacity-90">Explore our latest trends and find your perfect style</p>
-    </div>
-  </div>
-  <!-- Categories Navigation -->
-  <div class="max-w-7xl container mx-auto px-4 -mt-10">
-    <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl p-6">
-      <div class="flex flex-wrap gap-4 justify-center">
-        {#each categories as category}
-          <Button
-            variation="stroke"
-            class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3 {selectedCategory === category.id ? 'bg-black text-white dark:bg-white dark:text-black' : ''}"
-            on:click={() => handleCategorySelect(category.id)}
-          >
-            {category.name}
-          </Button>
-        {/each}
-      </div>
-    </div>
-  </div>
-  <!-- Products Grid -->
-  <div class="max-w-7xl container mx-auto px-4 py-16">
+  {#if isDetail}
+    <!-- Collection Detail Page -->
     {#if loading}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-        {#each Array(8) as _}
-          <Skeleton type="card" />
-        {/each}
-      </div>
+      <div class="text-center text-lg">Loading collection...</div>
     {:else if error}
-      <div class="text-center py-12">
-        <div class="text-red-500 text-xl mb-4">{error}</div>
-        <button 
-          class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-          on:click={() => window.location.reload()}
-        >
-          Try Again
-        </button>
+      <div class="text-center text-red-500">{error}</div>
+    {:else if collection}
+      <div class="bg-black text-white py-24">
+        <div class="max-w-7xl container mx-auto px-4 text-center">
+          <h1 class="text-5xl md:text-6xl font-extrabold uppercase tracking-widest mb-4">{collection.name}</h1>
+          <p class="text-xl opacity-90 mb-4">{collection.description}</p>
+        </div>
       </div>
-    {:else}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-        {#each filteredProducts as product}
-          <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-hidden group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-            <a href={`/#/products/${product.id}`} class="block">
+      <div class="max-w-7xl container mx-auto px-4 py-8">
+        <div class="flex flex-wrap gap-4 mb-8 items-end">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest mb-1">Sort</label>
+            <select bind:value={sortOption} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+              <option value="default">Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="newest">Newest</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+          {#if categories.length > 1}
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest mb-1">Category</label>
+            <select bind:value={filterCategory} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+              <option value="all">All</option>
+              {#each categories as cat}
+                <option value={cat}>{cat}</option>
+              {/each}
+            </select>
+          </div>
+          {/if}
+        <div class="max-w-7xl container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          {#each collection.products as product}
+            <ProductCard {product} variant="image-like" />
+          {/each}
+        </div>
+      </div>
+      </div>
+    </div>
+  {:else}
+    <!-- All Collections Grid -->
+    <div class="bg-black text-white py-24">
+      <div class="max-w-7xl container mx-auto px-4 text-center">
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase tracking-widest mb-4">Discover Our Collections</h1>
+        <p class="text-xl opacity-90">Explore our latest curated collections and find your perfect style</p>
+      </div>
+    </div>
+    <div class="max-w-7xl container mx-auto px-4 py-16">
+      {#if loading}
+        <div class="text-center text-lg">Loading collections...</div>
+      {:else if error}
+        <div class="text-center text-red-500">{error}</div>
+      {:else}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          {#each collections as collection}
+            <a href={`/#/collections/${collection.id}`} class="block bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-hidden group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
               <div class="relative">
-                <img 
-                  src={getResolvedImageUrl(product)} 
-                  alt={product.name} 
-                  class="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-110"
-                />
+                <img src={collection.image} alt={collection.name} class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
               </div>
               <div class="p-6">
-                <h2 class="text-xl font-extrabold uppercase tracking-widest mb-2 text-black dark:text-white truncate">{product.name}</h2>
-                <p class="text-lg font-bold mb-4 text-black dark:text-white">${product.price}</p>
-                <div class="flex justify-between items-center">
-                  <button class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-6 py-2 w-full hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
-                    Add to Cart
-                  </button>
-                </div>
+                <h2 class="text-xl font-extrabold uppercase tracking-widest mb-2 text-black dark:text-white truncate">{collection.name}</h2>
+                <p class="text-base text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">{collection.description}</p>
+                <Button variation="stroke" class="w-full mt-2">View Collection</Button>
               </div>
             </a>
-          </div>
-        {/each}
-      </div>
-    {/if}
-  </div>
-</div> 
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {/if}
+{/if}
+</div>

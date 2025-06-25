@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { syncLocalToBackend } from '../utils/interested.js';
 
 // Create stores
 export const user = writable(null);
@@ -44,6 +45,9 @@ export const auth = {
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('token', data.token);
       
+      // Sync localStorage interested products to backend
+      await syncLocalToBackend();
+      
       return data;
     } catch (error) {
       throw error;
@@ -73,6 +77,9 @@ export const auth = {
       // Update localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('token', data.token);
+      
+      // Sync localStorage interested products to backend
+      await syncLocalToBackend();
       
       return data;
     } catch (error) {

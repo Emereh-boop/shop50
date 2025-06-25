@@ -447,4 +447,52 @@ router.put('/orders/:id/status', async (req, res) => {
   }
 });
 
+// --- Still Interested Products Endpoints ---
+// Get interested products for a user
+router.get('/users/:id/interested-products', async (req, res) => {
+  try {
+    const users = await db.getData('/users');
+    const user = users.find(u => u.id === req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ interestedProducts: user.interestedProducts || [] });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching interested products' });
+  }
+});
+
+// Add a product to interested list
+router.post('/users/:id/interested-products', async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const users = await db.getData('/users');
+    const userIndex = users.findIndex(u => u.id === req.params.id);
+    if (userIndex === -1) return res.status(404).json({ message: 'User not found' });
+    if (!users[userIndex].interestedProducts) users[userIndex].interestedProducts = [];
+    if (!users[userIndex].interestedProducts.includes(productId)) {
+      users[userIndex].interestedProducts.push(productId);
+      await db.push('/users', users);
+    }
+    res.json({ interestedProducts: users[userIndex].interestedProducts });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding interested product' });
+  }
+});
+
+// Remove products from interested list
+router.delete('/users/:id/interested-products', async (req, res) => {
+  try {
+    const { productIds } = req.body; // array
+    const users = await db.getData('/users');
+    const userIndex = users.findIndex(u => u.id === req.params.id);
+    if (userIndex === -1) return res.status(404).json({ message: 'User not found' });
+    users[userIndex].interestedProducts = (users[userIndex].interestedProducts || []).filter(
+      id => !productIds.includes(id)
+    );
+    await db.push('/users', users);
+    res.json({ interestedProducts: users[userIndex].interestedProducts });
+  } catch (error) {
+    res.status(500).json({ message: 'Error removing interested products' });
+  }
+});
+
 module.exports = router; 

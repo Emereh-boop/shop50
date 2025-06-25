@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import axios from 'axios';
   import Button from '../../components/common/Button.svelte';
+  import { adminOrders, fetchAdminOrders } from '../../stores/adminOrders';
+  import { get } from 'svelte/store';
   
   let orders = [];
   let loading = true;
@@ -12,27 +14,22 @@
   let dateFilter = 'all';
 
   onMount(async () => {
-    await loadOrders();
+    loading = true;
+    await fetchAdminOrders();
+    const store = get(adminOrders);
+    orders = store.orders;
+    loading = store.loading;
+    error = store.error;
   });
-
-  async function loadOrders() {
-    try {
-      const response = await axios.get('https://shop50.onrender.com/api/admin/orders', {
-        params: { status: statusFilter, date: dateFilter }
-      });
-      orders = response.data;
-    } catch (e) {
-      error = 'Failed to load orders';
-      console.error(e);
-    } finally {
-      loading = false;
-    }
-  }
 
   async function updateOrderStatus(orderId, newStatus) {
     try {
       await axios.put(`https://shop50.onrender.com/api/admin/orders/${orderId}`, { status: newStatus });
-      await loadOrders();
+      await fetchAdminOrders(true);
+      const store = get(adminOrders);
+      orders = store.orders;
+      loading = store.loading;
+      error = store.error;
     } catch (e) {
       error = 'Failed to update order status';
       console.error(e);
@@ -51,7 +48,7 @@
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
       <select
         bind:value={statusFilter}
-        on:change={loadOrders}
+        on:change={() => fetchAdminOrders()}
         class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-6 py-2 bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white w-full sm:w-auto"
       >
         <option value="all">All Status</option>
@@ -63,7 +60,7 @@
       </select>
       <select
         bind:value={dateFilter}
-        on:change={loadOrders}
+        on:change={() => fetchAdminOrders()}
         class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-6 py-2 bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white w-full sm:w-auto"
       >
         <option value="all">All Time</option>
@@ -73,12 +70,12 @@
       </select>
     </div>
   </div>
-  {#if loading}
+  {#if $adminOrders.loading}
     <div class="flex justify-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
     </div>
-  {:else if error}
-    <div class="text-red-500 text-center">{error}</div>
+  {:else if $adminOrders.error}
+    <div class="text-red-500 text-center">{$adminOrders.error}</div>
   {:else}
     <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-x-auto">
       <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
@@ -93,7 +90,7 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-black divide-y divide-black dark:divide-white">
-          {#each orders as order}
+          {#each $adminOrders.orders as order}
             <tr>
               <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-black dark:text-white">#{order.id}</td>
               <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-black dark:text-white">{order.customerName}</td>

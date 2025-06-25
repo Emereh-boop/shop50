@@ -20,6 +20,7 @@
     colors: '',
     tags: '',
     trending: false,
+    featured: false,
     onSale: false,
     discount: 0,
     relatedProducts: [],
@@ -31,6 +32,8 @@
   let mainImage = null;
   let additionalImages = [];
   let mainPreviewUrl = '';
+  let editMode = false;
+  let editingProductId = null;
 
   onMount(async () => {
     await loadProducts();
@@ -57,14 +60,13 @@
         return;
       }
     }
-    if (!mainImage) {
+    if (!mainImage && !editMode) {
       error = 'Please select a main image for the product.';
       return;
     }
 
-    console.log('2. Frontend: Creating FormData');
     const formData = new FormData();
-    formData.append('mainImage', mainImage);
+    if (mainImage) formData.append('mainImage', mainImage);
     additionalImages.forEach((file, index) => {
       formData.append(`additionalImages`, file);
     });
@@ -79,6 +81,7 @@
     formData.append('colors', newProduct.colors);
     formData.append('tags', newProduct.tags);
     formData.append('trending', newProduct.trending);
+    formData.append('featured', newProduct.featured);
     formData.append('onSale', newProduct.onSale);
     formData.append('discount', newProduct.discount);
     formData.append('relatedProducts', JSON.stringify(newProduct.relatedProducts));
@@ -93,14 +96,16 @@
       formData.append('author', newProduct.author);
     }
 
-    console.log('3. Frontend: Sending request to backend');
     try {
-      const response = await axios.post('https://shop50.onrender.com/api/products', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log('4. Frontend: Received response from backend', response.data);
+      if (editMode && editingProductId) {
+        await axios.put(`https://shop50.onrender.com/api/products/${editingProductId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        await axios.post('https://shop50.onrender.com/api/products', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
       showAddModal = false;
       await loadProducts();
       // Reset form
@@ -116,6 +121,7 @@
         colors: '',
         tags: '',
         trending: false,
+        featured: false,
         onSale: false,
         discount: 0,
         relatedProducts: [],
@@ -126,9 +132,11 @@
       };
       mainImage = null;
       additionalImages = [];
+      editMode = false;
+      editingProductId = null;
     } catch (e) {
       console.error('5. Frontend: Error occurred', e);
-      error = e.response?.data?.message || 'Failed to add product';
+      error = e.response?.data?.message || 'Failed to save product';
     }
   }
 
@@ -164,8 +172,33 @@
   }
 
   function handleEditProduct(product) {
-    toast.info('Edit product modal coming soon!');
-    // Optionally: set up edit modal state here
+    showAddModal = true;
+    editMode = true;
+    editingProductId = product.id;
+    newProduct = {
+      name: product.name,
+      description: product.description,
+      shortDescription: product.shortDescription,
+      price: product.price,
+      category: product.category,
+      stock: product.stock,
+      brand: product.brand,
+      sizes: product.sizes,
+      colors: product.colors,
+      tags: product.tags,
+      trending: product.trending,
+      featured: product.featured || false,
+      onSale: product.onSale,
+      discount: product.discount,
+      relatedProducts: product.relatedProducts || [],
+      type: product.type || 'product',
+      ctaText: product.ctaText || '',
+      link: product.link || '',
+      author: product.author || ''
+    };
+    mainImage = null;
+    additionalImages = [];
+    mainPreviewUrl = product.mainImage || product.image || product.imageUrl || '';
   }
 </script>
 
@@ -275,6 +308,10 @@
             <input type="checkbox" class="mr-2" bind:checked={newProduct.trending} />
           </div>
           <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">Featured</label>
+            <input type="checkbox" class="mr-2" bind:checked={newProduct.featured} />
+          </div>
+          <div>
             <label class="block text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300 mb-2">On Sale</label>
             <input type="checkbox" class="mr-2" bind:checked={newProduct.onSale} />
           </div>
@@ -325,7 +362,7 @@
         </div>
         <div class="flex justify-end gap-4 mt-8">
           <Button variation="ghost" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3" type="button" on:click={() => showAddModal = false}>Cancel</Button>
-          <Button variation="stroke" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3" type="submit">Add Product</Button>
+          <Button variation="stroke" class="font-extrabold uppercase tracking-widest border-2 border-black dark:border-white text-black dark:text-white rounded-full px-8 py-3" type="submit">{editMode ? 'Update Product' : 'Add Product'}</Button>
         </div>
       </form>
     </div>

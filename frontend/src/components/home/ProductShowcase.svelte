@@ -1,11 +1,11 @@
 <script>
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
-  import { products } from '../../stores/products';
+  import { products, fetchProducts } from '../../stores/products';
   import { ChevronCompactLeft, ChevronCompactRight } from 'svelte-bootstrap-icons';
   import ProductCard from '../product/ProductCard.svelte';
 
-  export let type = 'featured'; // featured, trending, new-arrivals, most-purchased
+  export let type = 'featured'; // featured, trending, new-arrivals, most-purchased, still-interested
   export let title = 'Featured Products';
   export let seeMoreLink = '/products';
   export let limit = 4;
@@ -17,6 +17,7 @@
   let displayedProducts = [];
   let isLoading = $products.loading;
   let error = $products.error;
+  let shouldShow = true;
 
   function checkScroll() {
     if (sliderRef) {
@@ -43,19 +44,28 @@
     push(path);
   }
 
-  onMount(async () => {
-    if (!$products.products || !$products.products.length) {
-      products.update(store => ({ ...store, loading: true, error: null }));
+  // Helper: Get 'still interested' product IDs from localStorage
+  function getStillInterestedIds() {
+    if (typeof localStorage !== 'undefined') {
       try {
-        const response = await fetch('https://shop50.onrender.com/api/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
-        products.update(store => ({ ...store, products: data, loading: false }));
-      } catch (e) {
-        products.update(store => ({ ...store, error: e.message, loading: false }));
+        return JSON.parse(localStorage.getItem('interestedProducts') || '[]');
+      } catch {
+        return [];
       }
     }
+    return [];
+  }
 
+  // Helper: Is product new (added in last 30 days)?
+  function isNew(product) {
+    const days = 30;
+    const now = new Date();
+    const added = new Date(product.timeStamp);
+    return (now - added) / (1000 * 60 * 60 * 24) <= days;
+  }
+
+  onMount(async () => {
+    await fetchProducts(); // Will only fetch if not already loaded
     // Filter products based on type
     switch (type) {
       case 'trending':
@@ -67,13 +77,11 @@
           .slice(0, limit);
         break;
       case 'most-purchased':
-        // This would need orders data to be implemented
         displayedProducts = prods.slice(0, limit);
         break;
       default: // featured
         displayedProducts = prods.slice(0, limit);
     }
-
     checkScroll();
     sliderRef?.addEventListener('scroll', checkScroll);
     return () => sliderRef?.removeEventListener('scroll', checkScroll);
@@ -84,24 +92,36 @@
   $: error = $products.error;
   $: {
     switch (type) {
+      case 'featured':
+        displayedProducts = prods.filter(p => p.featured).slice(0, limit);
+        break;
       case 'trending':
         displayedProducts = prods.filter(p => p.trending).slice(0, limit);
         break;
       case 'new-arrivals':
-        displayedProducts = prods
-          .sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp))
-          .slice(0, limit);
+        displayedProducts = prods.filter(isNew).sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)).slice(0, limit);
         break;
       case 'most-purchased':
-        displayedProducts = prods.slice(0, limit);
+        displayedProducts = prods
+          .slice()
+          .sort((a, b) => (b.purchaseCount || 0) - (a.purchaseCount || 0))
+          .slice(0, limit);
+        break;
+      case 'still-interested':
+        const interestedIds = getStillInterestedIds();
+        displayedProducts = prods.filter(p => interestedIds.includes(p.id)).slice(0, limit);
         break;
       default:
         displayedProducts = prods.slice(0, limit);
     }
   }
+
+  $: if (type === 'still-interested' && displayedProducts.length === 0) {
+    shouldShow = false;
+  }
 </script>
 
-<section class="py-16 bg-white dark:bg-gray-800">
+<section class="py-16 bg-white dark:bg-gray-800" style="display: {shouldShow ? 'block' : 'none'}">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-12">
       <h2 class="text-3xl font-bold tracking-wider">
@@ -140,7 +160,7 @@
         {:else}
           {#each displayedProducts as product}
             <div class="flex-shrink-0 w-64 lg:w-80 snap-start">
-              <ProductCard {product} />
+              <ProductCard {product} variant={type === 'still-interested' ? 'full' : 'image-only'} />
             </div>
           {/each}
         {/if}

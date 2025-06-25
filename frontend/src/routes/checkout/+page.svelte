@@ -86,16 +86,6 @@
     }
   }
 
-  // Simulate Paystack callback for demo (in real app, listen for redirect)
-  function simulateSuccess(order) {
-    lastOrder = order;
-    showSuccessModal = true;
-    push('/checkout/success');
-  }
-  function simulateError() {
-    showErrorModal = true;
-    push('/checkout/error');
-  }
 </script>
 
 <div class="max-w-4xl mx-auto px-4 py-12">
@@ -158,7 +148,7 @@
       <div class="border-t border-black dark:border-white mt-8 pt-4">
         <div class="flex justify-between font-bold text-lg text-black dark:text-white">
           <span>Total</span>
-          <span>${calculateTotal().toFixed(2)}</span>
+          <span>${calculateTotal()?.toFixed(2)}</span>
         </div>
       </div>
     </div>
@@ -181,7 +171,7 @@
           </ul>
           <div class="flex justify-between font-bold">
             <span>Total</span>
-            <span>${calculateTotal().toFixed(2)}</span>
+            <span>${calculateTotal()?.toFixed(2)}</span>
           </div>
           <div class="flex justify-between text-sm mt-2">
             <span>Shipping</span>

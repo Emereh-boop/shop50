@@ -10,7 +10,7 @@
   import { cart } from './stores/cart';
   import { showCart, showAuthModal, authMode } from './stores/ui';
   import routes from './routes';
-  import { products } from './stores/products';
+  import { products, fetchProducts } from './stores/products';
   import Sonner from './components/common/Sonner.svelte';
 
   function handleAuthSuccess() {
@@ -51,18 +51,6 @@
   onDestroy(() => {
     clearInterval(heartbeatInterval);
   });
-
-  async function fetchProducts() {
-    products.update(store => ({ ...store, loading: true, error: null }));
-    try {
-      const response = await fetch('https://shop50.onrender.com/api/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
-      products.update(store => ({ ...store, products: data, loading: false }));
-    } catch (e) {
-      products.update(store => ({ ...store, error: e.message, loading: false }));
-    }
-  }
 </script>
 
 <svelte:head>

@@ -7,7 +7,8 @@
             "name": "Ariel Beard",
             "role": "user",
             "createdAt": "2025-06-15T19:01:44.992Z",
-            "lastActive": 1750765308827
+            "lastActive": 1750765308827,
+            "interestedProducts": []
         }
     ],
     "products": [
@@ -51,7 +52,8 @@
             "mainImage": "/uploads/1750692556421-447493822.jpg",
             "additionalImages": [],
             "type": "product",
-            "createdAt": "2025-06-23T15:29:16.460Z"
+            "createdAt": "2025-06-23T15:29:16.460Z",
+            "collections": ["summer-2024", "bestsellers"]
         },
         {
             "id": "1750694601662",
@@ -85,14 +87,16 @@
                 "#TriangleBikini",
                 "#SunKissedStyle"
             ],
-            "trending": true,
+            "trending": false,
+            "featured": true,
             "onSale": true,
             "discount": 1,
             "relatedProducts": [],
             "mainImage": "/uploads/1750694601478-475673354.jpeg",
             "additionalImages": [],
             "type": "product",
-            "createdAt": "2025-06-23T16:03:21.663Z"
+            "createdAt": "2025-06-23T16:03:21.663Z",
+            "collections": ["summer-2024", "bestsellers"]
         },
         {
             "id": "1750762050218",
@@ -131,8 +135,25 @@
                 "/uploads/1750762050177-851811723.avif"
             ],
             "type": "banner",
-            "createdAt": "2025-06-24T10:47:30.219Z"
+            "createdAt": "2025-06-24T10:47:30.219Z",
+            "collections": ["summer-2024", "bestsellers"]
         }
     ],
-    "orders": []
+    "orders": [],
+    "collections": [
+        {
+            "id": "summer-2024",
+            "name": "Summer 2024",
+            "description": "Hot picks for the summer season.",
+            "image": "/collections/summer2024.jpg",
+            "products": ["1750014104992", "1750692556460"]
+        },
+        {
+            "id": "bestsellers",
+            "name": "Best Sellers",
+            "description": "Our most popular products.",
+            "image": "/collections/bestsellers.jpg",
+            "products": ["1750692556460"]
+        }
+    ]
 }

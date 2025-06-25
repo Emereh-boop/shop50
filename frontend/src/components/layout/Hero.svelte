@@ -37,7 +37,8 @@
 
   function handleShopNow() {
     if (featured?.category) {
-      push(`/products?category=${encodeURIComponent(featured.category)}`);
+      const url = `/products?category=${encodeURIComponent(featured.category)}`;
+      push(url);
     } else {
       push('/products');
     }

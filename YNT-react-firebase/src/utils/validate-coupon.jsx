@@ -7,13 +7,11 @@ export const validateCoupon = async (couponCode) => {
   try {
     const couponQuerySnapshot = await getDocs(collection(db, "coupons"));
       const coupons = couponQuerySnapshot.docs.map((doc) => doc.data());
-      console.log("firebase coupon:",coupons)
 
     // Find the coupon that matches the couponCode
     const couponData = coupons.find(
       (coupon) => coupon.code.toLowerCase() === couponCode.toLowerCase()
       );
-      console.log("coupon data:",couponData)
 
     if (!couponData) {
       return { valid: false, message: "Invalid coupon code." };

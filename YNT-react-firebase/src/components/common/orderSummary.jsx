@@ -23,10 +23,8 @@ const OrderSummary = ({
         const result = await validateCoupon(couponCode);
         if (result.valid) {
             setDiscount(result.discount); // Set the discount from the coupon
-            console.log("coupon discount", discount);
         } else {
             // Handle invalid coupon error if needed
-            console.log(result.message);
         }
     };
 
