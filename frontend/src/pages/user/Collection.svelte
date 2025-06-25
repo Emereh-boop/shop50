@@ -18,13 +18,13 @@
   }
 
   async function fetchCollections() {
-    const res = await fetch('/api/collections');
+    const res = await fetch('https://shop50.onrender.com/api/products/collections');
     if (!res.ok) throw new Error('Failed to fetch collections');
     collections = await res.json();
   }
 
   async function fetchCollectionDetail(id) {
-    const res = await fetch(`/api/collections/${id}`);
+    const res = await fetch(`https://shop50.onrender.com/api/products/collections/${id}`);
     if (!res.ok) throw new Error('Failed to fetch collection');
     collection = await res.json();
   }

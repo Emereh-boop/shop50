@@ -2,7 +2,26 @@
   <h1 class="text-3xl font-bold mb-6">Manage Collections</h1>
   <Button on:click={openCreate} class="mb-4">+ New Collection</Button>
   {#if loading}
-    <div>Loading...</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mb-8">
+      {#each Array(4) as _, i}
+        <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
+          <div class="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-t-2xl"></div>
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2 w-full"></div>
+            <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded mb-4 w-1/2"></div>
+            <div class="flex gap-2 mt-auto">
+              <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+              <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+  {:else if error}
+    <div class="text-red-500 text-center my-8">{error}</div>
+  {:else if collections.length === 0}
+    <div class="text-gray-500 text-center my-8">No collections yet.</div>
   {:else}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mb-8">
       {#each collections as c}
@@ -57,12 +76,13 @@
         </div>
       </div>
     {/if}
-    {/if}
-    </div>
+  {/if}
+</div>
 
 <script>
   import { onMount } from 'svelte';
   import Button from '../../components/common/Button.svelte';
+  import { products as productsStore, fetchProducts } from '../../stores/products';
 
   let collections = [];
   let products = [];
@@ -73,16 +93,23 @@
   let form = { id: '', name: '', description: '', image: '', products: [] };
 
   async function fetchCollections() {
-    const res = await fetch('/api/collections');
-    collections = await res.json();
+    try {
+      const res = await fetch('https://shop50.onrender.com/api/products/collections');
+      if (!res.ok) throw new Error('Failed to fetch collections');
+      collections = await res.json();
+      error = null;
+    } catch (e) {
+      collections = [];
+      error = 'Failed to load collections.';
+    }
   }
-  async function fetchProducts() {
-    const res = await fetch('/api/products');
-    products = await res.json();
+  async function fetchProductsList() {
+    await fetchProducts();
+    products = productsStore?.products || [];
   }
   async function load() {
     loading = true;
-    await Promise.all([fetchCollections(), fetchProducts()]);
+    await Promise.all([fetchCollections(), fetchProductsList()]);
     loading = false;
   }
   onMount(load);
@@ -99,13 +126,13 @@
   }
   async function save() {
     if (editing) {
-      await fetch(`/api/collections/${editing}`, {
+      await fetch(`/api/products/collections/${editing}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
     } else {
-      await fetch('/api/collections', {
+      await fetch('/api/products/collections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -116,7 +143,7 @@
   }
   async function remove(id) {
     if (!confirm('Delete this collection?')) return;
-    await fetch(`/api/collections/${id}`, { method: 'DELETE' });
+    await fetch(`/api/products/collections/${id}`, { method: 'DELETE' });
     await load();
   }
   async function handleImageUpload(e) {

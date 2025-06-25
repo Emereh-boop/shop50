@@ -38,7 +38,7 @@
 </script>
 
 {#if variant === 'full'}
-  <div class="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl border-2 border-gray-200 dark:border-gray-700 transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
+  <div class="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl border-2 dark:border-gray-200 border-black transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
     <div class="relative w-full" style="aspect-ratio: 1/1;">
       {#if product.featured}
         <span class="absolute top-3 left-3 bg-yellow-400 text-xs font-bold px-2 py-1 rounded shadow z-20">Featured</span>
@@ -69,7 +69,7 @@
     </div>
   </div>
 {:else if variant === 'image-only'}
-  <div class="group bg-white dark:bg-gray-900 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
+  <div class="group bg-white dark:bg-gray-900 rounded-xl shadow-lg hover:shadow-2xl border-2 dark:border-gray-200 border-black transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
     <div class="relative w-full" style="aspect-ratio: 1/1; min-height: 380px;">
       <img
         src={getResolvedImageUrl(product)}
@@ -82,7 +82,7 @@
             <img
               src={img.startsWith('http') ? img : `https://shop50.onrender.com${img}`}
               alt="Additional"
-              class="w-12 h-12 object-cover rounded-md border border-gray-200 dark:border-gray-700 shadow pointer-events-auto"
+              class="w-12 h-12 object-cover rounded-md border dark:border-gray-200 border-black shadow pointer-events-auto"
               draggable="false"
             />
           {/each}
@@ -91,7 +91,7 @@
     </div>
   </div>
 {:else if variant === 'image-like'}
-  <div class="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
+  <div class="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl border-2 dark:border-gray-200 border-black transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer relative" on:click={handleClick}>
     <div class="relative w-full" style="aspect-ratio: 1/1; min-height: 220px;">
       <img
         src={getResolvedImageUrl(product)}

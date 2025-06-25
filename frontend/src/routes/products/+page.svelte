@@ -190,7 +190,7 @@
           placeholder="Search products..."
           class="w-full border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
         />
-        <Button on:click={handleSearchClick} class="ml-2"><Search/></Button>
+        <Button on:click={handleSearchClick} class="ml-2 hidden"><Search/></Button>
       </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
