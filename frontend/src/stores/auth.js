@@ -23,7 +23,7 @@ if (typeof window !== 'undefined') {
 export const auth = {
   login: async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('https://shop50.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export const auth = {
 
   register: async (name, email, password) => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('https://shop50.onrender.com/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
