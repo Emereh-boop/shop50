@@ -28,9 +28,7 @@
   ];
 
   const mainCategories = [
-    { name: 'MEN', link: '/products?category=men' },
     { name: 'WOMEN', link: '/products?category=women' },
-    { name: 'KIDS', link: '/products?category=kids' },
     { name: 'NEW & TRENDING', link: '/products?trending=true' },
     { name: 'SALE', link: '/products?sale=true' }
   ];
@@ -57,7 +55,7 @@
 
   function handleSearch() {
     if (searchQuery.trim()) {
-      push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+      push(`/products?name=${encodeURIComponent(searchQuery.trim())}`);
       showMobileSearch = false; // Hide after search (mobile)
     }
   }
@@ -181,9 +179,9 @@
         {:else}
           <button
             on:click={handleLogin}
-            class="border-2 border-black dark:border-white  p-2 text-gray-900 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-bold"
+            class="relative border-2 border-black dark:border-white  p-2 text-gray-900 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
           >
-            <LogIn class="nav-icon" />
+            <LogIn class="nav-icon w-4 h-4" />
           </button>
         {/if}
         <button

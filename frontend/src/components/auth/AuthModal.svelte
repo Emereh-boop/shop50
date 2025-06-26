@@ -83,7 +83,7 @@
     on:click={handleClose}
   >
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg auth-modal max-w-md w-full mx-4 relative"
+      class="bg-white dark:bg-gray-800  auth-modal max-w-md w-full mx-4 relative"
       transition:fly={{ y: -20, duration: 300 }}
       on:click|stopPropagation
     >
@@ -125,7 +125,7 @@
               id="name"
               bind:value={name}
               required
-              class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+              class="auth-input w-full  border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
             />
           </div>
         {/if}
@@ -141,7 +141,7 @@
             id="email"
             bind:value={email}
             required
-            class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+            class="auth-input w-full  border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
           />
         </div>
         
@@ -156,7 +156,7 @@
             id="password"
             bind:value={password}
             required
-            class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+            class="auth-input w-full  border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
           />
         </div>
         
@@ -166,13 +166,13 @@
         
         <Button
           type="submit"
-          class="auth-btn w-full bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+          class="auth-btn w-full bg-white text-gray-900 dark:bg-gray-800 dark:text-white  hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
           variation="stroke"
         >
           {#if isLoading}
             <div class="flex items-center justify-center">
-              <div class="auth-spinner animate-spin rounded-full border-b-2 border-white"></div>
+              <div class="auth-spinner animate-spin  border-b-2 border-white"></div>
               <span class="ml-2">Processing...</span>
             </div>
           {:else}
