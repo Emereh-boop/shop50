@@ -3,6 +3,7 @@
     import { products, fetchProducts } from '../../stores/products';
     import { push, location } from 'svelte-spa-router';
     import { cart } from '../../stores/cart.js';
+    import { user } from '../../stores/user';
     import Skeleton from '../../components/common/Skeleton.svelte';
     import Button from '../../components/common/Button.svelte';
     import ProductCard from '../../components/product/ProductCard.svelte';
@@ -11,7 +12,6 @@
     let filteredProducts = [];
     let selectedCategory = 'all';
     let searchInput = '';
-    let user = null;
     let selectedProduct = null;
     let showSidebar = false;
     let sortOption = 'default';
@@ -78,10 +78,6 @@
     onMount(() => {
       syncUIFromHash();
       window.addEventListener('hashchange', syncUIFromHash);
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        user = JSON.parse(storedUser);
-      }
       fetchProducts();
     });
     onDestroy(() => {

@@ -1,8 +1,8 @@
 import { writable, derived } from 'svelte/store';
 import { syncLocalToBackend } from '../utils/interested.js';
+import { user, setUser, clearUser } from './user';
 
-// Create stores
-export const user = writable(null);
+export { user, setUser, clearUser };
 export const token = writable(null);
 export const isAuthenticated = derived(user, $user => !!$user);
 
@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   const storedToken = localStorage.getItem('token');
   
   if (storedUser) {
-    user.set(JSON.parse(storedUser));
+    setUser(JSON.parse(storedUser));
   }
   if (storedToken) {
     token.set(storedToken);
@@ -38,7 +38,7 @@ export const auth = {
       const data = await response.json();
       
       // Update stores
-      user.set(data.user);
+      setUser(data.user);
       token.set(data.token);
       
       // Update localStorage
@@ -71,7 +71,7 @@ export const auth = {
       const data = await response.json();
       
       // Update stores
-      user.set(data.user);
+      setUser(data.user);
       token.set(data.token);
       
       // Update localStorage
@@ -88,11 +88,8 @@ export const auth = {
   },
 
   logout: () => {
-    // Clear stores
-    user.set(null);
+    clearUser();
     token.set(null);
-    
-    // Clear localStorage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
   },
@@ -102,7 +99,7 @@ export const auth = {
     const storedUser = localStorage.getItem('user');
     
     if (storedToken && storedUser) {
-      user.set(JSON.parse(storedUser));
+      setUser(JSON.parse(storedUser));
       token.set(storedToken);
       return true;
     }

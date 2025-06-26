@@ -6,7 +6,8 @@
   import { push } from "svelte-spa-router";
   import Logo from "../../assets/yntlogo.png";
   import { showCart, showAuthModal, authMode } from "../../stores/ui";
-  import { auth, isAuthenticated, user } from "../../stores/auth";
+  import { user, setUser, clearUser } from '../../stores/user';
+  import { auth, isAuthenticated } from '../../stores/auth';
   import ThemeToggle from "../common/ThemeToggle.svelte";
   import { LogIn } from "lucide-svelte";
   import Button from '../common/Button.svelte';

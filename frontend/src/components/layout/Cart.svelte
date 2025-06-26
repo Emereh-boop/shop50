@@ -1,7 +1,7 @@
 <script>
   import { cart } from '../../stores/cart';
   import { showCart } from '../../stores/ui';
-  import { user } from '../../stores/auth';
+  import { user } from '../../stores/user';
   import { slide } from 'svelte/transition';
   import CheckoutSuccess from '../checkout/CheckoutSuccess.svelte';
   import { link, push } from 'svelte-spa-router';

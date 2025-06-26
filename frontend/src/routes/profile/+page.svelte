@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { user, auth } from '../../stores/auth';
+  import { user } from '../../stores/user';
+  import { auth } from '../../stores/auth';
   import Button from '../../components/common/Button.svelte';
   import branding from '../../lib/branding.js';
   import { toast } from '../../components/common/sonner.js';

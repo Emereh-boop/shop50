@@ -1,6 +1,6 @@
 <script>
   import { cart, calculateTotal } from '../../stores/cart';
-  import { user } from '../../stores/auth';
+  import { user } from '../../stores/user';
   import { onMount } from 'svelte';
   import CheckoutSuccess from '../../components/checkout/CheckoutSuccess.svelte';
   import { push } from 'svelte-spa-router';
