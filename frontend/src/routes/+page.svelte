@@ -8,6 +8,14 @@
 <div class="min-h-screen">
   <Hero />
   
+  <!-- Still Interested Products -->
+  <ProductShowcase 
+    type="still-interested"
+    title="Still Interested?"
+    seeMoreLink="/products"
+    limit={4}
+  />
+  
   <!-- Featured Products -->
   <ProductShowcase 
     type="featured"

@@ -75,8 +75,8 @@
       <div class="max-w-7xl container mx-auto px-4 py-16">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {#each Array(4) as _, i}
-            <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
-              <div class="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-t-2xl"></div>
+            <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
+              <div class="w-full h-40 bg-gray-200 dark:bg-gray-800"></div>
               <div class="p-6 flex-1 flex flex-col">
                 <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
                 <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2 w-full"></div>
@@ -102,7 +102,7 @@
         <div class="flex flex-wrap gap-4 mb-8 items-end">
           <div>
             <label class="block text-xs font-bold uppercase tracking-widest mb-1">Sort</label>
-            <select bind:value={sortOption} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <select bind:value={sortOption} class="border-2 border-black dark:border-white px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
               <option value="default">Default</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
@@ -113,7 +113,7 @@
           {#if categories.length > 1}
           <div>
             <label class="block text-xs font-bold uppercase tracking-widest mb-1">Category</label>
-            <select bind:value={filterCategory} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <select bind:value={filterCategory} class="border-2 border-black dark:border-white px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
               <option value="all">All</option>
               {#each categories as cat}
                 <option value={cat}>{cat}</option>
@@ -141,7 +141,7 @@
       {#if loading}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {#each Array(4) as _, i}
-            <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
+            <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
               <div class="w-full h-64 bg-gray-200 dark:bg-gray-800"></div>
               <div class="p-6 flex-1 flex flex-col">
                 <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
@@ -157,7 +157,7 @@
       {:else}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {#each collections as collection}
-            <a href={`/#/collections/${collection.id}`} class="block bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl overflow-hidden group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            <a href={`/#/collections/${collection.id}`} class="block bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl overflow-hidden group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
               <div class="relative">
                 <img src={collection.image} alt={collection.name} class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>

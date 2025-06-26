@@ -64,6 +64,15 @@
     return (now - added) / (1000 * 60 * 60 * 24) <= days;
   }
 
+  function handleRemoveInterested(id) {
+    // Remove from localStorage
+    let interested = JSON.parse(localStorage.getItem('interestedProducts') || '[]');
+    interested = interested.filter(pid => pid !== id);
+    localStorage.setItem('interestedProducts', JSON.stringify(interested));
+    // Remove from displayedProducts
+    displayedProducts = displayedProducts.filter(p => p.id !== id);
+  }
+
   onMount(async () => {
     await fetchProducts(); // Will only fetch if not already loaded
     // Filter products based on type
@@ -124,15 +133,37 @@
   }
 </script>
 
-<section class="py-16 bg-white dark:bg-gray-800" style="display: {shouldShow ? 'block' : 'none'}">
+<style>
+  @import '../../styles/responsive.css';
+  .showcase-title {
+    font-size: calc(var(--prod-card) * 0.05 + 1.2rem);
+  }
+  .showcase-scroll {
+    gap: var(--prod-gap);
+  }
+  .showcase-card {
+    width: var(--prod-card);
+    min-width: var(--prod-card);
+    max-width: var(--prod-card);
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<section class="py-5 md:py-10 lg:py-14 bg-white dark:bg-gray-800" style="display: {shouldShow ? 'block' : 'none'}">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-12">
-      <h2 class="text-3xl font-bold tracking-wider">
+    <div class="flex justify-between items-center mb-5 md:mb-12">
+      <h2 class="showcase-title font-bold tracking-wider">
         {title}
       </h2>
       <button
         on:click={() => handleNavigation(seeMoreLink)}
-        class="text-black hover:underline text-sm lg:text-base"
+        class="text-black dark:text-white hover:underline text-sm lg:text-base"
       >
         See More →
       </button>
@@ -141,11 +172,11 @@
     <div class="relative">
       <div
         bind:this={sliderRef}
-        class="flex overflow-x-auto scroll-smooth scrollbar-hide gap-8 snap-x snap-mandatory transition-transform duration-700 ease-in-out"
+        class="flex overflow-x-auto scroll-smooth scrollbar-hide gap-6 snap-x snap-mandatory transition-transform duration-700 ease-in-out showcase-scroll"
       >
         {#if isLoading}
           {#each Array(limit) as _}
-            <div class="flex-shrink-0 w-64 lg:w-80 snap-start animate-pulse">
+            <div class="flex-shrink-0 showcase-card snap-start animate-pulse">
               <div class="bg-gray-200 dark:bg-gray-700 rounded-lg">
                 <div class="w-full h-64 bg-gray-300 dark:bg-gray-600 rounded-t-lg"></div>
                 <div class="p-4 space-y-3">
@@ -162,8 +193,8 @@
           </div>
         {:else}
           {#each displayedProducts as product}
-            <div class="flex-shrink-0 w-64 lg:w-80 snap-start">
-              <ProductCard {product} variant={type === 'still-interested' ? 'full' : 'image-only'} />
+            <div class="flex-shrink-0 showcase-card snap-start">
+              <ProductCard {product} variant={type === 'still-interested' ? 'still-interested' : 'image-only'} on:remove={e => handleRemoveInterested(e.detail)} />
             </div>
           {/each}
         {/if}
@@ -186,14 +217,4 @@
       {/if}
     </div>
   </div>
-</section>
-
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style> 
+</section> 

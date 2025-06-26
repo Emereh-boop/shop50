@@ -159,41 +159,70 @@
     }
   </script>
   
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <h1 class="text-3xl md:text-4xl font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-10 text-center">Shop All Products</h1>
-    <div class="flex flex-col md:flex-row md:items-end gap-6 mb-10">
+  <style>
+    @import '../../styles/responsive.css';
+    .page-title {
+      font-size: var(--page-title);
+    }
+    .page-container {
+      padding: var(--page-pad);
+    }
+    .form-input {
+      font-size: var(--form-input);
+      padding: calc(var(--form-input) * 0.5) calc(var(--form-input) * 1);
+    }
+    .form-label {
+      font-size: var(--form-label);
+    }
+    .form-btn {
+      font-size: var(--form-btn);
+      padding: calc(var(--form-btn) * 0.5) calc(var(--form-btn) * 1.5);
+    }
+    .products-grid {
+      gap: var(--grid-gap);
+    }
+    .filter-section {
+      gap: calc(var(--grid-gap) * 0.6);
+    }
+  </style>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 page-container">
+    <h1 class="page-title font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-10 text-center">Shop All Products</h1>
+    <div class="flex flex-col md:flex-row md:items-end filter-section mb-10">
       <div class="flex-1 flex flex-col md:flex-row gap-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-widest mb-1">Category</label>
-          <select bind:value={selectedCategory} on:change={updateHash} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-            <option value="all">All</option>
-            {#each categories as cat}
-              <option value={cat}>{cat}</option>
+          <label class="form-label block font-bold uppercase tracking-widest mb-1">Category</label>
+          <select bind:value={selectedCategory} on:change={updateHash} class="form-input border-2 border-black dark:border-white font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <option value="">All Categories</option>
+            {#each categories as category}
+              <option value={category}>{category}</option>
             {/each}
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-widest mb-1">Sort</label>
-          <select bind:value={sortOption} on:change={updateHash} class="border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-            <option value="default">Default</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
+          <label class="form-label block font-bold uppercase tracking-widest mb-1">Sort</label>
+          <select bind:value={sortOption} on:change={updateHash} class="form-input border-2 border-black dark:border-white font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name: A to Z</option>
           </select>
         </div>
       </div>
       <div class="flex-1">
-        <label class="block text-xs font-bold uppercase tracking-widest mb-1">Search</label>
+        <label class="form-label block font-bold uppercase tracking-widest mb-1">Search</label>
         <input
           type="text"
           bind:value={searchInput}
           on:keydown={handleSearchKey}
           placeholder="Search products..."
-          class="w-full border-2 border-black dark:border-white rounded-full px-4 py-2 font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+          class="form-input w-full border-2 border-black dark:border-white font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
         />
         <Button on:click={handleSearchClick} class="ml-2 hidden"><Search/></Button>
       </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 products-grid">
       {#each filteredProducts as product}
         <ProductCard {product} variant="image-like" />
       {/each}

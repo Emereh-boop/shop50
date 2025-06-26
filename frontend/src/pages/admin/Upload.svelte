@@ -32,7 +32,7 @@
   <h1 class="text-2xl font-bold mb-4">Uploaded Files Gallery</h1>
   {#if loading}
     <div class="flex justify-center items-center h-32">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div class="animate-spin h-12 w-12 border-b-2 border-gray-900"></div>
     </div>
   {:else if error}
     <p class="text-red-500">{error}</p>
@@ -41,7 +41,7 @@
   {:else}
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
       {#each files as file}
-        <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+        <div class="bg-white shadow p-4 flex flex-col items-center">
           {#if isImage(file)}
             <img src={file.url} alt={file.name} class="w-32 h-32 object-cover rounded mb-2" />
           {:else}

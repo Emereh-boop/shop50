@@ -1,0 +1,86 @@
+:root {
+  --hero-title: 3.6rem;
+  --hero-btn: 1.8rem;
+  --hero-pad: 3.6rem;
+  --cat-title: 1.5rem;
+  --cat-btn: 0.8rem;
+  --cat-card-width: 25rem;
+  --cat-card-height: 70;
+  --prod-card: 19.2rem;
+  --prod-gap: 1.2rem;
+  --card-width: 19.2rem;
+  --card-img: 24rem;
+  --card-title: 1.32rem;
+  --footer-title: 1.44rem;
+  --footer-pad: 1.8rem;
+  --news-title: 1.8rem;
+  --news-pad: 2.4rem;
+  
+  /* Page variables */
+  --page-title: 2.4rem;
+  --page-pad: 2.5rem;
+  --form-input: 1rem;
+  --form-btn: 1rem;
+  --form-label: 0.875rem;
+  --grid-gap: 2.5rem;
+  --section-pad: 3rem;
+  --sidebar-width: 280px;
+}
+@media (max-width: 900px) {
+  :root {
+    --hero-title: 2.2rem;
+    --hero-btn: 1.1rem;
+    --hero-pad: 2rem;
+    --cat-title: 1.1rem;
+    --cat-btn: 0.8rem;
+    --cat-card-width: 14rem;
+    --prod-card: 12rem;
+    --prod-gap: 1rem;
+    --card-width: 11rem;
+    --card-img: 8rem;
+    --card-title: 0.9rem;
+    --footer-title: 1rem;
+    --footer-pad: 1.2rem;
+    --news-title: 1.1rem;
+    --news-pad: 1.5rem;
+    
+    /* Page variables */
+    --page-title: 1.8rem;
+    --page-pad: 1.5rem;
+    --form-input: 0.9rem;
+    --form-btn: 0.9rem;
+    --form-label: 0.8rem;
+    --grid-gap: 1.5rem;
+    --section-pad: 2rem;
+    --sidebar-width: 240px;
+  }
+}
+@media (max-width: 600px) {
+  :root {
+    --hero-title: 2.55rem;
+    --hero-btn: 1.275rem;
+    --hero-pad: 2.55rem;
+    --cat-title: 1.275rem;
+    --cat-btn: 0.65rem;
+    --cat-card-width: 11rem;
+    --prod-card: 13.6rem;
+    --prod-gap: 0.3rem;
+    --card-width: 12.6rem;
+    --card-img: 18.2rem;
+    --card-title: 0.935rem;
+    --footer-title: 1.02rem;
+    --footer-pad: 1.7rem;
+    --news-title: 1.275rem;
+    --news-pad: 2.125rem;
+    
+    /* Page variables */
+    --page-title: 1.6rem;
+    --page-pad: 1rem;
+    --form-input: 0.8rem;
+    --form-btn: 0.8rem;
+    --form-label: 0.7rem;
+    --grid-gap: 0.8rem;
+    --section-pad: 1.2rem;
+    --sidebar-width: 200px;
+  }
+} 

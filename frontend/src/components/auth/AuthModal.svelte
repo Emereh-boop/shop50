@@ -41,6 +41,41 @@
   }
 </script>
 
+<style>
+  @import '../../styles/responsive.css';
+  .auth-modal {
+    padding: calc(var(--page-pad) * 0.6);
+  }
+  .auth-title {
+    font-size: calc(var(--page-title) * 0.5);
+  }
+  .auth-input {
+    font-size: var(--form-input);
+    padding: calc(var(--form-input) * 0.5) calc(var(--form-input) * 1);
+  }
+  .auth-label {
+    font-size: var(--form-label);
+  }
+  .auth-btn {
+    font-size: var(--form-btn);
+    padding: calc(var(--form-btn) * 0.8) calc(var(--form-btn) * 1.5);
+  }
+  .auth-close-icon {
+    width: calc(var(--form-btn) * 1.5);
+    height: calc(var(--form-btn) * 1.5);
+  }
+  .auth-error {
+    font-size: var(--form-label);
+  }
+  .auth-switch {
+    font-size: var(--form-label);
+  }
+  .auth-spinner {
+    width: calc(var(--form-btn) * 1.2);
+    height: calc(var(--form-btn) * 1.2);
+  }
+</style>
+
 {#if $showAuthModal}
   <div
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -48,7 +83,7 @@
     on:click={handleClose}
   >
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 relative"
+      class="bg-white dark:bg-gray-800 rounded-lg auth-modal max-w-md w-full mx-4 relative"
       transition:fly={{ y: -20, duration: 300 }}
       on:click|stopPropagation
     >
@@ -59,7 +94,7 @@
         variation="stroke"
       >
         <svg
-          class="h-6 w-6"
+          class="auth-close-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -73,7 +108,7 @@
         </svg>
       </Button>
 
-      <h2 class="text-2xl font-bold mb-6 tracking-wider">
+      <h2 class="auth-title font-bold mb-6 tracking-wider">
         {$authMode === 'login' ? 'LOGIN' : 'SIGN UP'}
       </h2>
       
@@ -82,7 +117,7 @@
           <div>
             <label
               for="name"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              class="auth-label block font-medium text-gray-700 dark:text-gray-300 mb-1"
               >Name</label
             >
             <input
@@ -90,7 +125,7 @@
               id="name"
               bind:value={name}
               required
-              class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+              class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
             />
           </div>
         {/if}
@@ -98,7 +133,7 @@
         <div>
           <label
             for="email"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            class="auth-label block font-medium text-gray-700 dark:text-gray-300 mb-1"
             >Email</label
           >
           <input
@@ -106,14 +141,14 @@
             id="email"
             bind:value={email}
             required
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+            class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
           />
         </div>
         
         <div>
           <label
             for="password"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            class="auth-label block font-medium text-gray-700 dark:text-gray-300 mb-1"
             >Password</label
           >
           <input
@@ -121,23 +156,23 @@
             id="password"
             bind:value={password}
             required
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+            class="auth-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
           />
         </div>
         
         {#if error}
-          <p class="text-red-500 dark:text-red-400 text-sm">{error}</p>
+          <p class="auth-error text-red-500 dark:text-red-400">{error}</p>
         {/if}
         
         <Button
           type="submit"
-          class="w-full px-6 py-3 bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+          class="auth-btn w-full bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-opacity-90 transition-colors tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
           variation="stroke"
         >
           {#if isLoading}
             <div class="flex items-center justify-center">
-              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <div class="auth-spinner animate-spin rounded-full border-b-2 border-white"></div>
               <span class="ml-2">Processing...</span>
             </div>
           {:else}
@@ -148,7 +183,7 @@
       
       <div class="mt-4 text-center">
         <Button
-          class="text-primary-light dark:text-primary-dark hover:underline"
+          class="auth-switch text-primary-light dark:text-primary-dark hover:underline"
           on:click={switchMode}
           variation="text"
         >

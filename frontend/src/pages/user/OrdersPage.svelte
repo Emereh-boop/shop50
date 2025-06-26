@@ -10,7 +10,7 @@
     <Skeleton type="order" />
   </div>
 {:else}
-  <div class="max-w-5xl mx-auto p-6 md:p-12 bg-white dark:bg-gray-900 rounded-2xl shadow-lg mt-10">
+  <div class="max-w-5xl mx-auto p-6 md:p-12 bg-white dark:bg-gray-900 shadow-lg mt-10">
     <h1 class="text-4xl font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-10 text-center">Your Orders</h1>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -29,7 +29,7 @@
             <td class="px-6 py-4 text-gray-500 dark:text-gray-400" colspan="5">
               <div class="flex flex-col items-center justify-center py-12">
                 <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">You have no orders yet.</p>
-                <button class="px-8 py-3 border-2 border-black dark:border-white text-black dark:text-white font-extrabold rounded-full uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+                <button class="px-8 py-3 border-2 border-black dark:border-white text-black dark:text-white font-extrabold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
                   Shop Now
                 </button>
               </div>
