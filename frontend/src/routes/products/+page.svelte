@@ -188,8 +188,8 @@
   
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 page-container">
     <h1 class="page-title font-extrabold uppercase tracking-widest text-gray-900 dark:text-white mb-10 text-center">Shop All Products</h1>
-    <div class="flex flex-col md:flex-row md:items-end filter-section mb-10">
-      <div class="flex-1 flex flex-col md:flex-row gap-4">
+    <div class="flex flex-col md:flex-row md:items-end filter-section mb-5">
+      <div class="flex-1 flex flex-row md:flex-row gap-4">
         <div>
           <label class="form-label block font-bold uppercase tracking-widest mb-1">Category</label>
           <select bind:value={selectedCategory} on:change={updateHash} class="form-input border-2 border-black dark:border-white font-bold bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -222,7 +222,7 @@
         <Button on:click={handleSearchClick} class="ml-2 hidden"><Search/></Button>
       </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 products-grid">
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 products-grid gap-[1px] overflow-hidden">
       {#each filteredProducts as product}
         <ProductCard {product} variant="image-like" />
       {/each}

@@ -22,6 +22,21 @@ import AdminCoupon from './pages/admin/Coupon.svelte';
 // 404 page
 import NotFound from './routes/+not-found.svelte';
 
+import { isAdmin } from './stores/admin';
+import { user } from './stores/user';
+import { get } from 'svelte/store';
+import { push } from 'svelte-spa-router';
+
+function adminOnly(component) {
+  const isUserAdmin = get(isAdmin);
+  const currentUser = get(user);
+  if (!currentUser || !isUserAdmin) {
+    return Home;
+    // return NotFound; // Fallback, though replace should handle it
+  }
+  return component;
+}
+
 const routes = {
   // User routes
   '/': Home,
@@ -35,14 +50,14 @@ const routes = {
   '/contact': Contact,
 
   // Admin routes
-  '/admin': AdminDashboard,
-  '/admin/products': AdminProducts,
-  '/admin/orders': AdminOrders,
-  '/admin/users': AdminUsers,
-  '/admin/banners': AdminBanners,
-  '/admin/upload': AdminUpload,
-  '/admin/shipping': AdminShipping,
-  '/admin/coupons': AdminCoupon,
+  '/admin': adminOnly(AdminDashboard),
+  '/admin/products': adminOnly(AdminProducts),
+  '/admin/orders': adminOnly(AdminOrders),
+  '/admin/users': adminOnly(AdminUsers),
+  '/admin/banners': adminOnly(AdminBanners),
+  '/admin/upload': adminOnly(AdminUpload),
+  '/admin/shipping': adminOnly(AdminShipping),
+  '/admin/coupons': adminOnly(AdminCoupon),
 
   // 404 route
   '*': NotFound

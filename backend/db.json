@@ -5,7 +5,7 @@
             "email": "abuashiaemereh@gmail.com",
             "password": "$2b$10$lbUsMhpObVq7rA1NdiEIH.9WM83jKmchiGSksF5QemGzZ33fyH0Ny",
             "name": "Ariel Beard",
-            "role": "user",
+            "role": "admin",
             "createdAt": "2025-06-15T19:01:44.992Z",
             "lastActive": 1750765308827,
             "interestedProducts": []

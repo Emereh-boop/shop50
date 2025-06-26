@@ -126,14 +126,14 @@
       {#if $cart.length === 0}
         <div class="text-center py-16">
           <p class="cart-empty-text text-gray-500 dark:text-gray-400 mb-6">Your bag is empty</p>
-          <button class="cart-continue-btn border-2 border-black dark:border-white text-black dark:text-white font-bold rounded-full uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors" on:click={() => showCart.set(false)}>
+          <button class="cart-continue-btn border-2 border-black dark:border-white text-black dark:text-white font-bold  uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors" on:click={() => showCart.set(false)}>
             Continue Shopping
           </button>
         </div>
       {:else}
         {#each $cart as item, index}
           <div class="flex items-center gap-6">
-            <img src={getResolvedImageUrl(item)} alt={getResolvedImageUrl(item)} class="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700" />
+            <img src={getResolvedImageUrl(item)} alt={getResolvedImageUrl(item)} class="w-24 h-24 object-cover border border-gray-200 dark:border-gray-700" />
             <div class="flex-1">
               <h3 class="cart-item-title font-extrabold uppercase tracking-widest text-gray-900 dark:text-white">{item.name}</h3>
               <div class="flex items-center gap-2 mt-2">
@@ -145,9 +145,9 @@
                 <span class="cart-item-price font-bold text-gray-900 dark:text-white">${item.price}</span>
               </div>
               <div class="flex items-center gap-4 mt-4">
-                <button class="cart-quantity-btn border border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center font-bold hover:bg-gray-100 dark:hover:bg-gray-700" on:click={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                <button class="cart-quantity-btn border border-gray-300 dark:border-gray-600  flex items-center justify-center font-bold hover:bg-gray-100 dark:hover:bg-gray-700" on:click={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                 <span class="cart-quantity-text font-bold">{item.quantity}</span>
-                <button class="cart-quantity-btn border border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center font-bold hover:bg-gray-100 dark:hover:bg-gray-700" on:click={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                <button class="cart-quantity-btn border border-gray-300 dark:border-gray-600  flex items-center justify-center font-bold hover:bg-gray-100 dark:hover:bg-gray-700" on:click={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                 <button class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" on:click={() => removeItem(item.id)} title="Remove">
                   <svg class="cart-remove-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -163,7 +163,7 @@
 
     <!-- Order Summary & Checkout -->
     {#if $cart.length > 0}
-      <div class="border-t border-gray-200 dark:border-gray-700 cart-summary bg-gray-50 dark:bg-gray-900">
+      <div class="border-t border-gray-200 dark:border-gray-700 cart-summary bg-gray-50 dark:bg-gray-900 flex-1">
         <div class="flex justify-between mb-3">
           <span class="cart-summary-text font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">Subtotal</span>
           <span class="cart-summary-text font-bold text-gray-900 dark:text-white">${calculateTotal().toFixed(2)}</span>
@@ -177,7 +177,7 @@
           <span class="cart-total-text font-extrabold text-gray-900 dark:text-white">${calculateTotal().toFixed(2)}</span>
         </div>
      
-          <button on:click={goToCheckout} class="cart-checkout-btn w-full border-2 border-black dark:border-white text-black dark:text-white font-extrabold rounded-full uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+          <button on:click={goToCheckout} class="cart-checkout-btn w-full border-2 border-black dark:border-white text-black dark:text-white font-extrabold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
             Checkout
           </button>
       </div>

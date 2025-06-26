@@ -55,7 +55,7 @@
     --sidebar-width: 240px;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   :root {
     --hero-title: 2.55rem;
     --hero-btn: 1.275rem;

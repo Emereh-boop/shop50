@@ -24,7 +24,7 @@
 
   let navigation = [
     { name: "Home", href: "/", current: true },
-    { name: "Collection", href: "/collection", current: false },
+    { name: "Products", href: "/products", current: false },
   ];
 
   const mainCategories = [
@@ -195,12 +195,10 @@
         </button>
         <!-- <ThemeToggle /> -->
       </div>
-
-
     </div>
 
     <!-- Mobile Top Bar (Adidas style, no logo/hamburger) -->
-    <div class="md:hidden flex items-center justify-between mobile-height px-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <div class="md:hidden flex items-center justify-between mobile- height h-[3rem] py-2 px-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
       <div class="flex items-center gap-4">
         <button on:click={() => showMobileMenu = true} aria-label="Open menu">
           <svg class="mobile-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -209,10 +207,20 @@
       </div>
       <img src={Logo} alt="Logo" class="mobile-logo mx-auto" />
       <div class="flex items-center gap-4">
-        <button on:click={handleProfile} class=" relative border-2 border-black  dark:border-white p-2">
+        {#if $isAuthenticated}
+          <button on:click={handleProfile} class=" relative border-2 border-black  dark:border-white p-2">
           <Person class="mobile-icon" />
           <!-- <span class="absolute -top-1 -right-1 bg-yellow-400 text-xs font-bold  px-1">1</span> -->
-        </button>
+          </button>
+        {:else}
+          <button
+            on:click={handleLogin}
+            class="relative border-2 border-black dark:border-white  p-2 text-gray-900 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+          >
+            <LogIn class="nav-icon w-4 h-4" />
+          </button>
+        {/if}
+
         <button on:click={openMobileSearch} class="border-2 border-black  dark:border-white p-2"><Search class="mobile-icon" /></button>
         <button on:click={handleCart} class="border-2 border-black  dark:border-white p-2"><Cart2 class="mobile-icon" /></button>
       </div>
@@ -252,8 +260,8 @@
               <div class="space-y-2">
                 {#each navigation as item}
                   <button
-                    class="w-full text-left py-3 px-4 font-extrabold uppercase tracking-widest {item.current
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
+                    class="w-full text-left py-3 px-4 border- b-4 font-extrabold uppercase tracking-widest {item.current
+                      ? 'border-black dark:text-white dark:border-white text-black'
                       : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'}"
                     on:click={() => { handleNavigation(item.href); showMobileMenu = false; }}
                   >

@@ -42,13 +42,13 @@
 <style>
   @import '../../styles/responsive.css';
   .card-root {
-    width: var(--card-width);
-    min-width: var(--card-width);
-    max-width: var(--card-width);
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
   .card-img {
-    min-height: var(--card-img);
-    max-height: var(--card-img);
+    min-height: 240px;
+    max-height: 320px;
   }
   .card-title {
     font-size: var(--card-title);

@@ -19,7 +19,7 @@
   onMount(async () => {
     try {
       // Fetch user orders
-      const ordersResponse = await fetch('https://shop50.onrender.com/api/orders', {
+      const ordersResponse = await fetch('https://shop50.onrender.com/api/products/orders', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -156,16 +156,16 @@
   <!-- Dashboard Header -->
   <div class="flex flex-col gap-2 mb-8 items-start">
     <div class="flex items-center gap-2 w-full">
-      <h1 class="profile-title font-extrabold uppercase tracking-widest text-black dark:text-white">{$user.name || $user.email}</h1>
+      <h1 class="profile-title font-extrabold uppercase tracking-widest text-black dark:text-white">{$user?.name || $user?.email}</h1>
       <Button variation="icon" aria-label="Edit Profile" on:click={handleEditProfile}><Pencil size={22} /></Button>
     </div>
-    <p class="profile-subtitle text-gray-600 dark:text-gray-400">Welcome to your {branding.name} profile</p>
-    <span class={`profile-badge inline-flex items-center font-bold uppercase tracking-widest ${loyaltyTier.color}`}>{loyaltyTier.name} Member</span>
+    <p class="profile-subtitle text-gray-600 dark:text-gray-400">Welcome to your {branding?.name} profile</p>
+    <span class={`profile-badge inline-flex items-center font-bold uppercase tracking-widest ${loyaltyTier?.color}`}>{loyaltyTier?.name} Member</span>
     <div class="mt-2 profile-points text-gray-700 dark:text-gray-300 font-bold">Loyalty Points: {loyaltyPoints}</div>
   </div>
 
   <!-- Still Interested Products -->
-  <div class="mb-8 w-full">
+  <!-- <div class="mb-8 w-full">
     <h2 class="section-title font-bold mb-3 text-left">Still Interested?</h2>
     {#if isLoading}
       <div class="grid grid-cols-2 md:grid-cols-4 interested-grid">
@@ -173,18 +173,18 @@
           <div class="bg-gray-200 dark:bg-gray-700 h-36 md:h-40 animate-pulse"></div>
         {/each}
       </div>
-    {:else if interestedProducts.length === 0}
+    {:else if interestedProducts?.length === 0}
       <div class="text-gray-500 dark:text-gray-400 text-left">No products yet.</div>
     {:else}
       <div class="grid grid-cols-2 md:grid-cols-4 interested-grid">
-        {#each interestedProducts.slice(0, 4) as product}
+        {#each interestedProducts?.slice(0, 4) as product}
           <div class="max-w-[8.5rem] col-span-1 md:max-w-[10rem] mx-auto">
-            <ProductCard {product} variant="still-interested" on:remove={() => handleRemoveInterested(product.id)} />
+            <ProductCard {product} variant="still-interested" on:remove={() => handleRemoveInterested(product?.id)} />
           </div>
         {/each}
       </div>
     {/if}
-  </div>
+  </div> -->
 
   <!-- Orders Overview -->
   <div class="bg-white dark:bg-gray-900 section-card shadow-lg flex flex-col mb-8 w-full border-2 border-black dark:border-white">
