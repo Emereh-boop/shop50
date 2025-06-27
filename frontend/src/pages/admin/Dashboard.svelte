@@ -150,7 +150,7 @@
 
 <div class="min-h-screen bg-white dark:bg-black flex">
   <!-- Sidebar: always visible on md+ screens, overlay on small screens -->
-  <aside class="h-full bg-white dark:bg-black shadow-2xl flex flex-col gap-8 transition-all duration-300 {sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar'} p-8 hidden md:flex">
+  <aside class="h-svh bg-white dark:bg-black shadow-2xl flex flex-col gap-8 transition-all duration-300 {sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar'} p-8 hidden md:flex">
     <div class="flex items-center mb-6">
       <Button class="p-2" on:click={() => sidebarCollapsed = !sidebarCollapsed} aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
         {#if sidebarCollapsed}
@@ -161,38 +161,38 @@
       </Button>
     </div>
     <nav class="flex flex-col gap-4 mt-2 w-full">
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'overview'; }}>{#if sidebarCollapsed}<BarChart class="w-6 h-6"/>{:else}<BarChart class="w-6 h-6"/> <span>Overview</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'products'; }}>{#if sidebarCollapsed}<BoxSeam class="w-6 h-6"/>{:else}<BoxSeam class="w-6 h-6"/> <span>Products</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'orders'; }}>{#if sidebarCollapsed}<Clipboard class="w-6 h-6"/>{:else}<Clipboard class="w-6 h-6"/> <span>Orders</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'users'; }}>{#if sidebarCollapsed}<People class="w-6 h-6"/>{:else}<People class="w-6 h-6"/> <span>Users</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'collections'; }}>{#if sidebarCollapsed}<Layers class="w-6 h-6"/>{:else}<Layers class="w-6 h-6"/> <span>Collections</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'shipping'; }}>{#if sidebarCollapsed}<Truck class="w-6 h-6"/>{:else}<Truck class="w-6 h-6"/> <span>Shipping</span>{/if}</Button>
-      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-start' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'coupons'; }}>{#if sidebarCollapsed}<Gift class="w-6 h-6"/>{:else}<Gift class="w-6 h-6"/> <span>Coupons</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'overview'; }}>{#if sidebarCollapsed}<BarChart class="w-6 h-6"/>{:else}<BarChart class="w-6 h-6"/> <span>Overview</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'products'; }}>{#if sidebarCollapsed}<BoxSeam class="w-6 h-6"/>{:else}<BoxSeam class="w-6 h-6"/> <span>Products</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'orders'; }}>{#if sidebarCollapsed}<Clipboard class="w-6 h-6"/>{:else}<Clipboard class="w-6 h-6"/> <span>Orders</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'users'; }}>{#if sidebarCollapsed}<People class="w-6 h-6"/>{:else}<People class="w-6 h-6"/> <span>Users</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'collections'; }}>{#if sidebarCollapsed}<Layers class="w-6 h-6"/>{:else}<Layers class="w-6 h-6"/> <span>Collections</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'shipping'; }}>{#if sidebarCollapsed}<Truck class="w-6 h-6"/>{:else}<Truck class="w-6 h-6"/> <span>Shipping</span>{/if}</Button>
+      <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 {sidebarCollapsed ? 'w-12 h-12 justify-center' : 'pl-4 pr-6 py-2 w-full flex-row'}" on:click={() => { activeTab = 'coupons'; }}>{#if sidebarCollapsed}<Gift class="w-6 h-6"/>{:else}<Gift class="w-6 h-6"/> <span>Coupons</span>{/if}</Button>
     </nav>
   </aside>
   
   <!-- Overlay sidebar for small screens -->
   {#if showSidebar}
-    <div class="fixed inset-0 z-40 bg-black opacity-40 md:hidden" on:click={() => showSidebar = false}></div>
+    <div class="fixed inset-0 z-40 bg-black opacity-40 " on:click={() => showSidebar = false}></div>
     <aside class="fixed top-0 left-0 z-50 h-full bg-white dark:bg-black shadow-2xl flex flex-col gap-8 transition-all duration-300 w-64 p-8 md:hidden">
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb- ">
         <h2 class="text-xl font-bold text-black dark:text-white">Admin Menu</h2>
         <button class="text-2xl font-bold text-gray-500 hover:text-black dark:hover:text-white" on:click={() => showSidebar = false}>&times;</button>
       </div>
-      <nav class="flex flex-col gap-4 mt-4">
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'overview'; showSidebar = false; }}><BarChart/> Overview</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'products'; showSidebar = false; }}><BoxSeam/> Products</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'orders'; showSidebar = false; }}><Clipboard/> Orders</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'users'; showSidebar = false; }}><People/> Users</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'collections'; showSidebar = false; }}><Layers/> Collections</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'shipping'; showSidebar = false; }}><Truck/> Shipping</Button>
-        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-center" on:click={() => { activeTab = 'coupons'; showSidebar = false; }}><Gift/> Coupons</Button>
+      <nav class="flex flex-col gap-4 mt-">
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'overview'; showSidebar = false; }}><BarChart/> Overview</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'products'; showSidebar = false; }}><BoxSeam/> Products</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'orders'; showSidebar = false; }}><Clipboard/> Orders</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'users'; showSidebar = false; }}><People/> Users</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'collections'; showSidebar = false; }}><Layers/> Collections</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'shipping'; showSidebar = false; }}><Truck/> Shipping</Button>
+        <Button variation="ghost" class="sidebar-btn font-extrabold uppercase tracking-widest text-black dark:text-white border-2 border-black dark:border-white flex items-center gap-2 justify-start p-2" on:click={() => { activeTab = 'coupons'; showSidebar = false; }}><Gift/> Coupons</Button>
       </nav>
     </aside>
   {/if}
   
   <!-- Main Content -->
-  <div class="flex-1 p-2 md:p-12 transition-all duration-300 mx-auto max-w-7xl dashboard-container">
+  <div class="flex-1 p-2 md:p-12 transition-all duration-300 mx-auto max-w-7xl dashboard- container">
     <!-- Sidebar Toggle Button (small screens only) -->
     <button class="menu-btn text-black dark:text-white font-extrabold uppercase tracking-widest border-2 border-black dark:border-white mb-8 md:hidden" on:click={() => (showSidebar = true)}>
       Menu
@@ -200,7 +200,7 @@
     
     {#if loading}
       <div class="flex items-center justify-center h-64">
-        <div class="animate-spin h-12 w-12 border-b-2 border-black dark:border-white"></div>
+        <div class="animate-spin h-12 w-12 border-b-2 border-black rounded-full dark:border-white"></div>
       </div>
     {:else}
       <!-- Overview Tab -->
@@ -215,7 +215,7 @@
           </div>
           
           <!-- Stats Grid -->
-          <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-10 mb-8 md:mb-14">
+          <div class="stats -grid grid grid-cols-3 lg:grid-cols-5 gap-1 md:gap-10 mb-8 md:mb-14">
             <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl flex flex-col items-center justify-center aspect-square stats-card cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition" on:click={() => activeTab = 'orders'}>
               <h3 class="stats-label font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">Total Orders</h3>
               <p class="stats-number font-extrabold text-black dark:text-white">{stats.totalOrders}</p>
@@ -239,7 +239,7 @@
           </div>
           
           <!-- Online Users Section -->
-          <div id="online-users-section" class="bg-white dark:bg-black border-2 border-black dark:border-white shadow p-4 md:p-8 mb-8 md:mb-12">
+          <div id="online-users- section" class="bg-white dark:bg-black border-2 border-black dark:border-white shadow p-4 md:p-8 mb-8 md:mb-12">
             <h3 class="section-title font-extrabold uppercase tracking-widest mb-4 text-black dark:text-white">Online Users</h3>
             <ul>
               {#each $onlineUsers.users as user}
@@ -257,7 +257,7 @@
               <h3 class="section-title font-extrabold uppercase tracking-widest text-black dark:text-white">Recent Orders</h3>
             </div>
             <div class="table-container p-4 md:p-8">
-              <table class="min-w-full divide-y divide-black dark:divide-white">
+              <table class="min-w- full overflow-x-auto divide-y divide-black dark:divide-white">
                 <thead>
                   <tr>
                     <th class="px-3 md:px-6 py-3 text-left table-header font-bold uppercase tracking-widest text-black dark:text-white">Order ID</th>

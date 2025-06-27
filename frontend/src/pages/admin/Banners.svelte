@@ -112,7 +112,7 @@
   {:else}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each banners as banner}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded- shadow-md overflow-auto">
           <div class="relative">
             <img 
               src={banner.image} 

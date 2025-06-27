@@ -4,15 +4,15 @@
   {#if loading}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mb-8">
       {#each Array(4) as _, i}
-        <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-pulse" key={i}>
-          <div class="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-t-2xl"></div>
+        <div class="bg-white dark:bg-black border-2 border-black dark:border-white  shadow-xl flex flex-col overflow-auto" key={i}>
+          <div class="w-full h-40 bg-gray-200 dark:bg-gray-800 "></div>
           <div class="p-6 flex-1 flex flex-col">
-            <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
-            <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded mb-2 w-full"></div>
-            <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded mb-4 w-1/2"></div>
+            <div class="h-6 bg-gray-300 dark:bg-gray-700  mb-2 w-2/3"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-800  mb-2 w-full"></div>
+            <div class="h-3 bg-gray-200 dark:bg-gray-800  mb-4 w-1/2"></div>
             <div class="flex gap-2 mt-auto">
-              <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
-              <div class="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+              <div class="h-10 bg-gray-200 dark:bg-gray-800  w-full"></div>
+              <div class="h-10 bg-gray-200 dark:bg-gray-800  w-full"></div>
             </div>
           </div>
         </div>
@@ -25,7 +25,7 @@
   {:else}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mb-8">
       {#each collections as c}
-        <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
+        <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl flex flex-col overflow-auto">
           <img src={c.image} alt={c.name} class="w-full h-40 object-cover rounded-t-2xl" />
           <div class="p-6 flex-1 flex flex-col">
             <h2 class="text-xl font-extrabold uppercase tracking-widest mb-2 text-black dark:text-white truncate">{c.name}</h2>
@@ -40,31 +40,31 @@
       {/each}
     </div>
     {#if showForm}
-      <div class="bg-white dark:bg-black border-2 border-black dark:border-white rounded-2xl shadow-xl p-8 mb-8 max-w-xl mx-auto">
+      <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl p-8 mb-8 max-w-xl mx-auto">
         <h2 class="text-xl font-bold mb-4">{editing ? 'Edit' : 'Create'} Collection</h2>
         <div class="mb-2">
           <label>ID</label>
-          <input class="w-full p-2 rounded border" bind:value={form.id} disabled={editing} />
+          <input class="w-full p-2  border" bind:value={form.id} disabled={editing} />
         </div>
         <div class="mb-2">
           <label>Name</label>
-          <input class="w-full p-2 rounded border" bind:value={form.name} />
+          <input class="w-full p-2 border" bind:value={form.name} />
         </div>
         <div class="mb-2">
           <label>Description</label>
-          <textarea class="w-full p-2 rounded border" bind:value={form.description} />
+          <textarea class="w-full p-2 border" bind:value={form.description} />
         </div>
         <div class="mb-2">
           <label>Image URL</label>
-          <input class="w-full p-2 rounded border" bind:value={form.image} />
+          <input class="w-full p-2 border" bind:value={form.image} />
           <input type="file" accept="image/*" on:change={handleImageUpload} class="mt-2" />
           {#if form.image}
-            <img src={form.image} alt="Preview" class="mt-2 w-32 h-32 object-cover rounded" />
+            <img src={form.image} alt="Preview" class="mt-2 w-32 h-32 object-cover" />
           {/if}
         </div>
         <div class="mb-2">
           <label>Products</label>
-          <select multiple class="w-full p-2 rounded border" bind:value={form.products}>
+          <select multiple class="w-full p-2 border" bind:value={form.products}>
             {#each products as p}
               <option value={p.id}>{p.name}</option>
             {/each}

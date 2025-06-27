@@ -147,7 +147,7 @@
     <div class="text-red-500 text-center">{$adminOrders.error}</div>
   {:else}
     <div class="table-container">
-      <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl overflow-hidden">
+      <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl overflow-auto">
         <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
           <thead class="bg-white dark:bg-black">
             <tr>

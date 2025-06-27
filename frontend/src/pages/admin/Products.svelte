@@ -284,7 +284,7 @@
     <div class="text-red-500 text-center mb-2">{error}</div>
   {:else}
     <div class="table-container">
-      <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl overflow-hidden">
+      <div class="bg-white dark:bg-black border-2 border-black dark:border-white shadow-xl overflow-auto">
         <table class="min-w-full divide-y divide-black dark:divide-white text-sm">
           <thead class="bg-white dark:bg-black">
             <tr>
@@ -300,7 +300,7 @@
               <tr>
                 <td class="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2 md:gap-4">
-                    <div class="h-12 w-12 md:h-14 md:w-14 flex-shrink-0 border-2 border-black dark:border-white overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <div class="h-12 w-12 md:h-14 md:w-14 flex-shrink-0 border-2 border-black dark:border-white overflow-auto bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                       <img class="h-full w-full object-cover" src={getResolvedImageUrl(product)} alt={product.name} />
                     </div>
                     <div class="min-w-0">

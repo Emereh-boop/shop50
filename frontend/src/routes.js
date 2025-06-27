@@ -26,6 +26,15 @@ import { isAdmin } from './stores/admin';
 import { user } from './stores/user';
 import { get } from 'svelte/store';
 import { push } from 'svelte-spa-router';
+import RequireAdmin from './components/common/RequireAdmin.svelte';
+import AdminDashboardWrapper from './routes/admin/+page.svelte';
+import AdminProductsWrapper from './routes/admin/products/+page.svelte';
+import AdminOrdersWrapper from './routes/admin/orders/+page.svelte';
+import AdminUsersWrapper from './routes/admin/users/+page.svelte';
+import AdminBannersWrapper from './routes/admin/banners/+page.svelte';
+import AdminUploadWrapper from './routes/admin/upload/+page.svelte';
+import AdminShippingWrapper from './routes/admin/shipping/+page.svelte';
+import AdminCouponsWrapper from './routes/admin/coupons/+page.svelte';
 
 function adminOnly(component) {
   const isUserAdmin = get(isAdmin);
@@ -50,14 +59,14 @@ const routes = {
   '/contact': Contact,
 
   // Admin routes
-  '/admin': adminOnly(AdminDashboard),
-  '/admin/products': adminOnly(AdminProducts),
-  '/admin/orders': adminOnly(AdminOrders),
-  '/admin/users': adminOnly(AdminUsers),
-  '/admin/banners': adminOnly(AdminBanners),
-  '/admin/upload': adminOnly(AdminUpload),
-  '/admin/shipping': adminOnly(AdminShipping),
-  '/admin/coupons': adminOnly(AdminCoupon),
+  '/admin': AdminDashboardWrapper,
+  '/admin/products': AdminProductsWrapper,
+  '/admin/orders': AdminOrdersWrapper,
+  '/admin/users': AdminUsersWrapper,
+  '/admin/banners': AdminBannersWrapper,
+  '/admin/upload': AdminUploadWrapper,
+  '/admin/shipping': AdminShippingWrapper,
+  '/admin/coupons': AdminCouponsWrapper,
 
   // 404 route
   '*': NotFound

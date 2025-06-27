@@ -1,85 +1,125 @@
-# Adidas Clone Frontend
+# YNT Store Frontend (Svelte SPA) – Landmark Update (March)
 
-This is the frontend application for the Adidas clone project, built with Svelte and Tailwind CSS.
+This is the Svelte-based frontend for the YNT e-commerce platform. This README marks a major project milestone, summarizing all features, architecture, and recent progress.
 
-## Features
+---
 
-- Modern, responsive design following Adidas' design system
-- Product browsing and filtering
-- Shopping cart functionality
-- User authentication
-- Order management
-- Dark mode support
+## Overview
+- Modern, mobile-first e-commerce SPA
+- Built with Svelte, Tailwind CSS, and svelte-spa-router
+- Secure authentication, robust admin protection, and a clean, modular codebase
 
-## Getting Started
+---
 
-### Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository
-2. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-### Development
-
-To start the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-The application will be available at `http://localhost:5173`.
-
-### Building for Production
-
-To create a production build:
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-To preview the production build:
-
-```bash
-npm run preview
-# or
-yarn preview
-```
-
-## Project Structure
+## Directory Structure
 
 ```
 frontend/
 ├── src/
-│   ├── components/
-│   │   ├── layout/
-│   │   ├── product/
-│   │   └── ui/
-│   ├── routes/
-│   ├── stores/
-│   ├── App.svelte
-│   ├── main.js
-│   └── app.css
-├── public/
+│   ├── components/         # Svelte UI components (layout, product, admin, etc.)
+│   ├── pages/              # Page-level Svelte components (admin, user, etc.)
+│   ├── routes/             # SPA route entrypoints (+page.svelte)
+│   ├── stores/             # Svelte stores (user, cart, admin, etc.)
+│   ├── styles/             # CSS (Tailwind, responsive)
+│   ├── utils/              # Utility JS
+│   └── main.js             # App entrypoint
+├── public/                 # Static assets
 ├── index.html
 └── package.json
 ```
+
+---
+
+## Setup & Development
+
+### Prerequisites
+- Node.js (v14+)
+- npm or yarn
+
+### Install & Run
+```bash
+cd frontend
+npm install
+npm run dev
+```
+App runs at `http://localhost:5173` by default.
+
+### Build for Production
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## Features
+
+### User
+- Register, login, logout (JWT, secure)
+- Browse, search, and filter products
+- Add to cart, update cart, checkout
+- View order history
+- Responsive design (mobile-first)
+- Dark mode
+
+### Admin
+- Admin-only dashboard and management pages (products, users, orders, banners, coupons, shipping)
+- Add/edit/delete products
+- Manage users and roles
+- View and manage orders
+- Upload product images
+- All admin routes are protected (via RequireAdmin wrapper and store-based guard)
+
+### UI/UX
+- 2-column product grid on mobile, tight card sizing, no overflow
+- Cart summary always visible on all mobile sizes
+- Modern, accessible, and fast
+
+---
+
+## What's New & Different (Landmark March Update)
+- **Unified user/auth store:** All user and admin logic now uses a single Svelte store for reliability
+- **Robust admin protection:** Admin routes use a wrapper component (`RequireAdmin`) for real-time, reactive access control
+- **Mobile grid improvements:** Product grid is now 2-column on mobile, with tight card sizing and no overflow
+- **Cart summary bugfix:** Cart summary always visible on all mobile sizes
+- **Cleaner codebase:** Removed redundant stores, unified logic, and improved documentation
+- **Wrapper-based admin routing:** Each admin route now has a dedicated Svelte wrapper for compatibility and clarity
+
+---
+
+## Key Logic Explanations
+
+### Authentication & User Store
+- User logs in/registers → backend returns JWT and user object (with role)
+- User info is stored in Svelte store and localStorage
+- All components and guards use this single source of truth
+
+### Admin Route Guard (Svelte)
+- Each admin route is a Svelte wrapper that uses `<RequireAdmin component={...} />`
+- `RequireAdmin` checks the user store and admin status reactively
+- If not admin, user is redirected to home
+
+### Cart & Checkout
+- Cart is a Svelte store, synced to localStorage
+- Cart summary and checkout always available on all devices
+
+---
+
+## Progress & History
+- **Day 1:** Svelte SPA bootstrapped
+- **Milestone:** All major features ported from React
+- **Recent:** Major refactor for admin protection, mobile UI, and codebase cleanup
+- **This README:** Marks a major project landmark (March)
+
+---
+
+## For Developers & Stakeholders
+- All code is modular, documented, and ready for further extension
+- Please open issues or PRs for bugs, features, or questions
+
+---
+
+# End of Landmark Update
 
 ## Technologies Used
 
